@@ -38,9 +38,10 @@ typedef struct {
 } m_Arena;
 
 void m_arena_init(m_Arena *arena);
+void m_arena_init_reserve(m_Arena *arena, u64 reserve);
 void m_arena_init_base(m_Arena *arena, m_MemoryBase *base);
 void m_arena_init_reserve_base(m_Arena *arena, m_MemoryBase *base, u64 reserve);
-void m_arena_init_reserve(m_Arena *arena, u64 reserve);
+
 void m_arena_cleanup(m_Arena *arena);
 
 void* m_arena_push(m_Arena *arena, u64 size);

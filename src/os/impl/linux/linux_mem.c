@@ -1,6 +1,5 @@
 #include "os/os_mem.h"
 
-#include <stdatomic.h>
 #include <sys/mman.h>
 
 void*

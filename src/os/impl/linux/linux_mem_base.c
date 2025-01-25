@@ -1,6 +1,5 @@
 #include "base/mem.h"
 #include "os/os_mem.h"
-#include <stdatomic.h>
 
 void*
 os_memory_base_reserve(void* ctx, u64 size) {
