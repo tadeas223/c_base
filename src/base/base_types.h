@@ -1,5 +1,5 @@
 #ifndef BASE_TYPES_H
-#define BASEY_TYPES_H
+#define BASE_TYPES_H
 
 /* signed types */
 typedef signed char s8;
@@ -57,3 +57,5 @@ typedef u64 b64;
 #define B16_MAX 0xffff
 #define B32_MAX 0xffffffff
 #define B64_MAX 0xffffffffffffffff
+
+#endif
