@@ -1,3 +1,4 @@
 sources += files(
-  'mem.c',
+  'os_mem.c'
+
 )

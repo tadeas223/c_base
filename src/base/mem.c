@@ -1,11 +1,8 @@
 #include "mem.h"
 #include "types.h"
-#include <stdio.h>
 
 void
-m_memory_change_noop(void* ctx, void* ptr, u64 size) {
-    printf("NOOP: %p %llu\n", ptr, size);
-}
+m_memory_change_noop(void* ctx, void* ptr, u64 size) {}
 
 u64
 m_align_forward(u64 ptr, u64 align) {
@@ -18,10 +15,9 @@ m_align_forward(u64 ptr, u64 align) {
 }
 
 void
-m_arena_init(m_Arena *arena, m_BaseMemory *base) {
+m_arena_init(m_Arena *arena, m_MemoryBase *base) {
     arena->base = base;
     arena->memory = base->reserve(base->ctx, M_ARENA_DEFAULT_RESERVE);
-
     arena->cap = M_ARENA_DEFAULT_RESERVE;
 
     arena->pos = 0;
@@ -29,7 +25,7 @@ m_arena_init(m_Arena *arena, m_BaseMemory *base) {
 }
 
 void
-m_arena_init_reserve(m_Arena *arena, m_BaseMemory *base, u64 reserve) {
+m_arena_init_reserve(m_Arena *arena, m_MemoryBase *base, u64 reserve) {
     arena->base = base;
     arena->memory = base->reserve(base->ctx, reserve);
 arena->cap = reserve;
@@ -79,4 +75,9 @@ m_arena_pop(m_Arena *arena, u64 size) {
         arena->base->decommit(arena->base->ctx, arena->memory + arena->pos + modulo, decommit_size);
         arena->commit_pos -= decommit_size;
     }
+}
+
+void
+m_arena_cleanup(m_Arena *arena) {
+    arena->base->release(arena->base->ctx, arena->memory, arena->commit_pos);
 }
