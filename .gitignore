@@ -1,0 +1,5 @@
+# build dir
+/build
+
+# clang or something idk
+/.cache
