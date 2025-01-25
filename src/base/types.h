@@ -27,6 +27,11 @@ typedef u64 b64;
 #define null 0
 #define nullptr ((void*) 0)
 
+/* memory macros */
+#define Kilobytes(x) (x * 1024)
+#define Megabytes(x) (x * 1024 * 1024)
+#define Gigabytes(x) (x * 1024 * 1024 * 1024)
+
 /* min, max values */
 #define S8_MIN 0x80
 #define S16_MIN 0x8000
