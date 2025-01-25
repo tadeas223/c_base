@@ -1,8 +1,19 @@
 #include "mem.h"
 #include "types.h"
 
+static m_MemoryBase *base_default;
 void
 m_memory_change_noop(void* ctx, void* ptr, u64 size) {}
+
+void
+m_memory_base_set_default(m_MemoryBase *base) {
+    base_default = base;
+}
+
+m_MemoryBase*
+m_memory_base_get_default() {
+    return base_default;
+}
 
 u64
 m_align_forward(u64 ptr, u64 align) {
@@ -15,7 +26,17 @@ m_align_forward(u64 ptr, u64 align) {
 }
 
 void
-m_arena_init(m_Arena *arena, m_MemoryBase *base) {
+m_arena_init(m_Arena *arena) {
+    m_arena_init_base(arena, base_default);
+}
+
+void
+m_arena_init_reserve(m_Arena *arena, u64 reserve) {
+    m_arena_init_reserve_base(arena, base_default, reserve);
+}
+
+void
+m_arena_init_base(m_Arena *arena, m_MemoryBase *base) {
     arena->base = base;
     arena->memory = base->reserve(base->ctx, M_ARENA_DEFAULT_RESERVE);
     arena->cap = M_ARENA_DEFAULT_RESERVE;
@@ -25,7 +46,7 @@ m_arena_init(m_Arena *arena, m_MemoryBase *base) {
 }
 
 void
-m_arena_init_reserve(m_Arena *arena, m_MemoryBase *base, u64 reserve) {
+m_arena_init_reserve_base(m_Arena *arena, m_MemoryBase *base, u64 reserve) {
     arena->base = base;
     arena->memory = base->reserve(base->ctx, reserve);
 arena->cap = reserve;

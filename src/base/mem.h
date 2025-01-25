@@ -21,6 +21,10 @@ typedef struct {
 /* base memory helper functions */
 void m_memory_change_noop(void* ctx, void* ptr, u64 size);
 
+/* base select */
+void m_memory_base_set_default(m_MemoryBase *base);
+m_MemoryBase* m_memory_base_get_default();
+
 /* 64-bit arena */
 #define M_ARENA_DEFAULT_RESERVE Kilobytes(4)
 #define M_ARENA_COMMIT_BLOCK 512
@@ -33,8 +37,10 @@ typedef struct {
     u64 cap;
 } m_Arena;
 
-void m_arena_init(m_Arena *arena, m_MemoryBase *base);
-void m_arena_init_reserve(m_Arena *arena, m_MemoryBase *base, u64 reserve);
+void m_arena_init(m_Arena *arena);
+void m_arena_init_base(m_Arena *arena, m_MemoryBase *base);
+void m_arena_init_reserve_base(m_Arena *arena, m_MemoryBase *base, u64 reserve);
+void m_arena_init_reserve(m_Arena *arena, u64 reserve);
 void m_arena_cleanup(m_Arena *arena);
 
 void* m_arena_push(m_Arena *arena, u64 size);
