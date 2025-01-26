@@ -1,8 +1,12 @@
-#include "base/base.h"
+#include "base/strings.h"
+#include "base/list.h"
 #include "base/mem.h"
 #include "base/types.h"
-#include "os/os.h"
+#include "os/os_mem.h"
 #include <stdio.h>
+
+ListPrototype(int);
+ListImpl(int);
 
 int main(int argc, char *argv[])
 {
@@ -44,7 +48,23 @@ int main(int argc, char *argv[])
         printf("p=%llu\n", *p);
         m_pool_dealloc(&pool, p); 
     }
-    
 
+    m_Pool list_pool;
+    List(int) list;
+    ListInit(int, &list, &list_pool);
+    
+    for(i = 0; i < 10; i++) {
+        ListPush(int, &list, i);
+    }
+
+    printf("list length=%llu\n", ListLength(&list));
+    for(i = 0; i < ListLength(&list); i++) {
+        printf("list get %d=%d\n", i, ListGet(int, &list, i));
+    }
+    
+    int len = ListLength(&list);
+    for(i = 0; i < len; i++) {
+        printf("list pop %d=%d\n", i, ListPop(int, &list));
+    }
     return 0;
 }

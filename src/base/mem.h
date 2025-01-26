@@ -80,4 +80,5 @@ void m_pool_init_reserve_base(m_Pool * pool, m_MemoryBase *base, u64 reserve, u6
 void* m_pool_alloc(m_Pool *pool);
 void m_pool_dealloc(m_Pool *pool, void* ptr);
 void m_pool_dealloc_count(m_Pool *pool, void* ptr, u64 count);
+void m_pool_cleanup(m_Pool *pool);
 #endif

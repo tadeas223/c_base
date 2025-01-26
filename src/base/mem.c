@@ -208,3 +208,8 @@ m_pool_dealloc_count(m_Pool *pool, void *ptr, u64 count) {
         iter += pool->data_size;
     }
 }
+
+void
+m_pool_cleanup(m_Pool *pool) {
+    pool->base->release(pool->base->ctx, pool->memory, pool->commit_pos * pool->data_size);
+}
