@@ -52,4 +52,6 @@
         m_arena_pop(&(array)->arena, sizeof(*(array)->items));\
         (array)->count--;\
     )
+
+#define DArrayCleanup(array) Stmt( m_arena_cleanup(&(array)->arena); )
 #endif
