@@ -6,5 +6,7 @@ project(
 include_dirs = include_directories('include', 'src')
 
 sources = []
+headers = []
 
+subdir('include')
 subdir('src')
