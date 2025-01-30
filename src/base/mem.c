@@ -1,5 +1,5 @@
-#include "mem.h"
-#include "types.h"
+#include "base/mem.h"
+#include "base/types.h"
 #include <stdio.h>
 
 static m_MemoryBase *base_default;
