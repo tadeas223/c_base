@@ -6,6 +6,9 @@
 #define M_DEFAULT_ALIGN sizeof(void*)
 u64 m_align_forward(u64 ptr, u64 align);
 
+/* memory operations */
+void m_copy(void *dest, const void *src, u64 size);
+
 /* memory base */
 typedef void* m_ReserveFunc(void* ctx, u64 size);
 typedef void m_MemoryChangeFunc(void* ctx, void* ptr, u64 size);

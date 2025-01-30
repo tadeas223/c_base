@@ -26,6 +26,24 @@ m_align_forward(u64 ptr, u64 align) {
     return ptr;
 }
 
+void
+m_copy(void *dest, const void *src, u64 size) {
+    u8* dest8 = (u8*)dest;
+    u8* src8 = (u8*)src;
+    u64 i;
+    if(dest8 < src8) {
+        for(i = 0; i < size; i++) {
+            dest8[i] = src8[i];
+        }
+    } else {
+        u8* last_dest8 = dest8 + (size - 1);
+        u8* last_src8 = src8 + (size - 1);
+        for(i = 0; i < size; i++) {
+            last_dest8[i] = last_src8[i];
+        }
+    }
+}
+
 /* debug base wrapper */
 void*
 m_memory_base_debug_reserve(void *ctx, u64 size) {

@@ -21,4 +21,6 @@
 #   error unkown platform 
 # endif
 
+/* handy macros */
+#define Stmt(code) do { code } while(0)
 #endif 
