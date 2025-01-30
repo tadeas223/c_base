@@ -18,5 +18,5 @@ build() {
 package() {
     cd "$srcdir/$pkgname"
     DESTDIR="$pkgdir" ninja -C build install
-    install "$srcdir/c_base.pc" "$pkgdir/usr/lib/pkgconfig/c_base.pc"
+    install "$srcdir/$pkgdir/c_base.pc" "$pkgdir/usr/lib/pkgconfig/c_base.pc"
 }
