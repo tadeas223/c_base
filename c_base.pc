@@ -1,0 +1,12 @@
+
+prefix=/usr
+libdir=${prefix}/lib
+includedir=${prefix}/include
+
+Name: c_base
+Description: Base library for C projects
+Version: 0.0.1
+
+URL: https://github.com/tadeas223/c_base
+Libs: L${libdir} -lc_base
+Cflags: -I{inclidedir}/c_base

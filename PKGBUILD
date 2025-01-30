@@ -11,11 +11,12 @@ source=("git+https://github.com/tadeas223/c_base.git")
 
 build() {
     cd "$srcdir/$pkgname"
-    meson setup build
+    meson setup build --prefix=/usr
     ninja -C build
 }
 
 package() {
     cd "$srcdir/$pkgname"
     DESTDIR="$pkgdir" ninja -C build install
+    install "$srcdir/c_base.pc" "$pkgdir/usr/lib/pkgconfig/c_base.pc"
 }
