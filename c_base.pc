@@ -9,4 +9,4 @@ Version: 0.0.1
 
 URL: https://github.com/tadeas223/c_base
 Libs: L${libdir} -lc_base
-Cflags: -I{includedir}/c_base
+Cflags: -I${includedir}/c_base
