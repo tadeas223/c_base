@@ -12,5 +12,5 @@ subdir('src')
 
 library('c_base', sources, include_directories: include_dirs, install: true)
 
-install_subdir('include', install_dir: 'include/c_base/')
+install_subdir('include/', install_dir: 'include/c_base/')
 install_data('c_base.pc', install_dir: 'lib/pkgconfig/')
