@@ -2,6 +2,7 @@
 #define STRINGS_H
 
 #include "base/types.h"
+
 typedef struct {
     u64 length;
     u8 *c_str;

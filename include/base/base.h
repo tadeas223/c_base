@@ -1,9 +1,9 @@
 #ifndef BASE_H
 #define BASE_H
 
-#include "types.h"
-#include "defines.h"
-#include "mem.h"
-#include "strings.h"
+#include "base/types.h"
+#include "base/defines.h"
+#include "base/mem.h"
+#include "base/strings.h"
 
 #endif
