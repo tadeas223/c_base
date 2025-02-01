@@ -55,7 +55,7 @@ str8_print(String8 str) {
 }
 
 void
-str8_print_view(String8View view) {
+str8_view_print(String8View view) {
     u64 i;
     for(i = 0; i < view.count; i++) {
         printf("%c", view.str[i]);
