@@ -44,45 +44,7 @@ m_copy(void *dest, void *src, u64 size) {
     }
 }
 
-/* debug base wrapper */
-void*
-m_memory_base_debug_reserve(void *ctx, u64 size) {
-    printf("RESERVE size=%llu\n", size);
-    return ((m_MemoryBase*)ctx)->reserve(((m_MemoryBase*)ctx)->ctx, size);
-}
-
-void
-m_memory_base_debug_commit(void *ctx, void* ptr, u64 size) {
-    printf("COMMIT ptr=%p size=%llu\n", ptr, size);
-    return ((m_MemoryBase*)ctx)->commit(((m_MemoryBase*)ctx)->ctx, ptr, size);
-}
-
-void
-m_memory_base_debug_decommit(void *ctx, void* ptr, u64 size) {
-    printf("DECOMMIT ptr=%p size=%llu\n", ptr, size);
-    return ((m_MemoryBase*)ctx)->decommit(((m_MemoryBase*)ctx)->ctx, ptr, size);
-}
-
-void
-m_memory_base_debug_release(void *ctx, void* ptr, u64 size) {
-    printf("RELEASE ptr=%p size=%llu\n", ptr, size);
-    return ((m_MemoryBase*)ctx)->release(((m_MemoryBase*)ctx)->ctx, ptr, size);
-}
-
-m_MemoryBase*
-m_memory_base_debug(m_MemoryBase* base) {
-    static m_MemoryBase memory = {};
-    if(memory.release == null) {
-        memory.reserve = m_memory_base_debug_reserve; 
-        memory.commit = m_memory_base_debug_commit; 
-        memory.decommit = m_memory_base_debug_decommit; 
-        memory.release = m_memory_base_debug_release; 
-        memory.ctx = base;
-    }
-    return &memory;
-}
 /* Arena allocator */
-
 void
 m_arena_init(m_Arena *arena) {
     m_arena_init_base(arena, base_default);
@@ -157,8 +119,14 @@ m_arena_pop(m_Arena *arena, u64 size) {
 }
 
 void
-m_arena_cleanup(m_Arena *arena) {
+m_arena_release(m_Arena *arena) {
     arena->base->release(arena->base->ctx, arena->memory, arena->commit_pos);
+}
+
+void
+m_arena_reset(m_Arena *arena) {
+    arena->base->release(arena->base->ctx, arena->memory, arena->commit_pos);
+    m_arena_init_reserve_base(arena, arena->base, arena->cap);
 }
 
 /* Pool allocator */
@@ -228,6 +196,12 @@ m_pool_dealloc_count(m_Pool *pool, void *ptr, u64 count) {
 }
 
 void
-m_pool_cleanup(m_Pool *pool) {
+m_pool_release(m_Pool *pool) {
     pool->base->release(pool->base->ctx, pool->memory, pool->commit_pos * pool->data_size);
+}
+
+void
+m_pool_reset(m_Pool *pool) {
+    pool->base->release(pool->base->ctx, pool->memory, pool->commit_pos * pool->data_size);
+    m_pool_init_reserve_base(pool, pool->base, pool->cap, pool->data_size);
 }

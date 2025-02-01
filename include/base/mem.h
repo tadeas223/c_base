@@ -4,9 +4,9 @@
 #include "base/types.h"
 
 #define M_DEFAULT_ALIGN sizeof(void*)
-u64 m_align_forward(u64 ptr, u64 align);
 
 /* memory operations */
+u64 m_align_forward(u64 ptr, u64 align);
 void m_copy(void *dest, void *src, u64 size);
 
 /* memory base */
@@ -28,13 +28,6 @@ void m_memory_change_noop(void* ctx, void* ptr, u64 size);
 void m_memory_base_set_default(m_MemoryBase *base);
 m_MemoryBase* m_memory_base_get_default();
 
-/* debug */
-m_MemoryBase* m_memory_base_debug(m_MemoryBase *base);
-void* m_memory_base_debug_reserve(void* ctx, u64 size);
-void m_memory_base_debug_commit(void* ctx, void* ptr, u64 size);
-void m_memory_base_debug_decommit(void* ctx, void* ptr, u64 size);
-void m_memory_base_debug_release(void* ctx, void* ptr, u64 size);
-
 /* 64-bit arena */
 #define M_ARENA_DEFAULT_RESERVE Gigabytes(1)
 #define M_ARENA_COMMIT_BLOCK Kilobytes(8)
@@ -52,7 +45,8 @@ void m_arena_init_reserve(m_Arena *arena, u64 reserve);
 void m_arena_init_base(m_Arena *arena, m_MemoryBase *base);
 void m_arena_init_reserve_base(m_Arena *arena, m_MemoryBase *base, u64 reserve);
 
-void m_arena_cleanup(m_Arena *arena);
+void m_arena_release(m_Arena *arena);
+void m_arena_reset(m_Arena *arena);
 
 void* m_arena_push(m_Arena *arena, u64 size);
 void m_arena_pop(m_Arena *arena, u64 size);
@@ -83,5 +77,7 @@ void m_pool_init_reserve_base(m_Pool * pool, m_MemoryBase *base, u64 reserve, u6
 void* m_pool_alloc(m_Pool *pool);
 void m_pool_dealloc(m_Pool *pool, void* ptr);
 void m_pool_dealloc_count(m_Pool *pool, void* ptr, u64 count);
-void m_pool_cleanup(m_Pool *pool);
+
+void m_pool_release(m_Pool *pool);
+void m_pool_reset(m_Pool *pool);
 #endif

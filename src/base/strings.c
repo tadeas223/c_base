@@ -1,8 +1,7 @@
 #include "base/strings.h"
-#include "base/defines.h"
 #include "base/mem.h"
+#include "base/types.h"
 #include <stdio.h>
-#include <string.h>
 
 String8
 str8_alloc(m_Arena *arena, u64 count) {
@@ -56,10 +55,10 @@ str8_print(String8 str) {
 }
 
 void
-str8_print_view(String8View str) {
+str8_print_view(String8View view) {
     u64 i;
-    for(i = 0; i < str.count; i++) {
-        printf("%c", str.str[i]);
+    for(i = 0; i < view.count; i++) {
+        printf("%c", view.str[i]);
     }
 }
 
@@ -148,3 +147,10 @@ str8_join(m_Arena *arena, String8ViewList *list) {
 
     return str;
 }
+
+u8
+str8_at(String8View view, u64 pos) {
+    if(pos >= view.count) return null;
+    return view.str[pos];
+}
+
