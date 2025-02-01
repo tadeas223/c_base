@@ -4,7 +4,7 @@
 #include "base/mem.h"
 #include "base/types.h"
 
-#define str8_lit(c_str) str8_cstr_count(c_str, sizeof(c_str) - 1)
+#define Str8Lit(c_str) str8_cstr_count(c_str, sizeof(c_str) - 1)
 
 typedef struct {
     u64 count;
