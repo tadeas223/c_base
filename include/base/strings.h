@@ -58,16 +58,12 @@ bool is_alhpanum(u8 c);
 bool is_upper(u8 c);
 bool is_lower(u8 c);
 
-#define IsNumber(c) (c >= 48 && c <= 57)
-#define IsSpace(c) (c == 32)
-#define IsUpper(c) (c >= 65 && c <= 90)
-#define IsLower(c) (c >= 97 && c <= 122)
+#define IsNumber(c) (c >= '0' && c <= '9')
+#define IsSpace(c) (c == ' ')
+#define IsUpper(c) (c >= 'A' && c <= 'Z')
+#define IsLower(c) (c >= 'a' && c <= 'z')
 
-#if defined(PLATFORM_WINDOWS)
-    #define IsNewLine(c) (c == 10 && c == 13)
-#else
-    #define IsNewLine(c) (c == 10)
-#endif
+#define IsNewLine(c) (c == '\n')
 
 #define IsAlpha(c) (IsUpper(c) || IsLower(c)))
 #define IsAphaNum(c) (IsAlpha(c) || IsNumber(c))
