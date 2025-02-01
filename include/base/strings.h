@@ -3,6 +3,7 @@
 
 #include "base/mem.h"
 #include "base/types.h"
+#include "base/defines.h"
 
 #define Str8Lit(c_str) str8_cstr_count(c_str, sizeof(c_str) - 1)
 
@@ -50,4 +51,23 @@ String8View str8_substr(String8View view, u64 start, u64 length);
 String8ViewList* str8_split(m_Arena *arena, String8View view, u8 splitter);
 String8 str8_join(m_Arena *arena, String8ViewList *list);
 
+bool is_number(u8 c);
+bool is_white_space(u8 c);
+bool is_alpha(u8 c);
+bool is_alhpanum(u8 c);
+bool is_upper(u8 c);
+bool is_lower(u8 c);
+
+#define IsNumber(c) (c >= 48 && c <= 57)
+#define IsSpace(c) (c == 32)
+#define IsUpper(c) (c >= 65 && c <= 90)
+#define IsLower(c) (c >= 97 && c <= 122)
+
+#if defined(PLATFORM_WINDOWS)
+    #define IsNewLine(c) (c == 10 && c == 13)
+#else
+    #define IsNewLine(c) (c == 10)
+
+#define IsAlpha(c) (IsUpper(c) || IsLower(c)))
+#define IsAphaNum(c) (IsAlpha(c) || IsNumber(c))
 #endif

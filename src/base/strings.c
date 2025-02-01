@@ -153,4 +153,3 @@ str8_at(String8View view, u64 pos) {
     if(pos >= view.count) return null;
     return view.str[pos];
 }
-
