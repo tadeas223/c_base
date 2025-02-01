@@ -67,7 +67,9 @@ bool is_lower(u8 c);
     #define IsNewLine(c) (c == 10 && c == 13)
 #else
     #define IsNewLine(c) (c == 10)
+#endif
 
 #define IsAlpha(c) (IsUpper(c) || IsLower(c)))
 #define IsAphaNum(c) (IsAlpha(c) || IsNumber(c))
+
 #endif
