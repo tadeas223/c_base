@@ -1,6 +1,7 @@
 #ifndef STRINGS_H
 #define STRINGS_H
 
+#include "base/errors.h"
 #include "base/mem.h"
 #include "base/types.h"
 
@@ -23,6 +24,14 @@ typedef struct {
     u64 node_count;
     u64 str_count;
 } String8List;
+
+typedef struct {
+    ResultVars(String8);
+} String8Result;
+
+typedef struct {
+    ResultVars(String8List);
+} String8ListResult;
 
 String8 str8(u8* str, u64 count);
 String8 str8_range(u8* start, u8* end);

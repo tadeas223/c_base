@@ -2,10 +2,15 @@
 #define ERRORS_H
 
 #include "base/types.h"
-#define ResultVars(type) union { const type value; const u32 err; } result; const bool ok
 
-#define ResultOK(val) {.ok = true, .result.value = val}
-#define ResultERR(err_code) {.ok = false, .result.err = err_code}
+#define ResultVars(type) type value; const u32 err; const bool ok
+
+#define ResultOK(val) {.ok = true, .value = val}
+#define ResultERR(err_code) {.ok = false, .err = err_code}
+
+extern enum {
+    ERR_UNSPECIFIED = U32_MAX,
+} ErrorCodes;
 
 /* unsigned results */
 typedef struct {
