@@ -7,6 +7,7 @@
 
 /* memory operations */
 u64 m_align_forward(u64 ptr, u64 align);
+u64 m_align_backward(u64 ptr, u64 align);
 void m_copy(void *dest, void *src, u64 size);
 
 /* memory base */
@@ -50,6 +51,16 @@ void m_arena_reset(m_Arena *arena);
 
 void* m_arena_push(m_Arena *arena, u64 size);
 void m_arena_pop(m_Arena *arena, u64 size);
+void m_arena_pop_to(m_Arena *arena, u64 pos);
+
+/* scatch arenas */
+typedef struct {
+    m_Arena *arena;
+    u64 pos;
+} m_Temp;
+
+m_Temp m_temp_begin(m_Arena *arena);
+void m_temp_end(m_Temp *scratch);
 
 /* 64-bit Pool */
 #define M_POOL_DEFAULT_RESERVE Gigabytes(1)

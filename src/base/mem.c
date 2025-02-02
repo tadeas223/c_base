@@ -1,6 +1,5 @@
 #include "base/mem.h"
 #include "base/types.h"
-#include <stdio.h>
 
 static m_MemoryBase *base_default;
 void
@@ -22,6 +21,16 @@ m_align_forward(u64 ptr, u64 align) {
 
     if(modulo != 0) {
         ptr += align - modulo;
+    }
+    return ptr;
+}
+
+u64
+m_align_backward(u64 ptr, u64 align) {
+    u64 modulo = ptr % align;
+
+    if(modulo != 0) {
+        ptr -= align + modulo;
     }
     return ptr;
 }
@@ -100,14 +109,35 @@ m_arena_push(m_Arena *arena, u64 size) {
 void
 m_arena_pop(m_Arena *arena, u64 size) {
     u64 free_space;
-
-    size = m_align_forward(size, M_DEFAULT_ALIGN);
+    
+    /* align backward!!! */
+    size = m_align_backward(size, M_DEFAULT_ALIGN);
+   
     if(arena->pos - size <= 0) {
         arena->pos = 0;
     } else {
         arena->pos -= size;
     }
     
+    free_space = arena->commit_pos - arena->pos;
+    if(free_space >= M_ARENA_COMMIT_BLOCK) {
+        u64 modulo = (free_space % M_ARENA_COMMIT_BLOCK);
+        u64 decommit_size = free_space - modulo; 
+
+        arena->base->decommit(arena->base->ctx, arena->memory + arena->pos + modulo, decommit_size);
+        arena->commit_pos -= decommit_size;
+    }
+}
+
+void
+m_arena_pop_to(m_Arena *arena, u64 pos) {
+    if(pos >= arena->pos) return; /* theres nothing to pop */
+    
+
+    pos = m_align_backward(pos, M_DEFAULT_ALIGN);
+    arena->pos = pos; 
+    
+    u64 free_space;
     free_space = arena->commit_pos - arena->pos;
     if(free_space >= M_ARENA_COMMIT_BLOCK) {
         u64 modulo = (free_space % M_ARENA_COMMIT_BLOCK);
@@ -127,6 +157,18 @@ void
 m_arena_reset(m_Arena *arena) {
     arena->base->release(arena->base->ctx, arena->memory, arena->commit_pos);
     m_arena_init_reserve_base(arena, arena->base, arena->cap);
+}
+
+/* scatch arena */
+m_Temp
+m_temp_begin(m_Arena *arena) {
+    return (m_Temp) {.pos = arena->pos, .arena = arena};
+}
+
+void
+m_temp_end(m_Temp *temp) {
+    m_arena_pop_to(temp->arena, temp->pos);
+    *temp= (m_Temp){0};
 }
 
 /* Pool allocator */
