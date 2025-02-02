@@ -28,9 +28,9 @@ String8 str8(u8* str, u64 count);
 String8 str8_range(u8* start, u8* end);
 String8 str8_alloc(m_Arena *arena, u64 count);
 
-String8 str8_view(String8 str);
 String8 str8_cstr(const char* cstr);
 String8 str8_cstr_count(const char* cstr, u64 count);
+char* str8_to_cstr(m_Arena *arena, String8 str);
 
 String8 substr(String8 string, u64 start, u64 count);
 

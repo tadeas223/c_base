@@ -38,6 +38,16 @@ str8_cstr_count(const char *cstr, u64 count) {
     return string;
 }
 
+char*
+str8_to_cstr(m_Arena *arena, String8 string) {
+    char* cstr = m_arena_push(arena, sizeof(char) * string.count + 1);
+    
+    m_copy(cstr, string.str, string.count);
+    cstr[string.count] = '\0';
+
+    return cstr;
+}
+
 String8
 str8_range(u8 *start, u8 *end) {
     String8 string;
