@@ -3,14 +3,27 @@
 
 #include "base/types.h"
 
-#define ResultVars(type) type value; const u32 err; const bool ok
+#define ResultVars(type) type value; u32 err; bool ok
+#define EmptyResultVars() u32 err; bool ok
 
-#define ResultOK(val) {.ok = true, .value = val}
-#define ResultERR(err_code) {.ok = false, .err = err_code}
+#define ResultOK(val) {.ok = true, .value = val, .err = 0 }
+#define ResultERR(code) {.ok = false, .err = code }
 
-extern enum {
+#define EmptyResultOK() {.ok = true, .err = 0 }
+#define EmptyResultERR(code) {.ok = false, .err = code }
+
+extern enum { 
     ERR_UNSPECIFIED = U32_MAX,
-} ErrorCodes;
+} ErrorCode;
+
+extern enum { 
+    ERR_GRP_NONE = U32_MAX,
+} ErrorGroup;
+
+/* empty result */
+typedef struct {
+    EmptyResultVars();
+} Result;
 
 /* unsigned results */
 typedef struct {

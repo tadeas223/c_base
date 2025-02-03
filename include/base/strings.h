@@ -1,8 +1,8 @@
 #ifndef STRINGS_H
 #define STRINGS_H
 
-#include "base/errors.h"
 #include "base/mem.h"
+#include "base/errors.h"
 #include "base/types.h"
 
 #define Str8Lit(c_str) str8_cstr_count(c_str, sizeof(c_str) - 1)

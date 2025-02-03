@@ -1,6 +1,8 @@
 #ifndef DEFINES_H
 #define DEFINES_H
 
+#include "base/strings.h"
+
 /* comiler */
 # if defined(__clang__)
 #   define COMPILER_CLANG 1
@@ -19,6 +21,12 @@
 #   define PLATFORM_WINDOWS 1
 # else
 #   error unkown platform 
+# endif
+
+# if defined(PLATFORM_WINDOWS)
+#   define NEW_LINE Str8Lit("\n\r")
+# else
+#   define NEW_LINE Str8Lit("\n") 
 # endif
 
 /* handy macros */
