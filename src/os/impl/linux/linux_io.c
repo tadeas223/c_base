@@ -107,7 +107,7 @@ os_file_create(m_Arena *arena, String8 path, FileMode mode) {
 }
 
 U8Result
-os_file_read_byte(File* file) {
+os_file_readb(File* file) {
     u8 byte;
     ssize_t r = read(file->descriptor, &byte, 1);
     if(r == -1) {
@@ -139,12 +139,56 @@ os_file_read_all(m_Arena *arena, File* file) {
     return (String8Result) ResultOK(string);
 }
 
+String8Result
+os_file_read_until(m_Arena *arena, File* file, u8 splitter) {
+    String8 string = {.count = 0, .str = arena->memory + arena->pos};
+
+    bool has_nl = false;
+    while(!has_nl) {
+        char buf[10];
+        ssize_t rd = read(file->descriptor, buf, 10);
+        if(rd < 0) {
+            return (String8Result) ResultERR(ERR_UNSPECIFIED);
+        }
+    
+        u8 i;
+        for(i = 0; i < 10; i++) {
+            if(buf[i] == splitter) {
+                has_nl = true;
+                break;
+            }
+        }
+        
+        m_arena_push(arena, i);
+        m_copy(string.str + string.count, buf, i);
+        string.count += i;
+    }
+
+    return (String8Result) ResultOK(string);
+}
+
+String8Result
+os_file_readln(m_Arena *arena, File* file) {
+    return os_file_read_until(arena, file, '\n');
+}
+
 Result
 os_file_write(File* file, String8 string) {
     ssize_t wr = write(file->descriptor, string.str, string.count);
     if(wr == -1) {
         return (Result) EmptyResultERR(ERR_UNSPECIFIED); 
     }
+
+    return (Result) EmptyResultOK();
+}
+
+Result
+os_file_writeln(m_Arena *arena, String8 string, File* file) {
+    Result res1 = os_file_write(file, string);
+    Result res2 = os_file_write(file, Str8Lit("\n"));
+    
+    if(!res1.ok) return res1;
+    if(!res2.ok) return res2;
 
     return (Result) EmptyResultOK();
 }
