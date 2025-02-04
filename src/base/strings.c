@@ -1,12 +1,11 @@
 #include "base/strings.h"
 #include "base/mem.h"
 #include "base/types.h"
-#include <stdio.h>
 
-String8
+String8Alloc
 str8_alloc(m_Arena *arena, u64 count) {
-    u8* str = m_arena_push(arena, sizeof(u8) * count);
-    String8 result = (String8){.str = str, .count = count};
+    u8* str = m_arena_alloc(arena, sizeof(u8) * count);
+    String8Alloc result = (String8Alloc){.string = {.str = str, .count = count}};
     return result;
 }
 
@@ -40,7 +39,7 @@ str8_cstr_count(const char *cstr, u64 count) {
 
 char*
 str8_to_cstr(m_Arena *arena, String8 string) {
-    char* cstr = m_arena_push(arena, sizeof(char) * string.count + 1);
+    char* cstr = m_arena_alloc(arena, sizeof(char) * string.count + 1);
     
     m_copy(cstr, string.str, string.count);
     cstr[string.count] = '\0';
@@ -56,23 +55,14 @@ str8_range(u8 *start, u8 *end) {
     return string;
 }
 
-void
-str8_print(String8 string) {
-    u64 i;
-    for(i = 0; i < string.count; i++) {
-        printf("%c", string.str[i]);
-    }
-}
-
 String8
 str8_substr(String8 string, u64 start, u64 count) {
     return (String8){.str = string.str + start, .count = count};
 }
 
-
 /* same as list = {0} */
 void
-str8_list_init(String8List *list) {
+str8_list_begin(String8List *list) {
     list->head = null;
     list->tail = null;
     list->node_count = 0;
@@ -81,8 +71,8 @@ str8_list_init(String8List *list) {
 
 void
 str8_list_push(m_Arena *arena, String8List *list, String8 string) {
-    String8Node *node = m_arena_push(arena, sizeof(*node));
-    node->str = string;
+    String8Node *node = m_arena_alloc(arena, sizeof(*node));
+    node->string = string;
     node->next = null;
     node->prev = null;
 
@@ -103,7 +93,7 @@ str8_list_push(m_Arena *arena, String8List *list, String8 string) {
 
 String8
 str8_list_pop(String8List *list) {
-    String8 string = list->tail->str;
+    String8 string = list->tail->string;
     list->tail = list->tail->prev;
     list->node_count--;
     list->str_count -= string.count;
@@ -117,7 +107,7 @@ str8_split(m_Arena *arena, String8 string, u8 splitter) {
     u64 splitStart = 0;
     u64 i = 0;
     String8List list;
-    str8_list_init(&list);
+    str8_list_begin(&list);
 
     for(i = 0; i < string.count; i++) {
         if(string.str[i] == splitter) {
@@ -133,18 +123,18 @@ str8_split(m_Arena *arena, String8 string, u8 splitter) {
     return list;
 }
 
-String8
+String8Alloc
 str8_join(m_Arena *arena, String8List *list) {
-    String8 str = str8_alloc(arena, list->str_count);
+    String8Alloc str_alloc = str8_alloc(arena, list->str_count);
 
     u64 counter = 0;
     String8Node *node = list->head;
     for(node = list->head; node != null; node = node->next) {
-        m_copy(str.str + counter, node->str.str, node->str.count); 
-        counter += node->str.count;
+        m_copy(str_alloc.string.str + counter, node->string.str, node->string.count); 
+        counter += node->string.count;
     }
 
-    return str;
+    return str_alloc;
 }
 
 u8

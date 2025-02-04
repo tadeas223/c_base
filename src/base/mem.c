@@ -55,17 +55,17 @@ m_copy(void *dest, void *src, u64 size) {
 
 /* Arena allocator */
 void
-m_arena_init(m_Arena *arena) {
-    m_arena_init_base(arena, base_default);
+m_arena_begin(m_Arena *arena) {
+    m_arena_begin_base(arena, base_default);
 }
 
 void
-m_arena_init_reserve(m_Arena *arena, u64 reserve) {
-    m_arena_init_reserve_base(arena, base_default, reserve);
+m_arena_begin_reserve(m_Arena *arena, u64 reserve) {
+    m_arena_begin_reserve_base(arena, base_default, reserve);
 }
 
 void
-m_arena_init_base(m_Arena *arena, m_MemoryBase *base) {
+m_arena_begin_base(m_Arena *arena, m_MemoryBase *base) {
     arena->base = base;
     arena->memory = base->reserve(base->ctx, M_ARENA_DEFAULT_RESERVE);
     arena->cap = M_ARENA_DEFAULT_RESERVE;
@@ -75,7 +75,7 @@ m_arena_init_base(m_Arena *arena, m_MemoryBase *base) {
 }
 
 void
-m_arena_init_reserve_base(m_Arena *arena, m_MemoryBase *base, u64 reserve) {
+m_arena_begin_reserve_base(m_Arena *arena, m_MemoryBase *base, u64 reserve) {
     arena->base = base;
     arena->memory = base->reserve(base->ctx, reserve);
     arena->cap = reserve;
@@ -85,7 +85,7 @@ m_arena_init_reserve_base(m_Arena *arena, m_MemoryBase *base, u64 reserve) {
 }
 
 void*
-m_arena_push(m_Arena *arena, u64 size) {
+m_arena_alloc(m_Arena *arena, u64 size) {
     void* result = 0;
     
     size = m_align_forward(size, M_DEFAULT_ALIGN);
@@ -107,7 +107,7 @@ m_arena_push(m_Arena *arena, u64 size) {
 }
 
 void
-m_arena_pop(m_Arena *arena, u64 size) {
+m_arena_dealloc(m_Arena *arena, u64 size) {
     u64 free_space;
     
     /* align backward!!! */
@@ -130,7 +130,7 @@ m_arena_pop(m_Arena *arena, u64 size) {
 }
 
 void
-m_arena_pop_to(m_Arena *arena, u64 pos) {
+m_arena_dealloc_to(m_Arena *arena, u64 pos) {
     if(pos >= arena->pos) return; /* theres nothing to pop */
     
 
@@ -149,31 +149,31 @@ m_arena_pop_to(m_Arena *arena, u64 pos) {
 }
 
 void
-m_arena_release(m_Arena *arena) {
+m_arena_end(m_Arena *arena) {
     arena->base->release(arena->base->ctx, arena->memory, arena->commit_pos);
 }
 
 void
 m_arena_reset(m_Arena *arena) {
     arena->base->release(arena->base->ctx, arena->memory, arena->commit_pos);
-    m_arena_init_reserve_base(arena, arena->base, arena->cap);
+    m_arena_begin_reserve_base(arena, arena->base, arena->cap);
 }
 
 /* scatch arena */
-m_Temp
-m_temp_begin(m_Arena *arena) {
-    return (m_Temp) {.pos = arena->pos, .arena = arena};
+void
+m_temp_begin(m_Arena *arena, m_Temp *temp) {
+    *temp = (m_Temp) {.pos = arena->pos, .arena = arena};
 }
 
 void
 m_temp_end(m_Temp *temp) {
-    m_arena_pop_to(temp->arena, temp->pos);
+    m_arena_dealloc_to(temp->arena, temp->pos);
     *temp= (m_Temp){0};
 }
 
 /* Pool allocator */
 void
-m_pool_init_reserve_base(m_Pool *pool, m_MemoryBase *base, u64 reserve, u64 data_size) {
+m_pool_begin_reserve_base(m_Pool *pool, m_MemoryBase *base, u64 reserve, u64 data_size) {
     pool->base = base;
     pool->memory = base->reserve(base->ctx, reserve);
 
@@ -185,18 +185,18 @@ m_pool_init_reserve_base(m_Pool *pool, m_MemoryBase *base, u64 reserve, u64 data
 }
 
 void
-m_pool_init(m_Pool *pool, u64 data_size) {
-    m_pool_init_reserve_base(pool, base_default, M_POOL_DEFAULT_RESERVE, data_size);
+m_pool_begin(m_Pool *pool, u64 data_size) {
+    m_pool_begin_reserve_base(pool, base_default, M_POOL_DEFAULT_RESERVE, data_size);
 }
 
 void
-m_pool_init_reserve(m_Pool *pool, u64 reserve, u64 data_size) {
-    m_pool_init_reserve_base(pool, base_default, reserve, data_size);
+m_pool_begin_reserve(m_Pool *pool, u64 reserve, u64 data_size) {
+    m_pool_begin_reserve_base(pool, base_default, reserve, data_size);
 }
 
 void
-m_pool_init_base(m_Pool *pool, m_MemoryBase *base, u64 data_size) {
-    m_pool_init_reserve_base(pool, base, M_POOL_DEFAULT_RESERVE, data_size);
+m_pool_begin_base(m_Pool *pool, m_MemoryBase *base, u64 data_size) {
+    m_pool_begin_reserve_base(pool, base, M_POOL_DEFAULT_RESERVE, data_size);
 }
 
 void*
@@ -245,5 +245,5 @@ m_pool_release(m_Pool *pool) {
 void
 m_pool_reset(m_Pool *pool) {
     pool->base->release(pool->base->ctx, pool->memory, pool->commit_pos * pool->data_size);
-    m_pool_init_reserve_base(pool, pool->base, pool->cap, pool->data_size);
+    m_pool_begin_reserve_base(pool, pool->base, pool->cap, pool->data_size);
 }

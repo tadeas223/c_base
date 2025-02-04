@@ -3,3 +3,7 @@
 
 # clang or something idk
 /.cache
+
+# generated docs files
+/docs/html
+/docs/latex

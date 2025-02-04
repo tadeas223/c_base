@@ -1,7 +1,20 @@
+/*!**********************************************************
+ * \file defines.h
+ * \brief Macros defining the compilation enviroment.
+ *
+ * Contains definition of the Platform that the program will
+ * be compiled on and the compiler that is used.
+ *
+ * Every definition that starts with **PLATFORM_** refers to the 
+ * platform (operating system) that the code is compiled for
+ * 
+ * every definition that starts with **COMPILER_** refers to the 
+ * compiler that is used to compile the code.
+ * 
+ * \todo add more platforms and compiler macros
+************************************************************/
 #ifndef DEFINES_H
 #define DEFINES_H
-
-#include "base/strings.h"
 
 /* comiler */
 # if defined(__clang__)
@@ -23,12 +36,12 @@
 #   error unkown platform 
 # endif
 
-# if defined(PLATFORM_WINDOWS)
-#   define NEW_LINE Str8Lit("\n\r")
-# else
-#   define NEW_LINE Str8Lit("\n") 
-# endif
+/****************************************
+ * Handy macros
+****************************************/
 
-/* handy macros */
+/*!
+ * @brief Simple macro that wraps its contents into a do {} while(0) loop
+ */
 #define Stmt(code) do { code } while(0)
 #endif 
