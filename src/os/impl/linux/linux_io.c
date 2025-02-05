@@ -6,6 +6,7 @@
 
 #include <fcntl.h>
 #include <stdatomic.h>
+#include <stdio.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
@@ -166,7 +167,7 @@ os_file_readln(m_Arena *arena, File* file) {
 Result
 os_file_write(File* file, String8 string) {
     ssize_t wr = write(file->descriptor, string.str, string.count);
-    if(wr == -1) {
+    if(wr == -1 || wr < string.count) {
         return (Result) EmptyResultERR(ERR_UNSPECIFIED); 
     }
 
@@ -233,13 +234,14 @@ os_console_read_until(m_Arena *arena, u8 splitter) {
     bool has_nl = false;
     while(!has_nl) {
         char buf[10];
+
         ssize_t rd = read(STDIN, buf, 10);
         if(rd < 0) {
             return (String8AllocResult) ResultERR(ERR_UNSPECIFIED);
         }
     
         u8 i;
-        for(i = 0; i < 10; i++) {
+        for(i = 0; i < rd; i++) {
             if(buf[i] == splitter) {
                 has_nl = true;
                 break;

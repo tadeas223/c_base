@@ -94,7 +94,7 @@
 
 /*!
  * \brief Global error codes.
- * \warning Thes codes should not overlap with any other error codes.
+ * \warning These codes should not overlap with any other error codes.
  */
 typedef enum { 
     ERR_UNSPECIFIED = U32_MAX,

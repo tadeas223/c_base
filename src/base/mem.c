@@ -2,6 +2,7 @@
 #include "base/types.h"
 
 static m_MemoryBase *base_default;
+
 void
 m_memory_change_noop(void* ctx, void* ptr, u64 size) {}
 
@@ -180,7 +181,6 @@ m_pool_begin_reserve_base(m_Pool *pool, m_MemoryBase *base, u64 reserve, u64 dat
     pool->data_size = data_size;
     pool->cap = reserve;
 
-    pool->pos = 0;
     pool->commit_pos = 0;
 }
 
@@ -238,7 +238,7 @@ m_pool_dealloc_count(m_Pool *pool, void *ptr, u64 count) {
 }
 
 void
-m_pool_release(m_Pool *pool) {
+m_pool_end(m_Pool *pool) {
     pool->base->release(pool->base->ctx, pool->memory, pool->commit_pos * pool->data_size);
 }
 
