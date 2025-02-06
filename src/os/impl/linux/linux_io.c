@@ -6,13 +6,14 @@
 
 #include <fcntl.h>
 #include <stdatomic.h>
-#include <stdio.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
 #define STDIN 0
 #define STDOUT 1
 #define STDERR 2
+
+#define FILE(desc) (File){.descriptor = desc}
 
 #define DEFAULT_PERMISSIONS 0000644 /* rw-r--r-- */
 
@@ -37,9 +38,8 @@ static mode_t os_file_convert_mode(FileMode mode) {
 }
 
 bool os_file_exists(m_Arena *arena, String8 path) {
-    bool value = false;
     m_Temp temp;
-    
+    bool value = false;
     m_temp_begin(arena, &temp);
     {
         const char* cstr = str8_to_cstr(temp.arena, path); 
@@ -50,14 +50,12 @@ bool os_file_exists(m_Arena *arena, String8 path) {
         }
     }
     m_temp_end(&temp);
-
     return value;
 }
 
 FileResult
 os_file_open(m_Arena *arena, String8 path, FileMode mode) {
     m_Temp temp;
-    
     int descriptor;
     m_temp_begin(arena, &temp);
     {
@@ -79,7 +77,6 @@ os_file_open(m_Arena *arena, String8 path, FileMode mode) {
 FileResult
 os_file_create(m_Arena *arena, String8 path, FileMode mode) {
     m_Temp temp;
-    
     int descriptor;
     m_temp_begin(arena, &temp);
     {
@@ -89,7 +86,7 @@ os_file_create(m_Arena *arena, String8 path, FileMode mode) {
     }
     m_temp_end(&temp);
     
-    if(descriptor == -1) {
+    if(descriptor < 0) {
         return (FileResult) ResultERR(ERR_UNSPECIFIED);    
     }
 
@@ -98,139 +95,93 @@ os_file_create(m_Arena *arena, String8 path, FileMode mode) {
     return (FileResult) ResultOK(file);
 }
 
-U8Result
-os_file_readb(File* file) {
-    u8 byte;
-    ssize_t r = read(file->descriptor, &byte, 1);
-    if(r == -1) {
-        return (U8Result) ResultERR(ERR_UNSPECIFIED); 
+Result
+os_file_close(File *file) {
+    if(close(file->descriptor) < 0) {
+        return (Result) EmptyResultERR(ERR_UNSPECIFIED);
     }
-    return (U8Result) ResultOK(byte);
+    return (Result) EmptyResultOK();
 }
 
-String8AllocResult
-os_file_read_all(m_Arena *arena, File* file) {
-    off_t offset = lseek(file->descriptor, 0,  SEEK_SET);
-    if(offset == - 1) {
-        return (String8AllocResult) ResultERR(ERR_UNSPECIFIED); 
+Result os_file_jmp(File *file, u64 pos) {
+    off_t seek_out = lseek(file->descriptor, pos, SEEK_SET);
+    if(seek_out < 0) {
+        return (Result) EmptyResultERR(ERR_UNSPECIFIED); 
     }
-    
+
+    return (Result) EmptyResultOK();
+}
+
+U64Result
+os_file_size(File *file) {
     struct stat file_info;
-    int stat = fstat(file->descriptor, &file_info);
-    if(stat == -1) {
-        return (String8AllocResult) ResultERR(ERR_UNSPECIFIED);
+    int stat_out = fstat(file->descriptor, &file_info);
+    if(stat_out < 0) {
+        return (U64Result) ResultERR(ERR_UNSPECIFIED);
     }
-
-    String8Alloc a_str = str8_alloc(arena, (u64)file_info.st_size);
-
-    ssize_t r = read(file->descriptor, a_str.string.str, file_info.st_size);
-    if(r == -1) {
-        return (String8AllocResult) ResultERR(ERR_UNSPECIFIED);
-    }
-
-    return (String8AllocResult) ResultOK(a_str);
-}
-
-String8AllocResult
-os_file_read_until(m_Arena *arena, File* file, u8 splitter) {
-    String8Alloc a_str = {.string = {.count = 0, .str = arena->memory + arena->pos}};
-
-    bool has_nl = false;
-    while(!has_nl) {
-        char buf[10];
-        ssize_t rd = read(file->descriptor, buf, 10);
-        if(rd < 0) {
-            return (String8AllocResult) ResultERR(ERR_UNSPECIFIED);
-        }
-    
-        u8 i;
-        for(i = 0; i < 10; i++) {
-            if(buf[i] == splitter) {
-                has_nl = true;
-                break;
-            }
-        }
-        
-        m_arena_alloc(arena, i);
-        m_copy(a_str.string.str + a_str.string.count, buf, i);
-        a_str.string.count += i;
-    }
-
-    return (String8AllocResult) ResultOK(a_str);
-}
-
-String8AllocResult
-os_file_readln(m_Arena *arena, File* file) {
-    return os_file_read_until(arena, file, '\n');
+    return (U64Result) ResultOK(file_info.st_size);
 }
 
 Result
 os_file_write(File* file, String8 string) {
     ssize_t wr = write(file->descriptor, string.str, string.count);
-    if(wr == -1 || wr < string.count) {
+    if(wr < 0 || wr < string.count) {
         return (Result) EmptyResultERR(ERR_UNSPECIFIED); 
     }
 
     return (Result) EmptyResultOK();
 }
 
-Result
-os_file_writeln(m_Arena *arena, String8 string, File* file) {
-    Result res1 = os_file_write(file, string);
-    Result res2 = os_file_write(file, Str8Lit("\n"));
-    
-    if(!res1.ok) return res1;
-    if(!res2.ok) return res2;
+String8AllocResult
+os_file_read_count(m_Arena *arena, File *file, u64 count) {
+    String8Alloc a_str = str8_alloc(arena, count);
+    ssize_t read_out = read(file->descriptor,a_str.string.str, count);
+    if(read_out < 0 || read_out < count) {
+        return (String8AllocResult) ResultERR(ERR_UNSPECIFIED); 
+    }
 
-    return (Result) EmptyResultOK();
+    return (String8AllocResult) ResultOK(a_str);
 }
 
-Result
-os_file_close(File *file) {
-    if(close(file->descriptor) == -1) {
-        return (Result) EmptyResultERR(ERR_UNSPECIFIED);
-    } else {
-        return (Result) EmptyResultOK();
+String8AllocResult
+os_file_read_all(m_Arena *arena, File* file) {
+    /* jump to the start of the file */
+    Result r_jmp = os_file_jmp(file, 0);
+    if(!r_jmp.ok) {
+        return (String8AllocResult) ResultERR(ERR_UNSPECIFIED); 
     }
+    
+    /* get the file size */
+    U64Result r_size = os_file_size(file);
+    if(!r_size.ok) {
+        return (String8AllocResult) ResultERR(ERR_UNSPECIFIED);
+    }
+    
+    /* read from start to file size */
+    String8Alloc a_str = str8_alloc(arena, r_size.value);
+    String8AllocResult a_out = os_file_read_count(arena, file, r_size.value);
+    if(!a_out.ok) {
+        return (String8AllocResult) ResultERR(ERR_UNSPECIFIED);
+    }
+
+    return (String8AllocResult) ResultOK(a_str);
 }
 
 Result
 os_console_write(String8 string) {
-    ssize_t wr = write(STDOUT, string.str, string.count);
-
-    if(wr < 0) {
+    File outfile = FILE(STDOUT);
+    Result r_write = os_file_write(&outfile, string);
+    if(!r_write.ok) {
         return (Result) EmptyResultERR(ERR_UNSPECIFIED); 
     }
-   
-    return (Result) EmptyResultOK();
-}
-
-Result
-os_console_writeln(String8 string) {
-    ssize_t wr = write(STDOUT, string.str, string.count);
-    u8 new_line = '\n';
-    ssize_t wr2 = write(STDOUT, &new_line, 1);
-    
-    if(wr < 0 || wr2 < 0) {
-        return (Result) EmptyResultERR(ERR_UNSPECIFIED);
-    }
-    
-    return (Result) EmptyResultOK();
-}
-
-Result
-os_console_writeb(u8 b) {
-    if(write(STDOUT, &b, 1) < 0) {
-        return (Result) EmptyResultERR(ERR_UNSPECIFIED); 
-    }
-   
     return (Result) EmptyResultOK();
 }
 
 String8AllocResult
 os_console_read_until(m_Arena *arena, u8 splitter) {
-    String8Alloc a_str = {.string = {.count = 0, .str = arena->memory + arena->pos}};
-
+    u64 arena_pos = arena->pos;
+    String8Alloc a_str = {.string = {.count = 0, .str = arena->memory + arena_pos}};
+    
     bool has_nl = false;
     while(!has_nl) {
         char buf[10];
@@ -248,24 +199,15 @@ os_console_read_until(m_Arena *arena, u8 splitter) {
             }
         }
         
-        m_arena_alloc(arena, i);
+        void* ptr = m_arena_alloc(arena, i);
+        if(ptr == null) {
+            m_arena_dealloc_to(arena, arena_pos);
+            return (String8AllocResult) ResultERR(ERR_UNSPECIFIED);
+        }
+
         m_copy(a_str.string.str + a_str.string.count, buf, i);
         a_str.string.count += i;
     }
 
     return (String8AllocResult) ResultOK(a_str);
-}
-
-String8AllocResult
-os_console_readln(m_Arena *arena) {
-    return os_console_read_until(arena, '\n');
-}
-
-U8Result
-os_console_readb() {
-    u8 buf = 0;
-    if(read(STDIN, &buf, 1) < 0) {
-        return (U8Result) ResultERR(ERR_UNSPECIFIED);
-    }
-    return (U8Result) ResultOK(buf);
 }
