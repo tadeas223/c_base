@@ -1,19 +1,33 @@
+/*!**********************************************************
+ * \file types.h
+ * \brief Primitive type definitions
+ *
+ * This header file contains primitive definitions of signed,
+ * unsigned and bool types along with constants like min, max
+ * values of them.
+************************************************************/
 #ifndef BASE_TYPES_H
 #define BASE_TYPES_H
 
-/* signed types */
+/****************************************
+ * signed types
+****************************************/
 typedef signed char s8;
 typedef signed short s16;
 typedef signed int s32;
 typedef signed long long s64;
 
-/* unsigned types */
+/****************************************
+ * unsigned types *
+****************************************/
 typedef unsigned char u8;
 typedef unsigned short u16;
 typedef unsigned int u32;
 typedef unsigned long long u64;
 
-/* boolean types (same as unsigned types)*/
+/****************************************
+ * boolean types (same as unsigned types)
+****************************************/
 typedef u8 b8;
 typedef u16 b16;
 typedef u32 b32;
@@ -23,16 +37,32 @@ typedef u64 b64;
 #define true 1
 #define false 0
 
-/* null types */
+/****************************************
+ * null types
+****************************************/
 #define null 0
 #define nullptr ((void*) 0)
 
-/* memory macros */
+/****************************************
+ * memory macros *
+****************************************/
+
+/*!
+ * \brief Calculates the number of bytes in x Kilobytes
+ */
 #define Kilobytes(x) (x * 1024)
+/*!
+ * \brief Calculates the number of bytes in x Megabytes 
+ */
 #define Megabytes(x) (x * 1024 * 1024)
+/*!
+ * \brief Calculates the number of bytes in x Gigabytes 
+ */
 #define Gigabytes(x) (x * 1024 * 1024 * 1024)
 
-/* min, max values */
+/****************************************
+ * min, max values
+****************************************/
 #define S8_MIN 0x80
 #define S16_MIN 0x8000
 #define S32_MIN 0x80000000
@@ -62,5 +92,4 @@ typedef u64 b64;
 #define B16_MAX 0xffff
 #define B32_MAX 0xffffffff
 #define B64_MAX 0xffffffffffffffff
-
 #endif

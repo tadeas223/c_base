@@ -8,12 +8,16 @@
 #define MEM_H
 #include "base/types.h"
 
+/*!
+ * \brief Default memory alignment that allocators should use.
+ */
 #define M_DEFAULT_ALIGN sizeof(void*)
 
 
 /****************************************
  * Memory Operations
-****************************************/
+ * 
+ ****************************************/
 
 /*!
  * \brief Aligns ptr forward.
@@ -55,7 +59,7 @@ void m_copy(void *dest, void *src, u64 size);
 /*!
  * \brief Function declaration used for reserving memory
  * 
- * \param ctx Allcoators context (Allocator will store its variables here)
+ * \param ctx Allcoators context (Allocator will store it's variables here)
  * \param size Size of the reserved memory
  *
  * \see m_MemoryBase
@@ -64,9 +68,9 @@ typedef void* m_ReserveFunc(void* ctx, u64 size);
 /*!
  * \brief Function declaration used for changing the state of already reserved memory
  * 
- * \param ctx Allcoators context (Allocator will store its variables here)
+ * \param ctx Allcator context (Allocator will store it's variables here)
  * \param size Size of the memory to be commited, decomitted etc...
- * /param ptr Pointer to the memory that should change it's state
+ * \param ptr Pointer to the memory that should change it's state
  *
  * \see m_MemoryBase
  */
@@ -93,10 +97,10 @@ typedef struct {
 } m_MemoryBase;
 
 /*!
- * \brief function that does nothing.
- *
- * Can be usefull when the defeloped  allocator does not allow
- * the commit and decommit functions.
+ * \brief Function that does nothing.
+ * 
+ * If an allocator does not support functions like commit or decommit
+ * than the allcoator can point to this function.
  */
 void m_memory_change_noop(void* ctx, void* ptr, u64 size);
 
@@ -183,7 +187,7 @@ void m_arena_begin_reserve(m_Arena *arena, u64 reserve);
 void m_arena_begin_base(m_Arena *arena, m_MemoryBase *base);
 
 /*!
- * \brief Initialized the m_Arena with a custom memorybase and a custom reserve amount.
+ * \brief Initialized the m_Arena with a custom memory base and a custom reserve amount.
  *
  * \param arena Pointer to the arena to be initialized
  * \param base Custom memory base that all the allocations will go trough
@@ -220,28 +224,28 @@ void m_arena_reset(m_Arena *arena);
 /*!
  * \brief Allocates memory in the m_Arena
  *
- * This functions pushed the size amount of memory to the end of m_Arena.
- * When the memory exceeds the commited memory, the M_ARENA_COMMIT_BLOCK amount of memory
+ * This functions pushes the size amount of memory to the end of m_Arena.
+ * When the memory exceeds the commited memory size, the M_ARENA_COMMIT_BLOCK amount of memory
  * is commited at the end of the last commit.
  *
- * If the memory exeeds the arena reserved memory (the cap variable in m_Arena) this functions return null.
+ * If the memory exeeds the arena reserved memory (the cap variable in m_Arena) this functions returns null.
  *
- * \param arena Arena in which the memory will be allcated
- * \param size The amount of memory to allcote
+ * \param arena Arena in which the memory will be allocated
+ * \param size The amount of memory to allocate
  *
  * \returns Pointer to the start of the allocated memory or null when no more memory is reserved.
  */
 void* m_arena_alloc(m_Arena *arena, u64 size);
 
 /*!
- * \brief Dallocates memory from the m_Arena
+ * \brief Deallocates memory from the m_Arena
  *
  * This function pops the size amount of memory from the end of the arena.
  * When there is more free memory than M_ARENA_COMMIT_BLOCK that memory is decommited.
  *
  * \pre Pointer must reside in the m_Arenas memory pool.
  *
- * \param arena From which the memory will be deallocated
+ * \param arena Pointer to the arena from which the memory will be deallocated
  * \param size The amount of memory to deallocate
  */
 void m_arena_dealloc(m_Arena *arena, u64 size);
@@ -249,7 +253,7 @@ void m_arena_dealloc(m_Arena *arena, u64 size);
 /*!
  * \brief Changes the m_Arena pos and deallocates everyting after it.
  *
- * When the pos - commit_pos is grater than the M_ARENA_COMMIT_BLOCK
+ * When the pos minus commit_pos is grater than the M_ARENA_COMMIT_BLOCK
  * the commit block is decommited.
  *
  * \param arena Arena to dealocate from
@@ -281,7 +285,7 @@ typedef struct {
 /*!
  * \brief Initializes a m_Temp arena.
  *
- * This function store the reverence to the specified m_Arena and
+ * This function stores the reference to the specified m_Arena and
  * the m_Arena's pos variable into the m_Temp struct.
  *
  * \param arena Main arena
@@ -295,7 +299,7 @@ void m_temp_begin(m_Arena *arena, m_Temp *temp);
  * This function calls the m_arena_pop_to() function of the main arena
  * to the pos variable.
  * 
- * The temporary arena is useable after this function, but be sure to end it again afterwrds
+ * The temporary arena is useable after this function, but be sure to end it again afterwrds.
 
  * \param temp Temporary arena to be released
  */
@@ -314,7 +318,7 @@ void m_temp_end(m_Temp *temp);
 /*!
  * \brief The default number of elements that the pool allocates if more memory is needed.
  */
-#define M_POOL_COMMIT_BLOCK 32 /* number of elements that can be stored in the pool */
+#define M_POOL_COMMIT_BLOCK 32
 
 struct m_PoolFreeNode {
     struct m_PoolFreeNode *next;
@@ -346,7 +350,7 @@ typedef struct {
  * The default memory base will be used for the reserve and for the pool allocator.
  * 
  * \param pool Pool to be initialized
- * \param data_size Size of the data that should be allocaed in the pool
+ * \param data_size Size of the data that should be allocated in the pool
  */
 void m_pool_begin(m_Pool *pool, u64 data_size);
 /*!
@@ -380,12 +384,12 @@ void m_pool_begin_base(m_Pool *pool, m_MemoryBase *base, u64 data_size);
  * \param pool Pool to be initialized
  * \param base The custom memory base
  * \param reserve The amount of bytes to be reserved for the pool
- * \param data_size Size of the data that should be allocaed in the pool
+ * \param data_size Size of the data that should be allocated in the pool
  */
 void m_pool_begin_reserve_base(m_Pool * pool, m_MemoryBase *base, u64 reserve, u64 data_size);
 
 /*!
- * \brief ALlocates memory inside the pool
+ * \brief Allocates memory inside the pool
  *
  * This funcion allocates memory in the pool and returns a pointer to it.
  * When the memory exceeds the pools capacity null is returned.
