@@ -1,6 +1,5 @@
 #ifndef DS_H
 #define DS_H
-
 #include "base/mem.h"
 #include "base/types.h"
 #include "base/defines.h"
@@ -54,4 +53,24 @@
     )
 
 #define DArrayCleanup(array) Stmt( m_arena_cleanup(&(array)->arena); )
+
+#define NodePush(head, node)\
+    Stmt(\
+        typeof(head) temp = head;\
+        while(temp->next != null) {\
+            temp = temp->next; \
+        }\
+        temp->next = node;\
+    )\
+
+#define NodeGet(head, index, nodeVar)\
+    Stmt(\
+        typeof((head)) temp = (head);\
+        u64 i;\
+        for(i = 0; i < index; i++) {\
+            temp = temp->next; \
+        }\
+        *variable = temp;\
+    )
+
 #endif
