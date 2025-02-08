@@ -6,6 +6,7 @@
 
 #define DListVars(node_type) node_type *head, *tail; u64 count
 #define DNodeVars(node_name) node_name *next, *prev
+
 #define DListCount(list) (list)->count
 
 #define DListPush(list, node)                                                                  \
