@@ -1,76 +1,117 @@
 #ifndef DS_H
 #define DS_H
-#include "base/mem.h"
+
 #include "base/types.h"
 #include "base/defines.h"
 
-#define DArrayInit(array)                                \
-    Stmt(                                                \
-        m_Arena arena;                                   \
-        m_arena_init(&arena);                            \
-        m_arena_push(&arena, sizeof(*((array)->items))); \
-        (array)->arena = arena;                          \
-        (array)->count = 0;                              \
-        (array)->items = null;                           \
+#define DListVars(node_type) node_type *head, *tail; u64 count
+#define DNodeVars(node_name) node_name *next, *prev
+#define DListCount(list) (list)->count
+
+#define DListPush(list, node)                                                                  \
+    Stmt(                                                                                      \
+        (node)->next = null;                                                                   \
+        (node)->prev = null;                                                                   \
+        if((list)->head == null) {                                                             \
+            (list)->head = (node);                                                             \
+        } else if((list)->tail == null) {                                                      \
+            (list)->tail = (node);                                                             \
+            (list)->tail->prev = (list)->head;                                                 \
+            (list)->head->next = (list)->tail;                                                 \
+        } else {                                                                               \
+            (list)->tail->next = (node);                                                       \
+            (node)->prev = (list)->tail;                                                       \
+            (list)->tail = (node);                                                             \
+        }                                                                                      \
+        (list)->count++;                                                                       \
     )
 
-#define DArrayPush(array, item)                                             \
-    Stmt(                                                                   \
-        void* ptr = m_arena_push(&(array)->arena, sizeof(*(array)->items)); \
-        if((array)->count == 0) { (array)->items = ptr; }                   \
-        (array)->items[(array)->count] = item;                              \
-        (array)->count++;                                                   \
+#define DListPushHead(list, node)                                                              \
+    Stmt(                                                                                      \
+        (node)->next = null;                                                                   \
+        (node)->prev = null;                                                                   \
+        if((list)->head != null) {                                                             \
+            (node)->next = (list)->head;                                                       \
+            (list)->head->prev = (node);                                                       \
+        }                                                                                      \
+        (list)->head = (node);                                                                 \
+        (list)->count++;                                                                       \
     )
 
-#define DArrayPop(array)                                       \
-    Stmt (                                                     \
-        m_arena_pop(&(array)->arena, sizeof(*(array)->items)); \
-        (array)->count--;                                      \
-        if((array)->count == 0) { (array)->items = null; }     \
+#define DListPop(list)                                                                         \
+    Stmt(                                                                                      \
+        (list)->tail = (list)->tail->prev;                                                     \
+        (list)->tail->next = null;                                                             \
+        (list)->count--;                                                                       \
     )
 
-#define DArrayGet(array, index) (array)->items[index]
-
-#define DArrayAdd(array, item, index)                           \
-    Stmt(                                                       \
-        m_arena_push(&(array)->arena, sizeof(*(array)->items)); \
-        u64 i;                                                  \
-        for(i = (array)->count; i > index; i--) {               \
-            (array)->items[i] = (array)->items[i-1];            \
-        }                                                       \
-        (array)->items[index] = item;                           \
-        (array)->count++;                                       \
+#define DListPopHead(list)                                                                     \
+    Stmt(                                                                                      \
+        (list)->head = (list)->head->hext;                                                     \
+        (list)->head->prev = null;                                                             \
+        (list)->count--;                                                                       \
     )
 
-#define DArrayRemove(array, index)\
-    Stmt(\
-        u64 i;\
-        for(i = index; i < (array)->count; i++) {\
-            (array)->items[i] = (array)->items[i+1];\
-        }\
-        m_arena_pop(&(array)->arena, sizeof(*(array)->items));\
-        (array)->count--;\
+#define DListPeek(list, node_var)                                                              \
+    Stmt(                                                                                      \
+        if((list)->head == null) {                                                             \
+            (node_var) = null;                                                                 \
+        } else if((list)->tail == null) {                                                      \
+            (node_var) = (list)->head;                                                         \
+        } else {                                                                               \
+            (node_var) = (list)->tail;                                                         \
+        }                                                                                      \
     )
 
-#define DArrayCleanup(array) Stmt( m_arena_cleanup(&(array)->arena); )
-
-#define NodePush(head, node)\
-    Stmt(\
-        typeof(head) temp = head;\
-        while(temp->next != null) {\
-            temp = temp->next; \
-        }\
-        temp->next = node;\
-    )\
-
-#define NodeGet(head, index, nodeVar)\
-    Stmt(\
-        typeof((head)) temp = (head);\
-        u64 i;\
-        for(i = 0; i < index; i++) {\
-            temp = temp->next; \
-        }\
-        *variable = temp;\
+#define DListPeekHead(list, node_var)                                                         \
+    Stmt(                                                                                     \
+        if((list)->head == null) {                                                            \
+            (node_var) = null;                                                                \
+        } else {                                                                              \
+            (node_var) = (list)->head;                                                        \
+        }                                                                                     \
     )
 
+#define DListAdd(list, index, node_var)                                                       \
+    Stmt(                                                                                     \
+        (node_var)->prev = (list)->head;                                                       \
+        u64 _list_node_current;                                                               \
+        for(_list_node_current = 0; _list_node_current < index-1; _list_node_current++) {       \
+            (node_var)->prev = (node_var)->prev->next;                                        \
+        }                                                                                     \
+        (node_var)->prev->next->prev = (node_var);                                            \
+        (node_var)->next = (node_var)->prev->next;                                            \
+        (node_var)->prev->next = (node_var);                                                  \
+        (list)->count++;                                                                      \
+    )
+
+#define DListRemove(list, index, calc_var)                                                    \
+    Stmt(                                                                                     \
+        (calc_var) = (list)->head;                                                            \
+        u64 _list_node_current;                                                               \
+        for(_list_node_current = 0; _list_node_current < index; _list_node_current++) {       \
+            (calc_var) = (calc_var)->next;                                                    \
+        }                                                                                     \
+        (calc_var)->prev->next = (calc_var)->next;                                            \
+        (calc_var)->next->prev = (calc_var)->prev;                                            \
+        (list)->count--;                                                                      \
+    )
+
+#define DListGet(list, index, node_var)                                                       \
+    Stmt(                                                                                     \
+        (node_var) = (list)->head;                                                            \
+        u64 _list_node_current;                                                               \
+        for(_list_node_current = 0; _list_node_current < index; _list_node_current++) {       \
+            (node_var) = (node_var)->next;                                                    \
+        }                                                                                     \
+    )
+
+#define DListIter(list, node_var, code)                                                       \
+    Stmt(                                                                                     \
+        (node_var) = (list)->head;                                                              \
+        while((node_var) != null) {                                                           \
+            Stmt(code);                                                                       \
+            (node_var) = (node_var)->next;                                                    \
+        }                                                                                     \
+    )
 #endif
