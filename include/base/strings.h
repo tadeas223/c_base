@@ -197,7 +197,7 @@ char* str8_to_cstr(m_Arena *arena, String8 string);
  *
  * \returns Substring
  */
-String8 substr(String8 string, u64 start, u64 count);
+String8 str8_substr(String8 string, u64 start, u64 count);
 
 /*!
  * \brief Splits the string by a character.
