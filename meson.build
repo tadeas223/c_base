@@ -11,5 +11,8 @@ sources = []
 subdir('src')
 
 lib = library('c_base', sources, include_directories: include_dirs, install: true)
+
+subdir('test')
+
 install_subdir('include', install_dir: 'include/c_base/', strip_directory: true)
 install_data('c_base.pc', install_dir: 'lib/pkgconfig/')
