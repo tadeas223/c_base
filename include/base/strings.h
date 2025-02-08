@@ -4,8 +4,6 @@
  *
  * Structs for length based strings, helper function for creation
  * and manipulation with the strings.
- *
- * \todo Implement character checking functions
 ************************************************************/
 #ifndef STRINGS_H
 #define STRINGS_H
@@ -277,10 +275,10 @@ u8 str8_at(String8 view, u64 pos);
 
 
 /****************************************
- * NOT IMPLEMENTED :(
+ * Char checking 
 ****************************************/
 bool is_number(u8 c);
-bool is_white_space(u8 c);
+bool is_space(u8 c);
 bool is_alpha(u8 c);
 bool is_alhpanum(u8 c);
 bool is_upper(u8 c);
@@ -314,11 +312,25 @@ bool is_lower(u8 c);
 /*!
  * \brief Expression checking if an ascii character is a letter. 
  */
-#define IsAlpha(c) (IsUpper(c) || IsLower(c)))
+#define IsAlpha(c) (IsUpper(c) || IsLower(c))
 
 /*!
  * \brief Expression checking if an ascii character is a letter or number. 
  */
-#define IsAphaNum(c) (IsAlpha(c) || IsNumber(c))
+#define IsAlphaNum(c) (IsAlpha(c) || IsNumber(c))
 
+#define NumFromAscii(c) (u8)(c - 48)
+
+/****************************************
+ * Integer and parsing
+****************************************/
+U8Result str8_parse_u8(String8 str);
+U16Result str8_parse_u16(String8 str);
+U32Result str8_parse_u32(String8 str);
+U64Result str8_parse_u64(String8 str);
+
+S8Result str8_parse_s8(String8 str);
+S16Result str8_parse_s16(String8 str);
+S32Result str8_parse_s32(String8 str);
+S64Result str8_parse_s64(String8 str);
 #endif

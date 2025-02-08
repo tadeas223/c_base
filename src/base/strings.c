@@ -1,6 +1,10 @@
 #include "base/strings.h"
+#include "base/errors.h"
 #include "base/mem.h"
 #include "base/types.h"
+#include <cctype>
+#include <cinttypes>
+#include <threads.h>
 
 /****************************************
  * String creation
@@ -151,4 +155,266 @@ u8
 str8_at(String8 string, u64 pos) {
     if(pos >= string.count) return null;
     return string.str[pos];
+}
+
+
+/****************************************
+ * Char checking
+****************************************/
+
+bool
+is_number(u8 c) { return IsNumber(c); }
+
+bool
+is_space(u8 c) { return IsSpace(c); }
+
+bool
+is_alpha(u8 c) { return IsAlpha(c); }
+
+bool
+is_alhpanum(u8 c) { return IsAlphaNum(c); }
+
+bool
+is_upper(u8 c) { return IsUpper(c); }
+
+bool
+is_lower(u8 c) { return IsLower(c); }
+
+bool
+is_new_line(u8 c) { return IsNewLine(c); }
+
+
+/**************************************** Integer and Float parsing
+****************************************/
+U8Result str8_parse_u8(String8 str) {
+    u8 num;
+    u8 i;
+    for(i = 0; i < str.count; i++) {
+        u8 c = str8_at(str, i);
+        if(!IsNumber(c)) {
+            return (U8Result) ResultERR(ERR_UNSPECIFIED); 
+        }
+        
+        u8 cur_num = NumFromAscii(c);
+        
+        if(num + cur_num < num) {
+             return (U8Result) ResultERR(ERR_UNSPECIFIED);
+        }
+
+        num += cur_num;
+
+    }
+
+    return (U8Result) ResultOK(num);
+}
+
+U16Result str8_parse_u16(String8 str) {
+    u16 num;
+    u8 i;
+    for(i = 0; i < str.count; i++) {
+        u8 c = str8_at(str, i);
+        if(!IsNumber(c)) {
+            return (U16Result) ResultERR(ERR_UNSPECIFIED); 
+        }
+        
+        u8 cur_num = NumFromAscii(c);
+        
+        if(num + cur_num < num) {
+             return (U16Result) ResultERR(ERR_UNSPECIFIED);
+        }
+
+        num += cur_num;
+
+    }
+
+    return (U16Result) ResultOK(num);
+}
+
+U32Result str8_parse_u32(String8 str) {
+    u32 num;
+    u8 i;
+    for(i = 0; i < str.count; i++) {
+        u8 c = str8_at(str, i);
+        if(!IsNumber(c)) {
+            return (U32Result) ResultERR(ERR_UNSPECIFIED); 
+        }
+        
+        u8 cur_num = NumFromAscii(c);
+        
+        if(num + cur_num < num) {
+             return (U32Result) ResultERR(ERR_UNSPECIFIED);
+        }
+
+        num += cur_num;
+
+    }
+
+    return (U32Result) ResultOK(num);
+}
+U64Result str8_parse_u64(String8 str) {
+    u64 num;
+    u8 i;
+    for(i = 0; i < str.count; i++) {
+        u8 c = str8_at(str, i);
+        if(!IsNumber(c)) {
+            return (U64Result) ResultERR(ERR_UNSPECIFIED); 
+        }
+        
+        u8 cur_num = NumFromAscii(c);
+        
+        if(num + cur_num < num) {
+             return (U64Result) ResultERR(ERR_UNSPECIFIED);
+        }
+
+        num += cur_num;
+
+    }
+
+    return (U64Result) ResultOK(num);
+}
+
+S8Result str8_parse_s8(String8 str) {
+    s8 num;
+    u8 i = 0;
+    bool is_positive;
+    
+    u8 c = str8_at(str, i);
+    if(c == '-') {
+         is_positive = false;
+         i++;
+    } else if(c == '+') {
+        is_positive = true;
+         i++;
+    }
+
+    
+    for(; i < str.count; i++) {
+        u8 c = str8_at(str, i);
+        if(!IsNumber(c)) {
+            return (S8Result) ResultERR(ERR_UNSPECIFIED); 
+        }
+        
+        u8 cur_num = NumFromAscii(c);
+        
+        if((is_positive && num + cur_num < num) || (!is_positive && num + cur_num > num)) {
+             return (S8Result) ResultERR(ERR_UNSPECIFIED);
+        }
+        
+        if(is_positive) {
+            num += cur_num;
+        } else {
+            num -= cur_num;
+        }
+    }
+
+    return (S8Result) ResultOK(num);
+}
+
+S16Result str8_parse_s16(String8 str) {
+    s16 num;
+    u8 i = 0;
+    bool is_positive;
+    
+    u8 c = str8_at(str, i);
+    if(c == '-') {
+         is_positive = false;
+         i++;
+    } else if(c == '+') {
+        is_positive = true;
+         i++;
+    }
+
+    
+    for(; i < str.count; i++) {
+        u8 c = str8_at(str, i);
+        if(!IsNumber(c)) {
+            return (S16Result) ResultERR(ERR_UNSPECIFIED); 
+        }
+        
+        u8 cur_num = NumFromAscii(c);
+        
+        if((is_positive && num + cur_num < num) || (!is_positive && num + cur_num > num)) {
+             return (S16Result) ResultERR(ERR_UNSPECIFIED);
+        }
+        
+        if(is_positive) {
+            num += cur_num;
+        } else {
+            num -= cur_num;
+        }
+    }
+
+    return (S16Result) ResultOK(num);
+}
+S32Result str8_parse_s32(String8 str) {
+    s32 num;
+    u8 i = 0;
+    bool is_positive;
+    
+    u8 c = str8_at(str, i);
+    if(c == '-') {
+         is_positive = false;
+         i++;
+    } else if(c == '+') {
+        is_positive = true;
+         i++;
+    }
+
+    
+    for(; i < str.count; i++) {
+        u8 c = str8_at(str, i);
+        if(!IsNumber(c)) {
+            return (S32Result) ResultERR(ERR_UNSPECIFIED); 
+        }
+        
+        u8 cur_num = NumFromAscii(c);
+        
+        if((is_positive && num + cur_num < num) || (!is_positive && num + cur_num > num)) {
+             return (S32Result) ResultERR(ERR_UNSPECIFIED);
+        }
+        
+        if(is_positive) {
+            num += cur_num;
+        } else {
+            num -= cur_num;
+        }
+    }
+
+    return (S32Result) ResultOK(num);
+}
+S64Result str8_parse_s64(String8 str) {
+    s64 num;
+    u8 i = 0;
+    bool is_positive;
+    
+    u8 c = str8_at(str, i);
+    if(c == '-') {
+         is_positive = false;
+         i++;
+    } else if(c == '+') {
+        is_positive = true;
+         i++;
+    }
+
+    
+    for(; i < str.count; i++) {
+        u8 c = str8_at(str, i);
+        if(!IsNumber(c)) {
+            return (S64Result) ResultERR(ERR_UNSPECIFIED); 
+        }
+        
+        u8 cur_num = NumFromAscii(c);
+        
+        if((is_positive && num + cur_num < num) || (!is_positive && num + cur_num > num)) {
+             return (S64Result) ResultERR(ERR_UNSPECIFIED);
+        }
+        
+        if(is_positive) {
+            num += cur_num;
+        } else {
+            num -= cur_num;
+        }
+    }
+
+    return (S64Result) ResultOK(num);
 }

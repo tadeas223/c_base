@@ -151,7 +151,7 @@ typedef struct {
 
 
 /****************************************
- * Bool Result Structs
+ * Bool Result structs
 ****************************************/
 typedef struct {
     ResultVars(b8);
@@ -170,5 +170,17 @@ typedef struct {
 } B64Result;
 
 #define BoolResult B8Result
+
+/****************************************
+ * Float Result structs
+****************************************/
+
+typedef struct {
+    ResultVars(f32);
+} F32Result;
+
+typedef struct {
+    ResultVars(f64);
+} F64Result;
 
 #endif
