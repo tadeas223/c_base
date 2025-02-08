@@ -24,11 +24,6 @@ static void test_strings_parse_u8() {
     U8Result r_str4 = str8_parse_u8(str4);
     U8Result r_str5 = str8_parse_u8(str5);
     
-    printf("1 %b\n", r_str1.ok);
-    printf("2 %b\n", r_str2.ok);
-    printf("3 %b\n", r_str3.ok);
-    printf("4 %b\n", r_str4.ok);
-    printf("5 %b\n", r_str5.ok);
     assert_true(r_str1.ok);
     assert_true(r_str2.ok);
     assert_true(!r_str3.ok);
@@ -52,10 +47,6 @@ static void test_strings_parse_u16() {
     U16Result r_str4 = str8_parse_u16(str4);
     U16Result r_str5 = str8_parse_u16(str5);
     
-    printf("1 %b\n", r_str1.ok);
-    printf("2 %b\n", r_str2.ok);
-    printf("3 %b\n", r_str3.ok);
-    printf("4 %b\n", r_str4.ok);
     assert_true(r_str1.ok);
     assert_true(r_str2.ok);
     assert_true(!r_str3.ok);
@@ -79,11 +70,6 @@ static void test_strings_parse_u32() {
     U32Result r_str4 = str8_parse_u32(str4);
     U32Result r_str5 = str8_parse_u32(str5);
     
-    printf("1 %b\n", r_str1.ok);
-    printf("2 %b\n", r_str2.ok);
-    printf("3 %b\n", r_str3.ok);
-    printf("4 %b\n", r_str4.ok);
-    printf("5 %b\n", r_str5.ok);
     assert_true(r_str1.ok);
     assert_true(r_str2.ok);
     assert_true(!r_str3.ok);
@@ -117,11 +103,124 @@ static void test_strings_parse_u64() {
     assert_int_equal(5000000000, r_str2.value);
 }
 
+static void test_strings_parse_s8() {
+    String8 str1 = Str8Lit("50");
+    String8 str2 = Str8Lit("+50");
+    String8 str3 = Str8Lit("-50");
+    String8 str4 = Str8Lit("abc");
+    String8 str5 = Str8Lit("300");
+    String8 str6 = Str8Lit("-300");
+    
+    S8Result r_str1 = str8_parse_s8(str1);
+    S8Result r_str2 = str8_parse_s8(str2);
+    S8Result r_str3 = str8_parse_s8(str3);
+    S8Result r_str4 = str8_parse_s8(str4);
+    S8Result r_str5 = str8_parse_s8(str5);
+    S8Result r_str6 = str8_parse_s8(str6);
+
+    assert_true(r_str1.ok);
+    assert_true(r_str2.ok);
+    assert_true(r_str3.ok);
+    assert_true(!r_str4.ok);
+    assert_true(!r_str5.ok);
+    assert_true(!r_str6.ok);
+
+    assert_int_equal(50, r_str1.value);
+    assert_int_equal(50, r_str2.value);
+    assert_int_equal(-50, r_str3.value);
+}
+
+static void test_strings_parse_s16() {
+    String8 str1 = Str8Lit("10000");
+    String8 str2 = Str8Lit("+10000");
+    String8 str3 = Str8Lit("-10000");
+    String8 str4 = Str8Lit("abc");
+    String8 str5 = Str8Lit("40000");
+    String8 str6 = Str8Lit("-40000");
+    
+    S16Result r_str1 = str8_parse_s16(str1);
+    S16Result r_str2 = str8_parse_s16(str2);
+    S16Result r_str3 = str8_parse_s16(str3);
+    S16Result r_str4 = str8_parse_s16(str4);
+    S16Result r_str5 = str8_parse_s16(str5);
+    S16Result r_str6 = str8_parse_s16(str6);
+
+    assert_true(r_str1.ok);
+    assert_true(r_str2.ok);
+    assert_true(r_str3.ok);
+    assert_true(!r_str4.ok);
+    assert_true(!r_str5.ok);
+    assert_true(!r_str6.ok);
+
+    assert_int_equal(10000, r_str1.value);
+    assert_int_equal(10000, r_str2.value);
+    assert_int_equal(-10000, r_str3.value);
+}
+
+static void test_strings_parse_s32() {
+    String8 str1 = Str8Lit("100000");
+    String8 str2 = Str8Lit("+100000");
+    String8 str3 = Str8Lit("-100000");
+    String8 str4 = Str8Lit("abc");
+    String8 str5 = Str8Lit("3000000000");
+    String8 str6 = Str8Lit("-3000000000");
+    
+    S32Result r_str1 = str8_parse_s32(str1);
+    S32Result r_str2 = str8_parse_s32(str2);
+    S32Result r_str3 = str8_parse_s32(str3);
+    S32Result r_str4 = str8_parse_s32(str4);
+    S32Result r_str5 = str8_parse_s32(str5);
+    S32Result r_str6 = str8_parse_s32(str6);
+
+    assert_true(r_str1.ok);
+    assert_true(r_str2.ok);
+    assert_true(r_str3.ok);
+    assert_true(!r_str4.ok);
+    assert_true(!r_str5.ok);
+    assert_true(!r_str6.ok);
+
+    assert_int_equal(100000, r_str1.value);
+    assert_int_equal(100000, r_str2.value);
+    assert_int_equal(-100000, r_str3.value);
+}
+
+static void test_strings_parse_s64() {
+    String8 str1 = Str8Lit("2000000000");
+    String8 str2 = Str8Lit("+2000000000");
+    String8 str3 = Str8Lit("-2000000000");
+    String8 str4 = Str8Lit("abc");
+    String8 str5 = Str8Lit("9223372036854775808");
+    String8 str6 = Str8Lit("-9223372036854775808");
+    
+    S64Result r_str1 = str8_parse_s64(str1);
+    S64Result r_str2 = str8_parse_s64(str2);
+    S64Result r_str3 = str8_parse_s64(str3);
+    S64Result r_str4 = str8_parse_s64(str4);
+    S64Result r_str5 = str8_parse_s64(str5);
+    S64Result r_str6 = str8_parse_s64(str6);
+
+    assert_true(r_str1.ok);
+    assert_true(r_str2.ok);
+    assert_true(r_str3.ok);
+    assert_true(!r_str4.ok);
+    assert_true(!r_str5.ok);
+    assert_true(!r_str6.ok);
+
+    assert_int_equal(2000000000, r_str1.value);
+    assert_int_equal(2000000000, r_str2.value);
+    assert_int_equal(-2000000000, r_str3.value);
+}
+
 static const struct CMUnitTest grp1[] = {
     cmocka_unit_test(test_strings_parse_u8),
     cmocka_unit_test(test_strings_parse_u16),
     cmocka_unit_test(test_strings_parse_u32),
     cmocka_unit_test(test_strings_parse_u64),
+
+    cmocka_unit_test(test_strings_parse_s8),
+    cmocka_unit_test(test_strings_parse_s16),
+    cmocka_unit_test(test_strings_parse_s32),
+    cmocka_unit_test(test_strings_parse_s64),
 };
 
 static const struct CMUnitTest grp2[] = {

@@ -255,7 +255,6 @@ U32Result str8_parse_u32(String8 string) {
     for(; iter < string.count; iter++) {
         u8 c = str8_at(string, iter);
         if(!IsNumber(c)) {
-            printf("non num\n");
             return (U32Result) ResultERR(ERR_UNSPECIFIED);
         }
 
@@ -300,4 +299,159 @@ U64Result str8_parse_u64(String8 string) {
     }
     
     return (U64Result) ResultOK(result);
+}
+
+/****************************************
+ * signed integer parsing
+****************************************/
+
+S8Result str8_parse_s8(String8 string) {
+    u64 iter = 0;
+    bool sign = false;
+    u8 c = str8_at(string, 0);
+    u8 result = 0;
+
+    if(c == '+') {
+        iter++; 
+    } else if(c == '-') {
+        sign = true; 
+        iter++; 
+    }
+
+    for(; iter < string.count; iter++) {
+        u8 c = str8_at(string, iter);
+        if(!IsNumber(c)) {
+            return (S8Result) ResultERR(ERR_UNSPECIFIED);
+        }
+
+        /* overflow check */
+        if(result > S8_MAX / 10) {
+            return (S8Result) ResultERR(ERR_UNSPECIFIED); 
+        }
+        if(result * 10 > S8_MAX - NumFromAscii(c)) {
+            return (S8Result) ResultERR(ERR_UNSPECIFIED); 
+        }
+
+        result = result * 10 + NumFromAscii(c);
+    }
+    
+    if(sign) {
+        result = -result; 
+    }
+
+    return (S8Result) ResultOK(result);
+}
+
+S16Result str8_parse_s16(String8 string) {
+    u64 iter = 0;
+    bool sign = false;
+    u8 c = str8_at(string, 0);
+    u16 result = 0;
+
+    if(c == '+') {
+        iter++; 
+    } else if(c == '-') {
+        sign = true; 
+        iter++; 
+    }
+
+    for(; iter < string.count; iter++) {
+        u8 c = str8_at(string, iter);
+        if(!IsNumber(c)) {
+            return (S16Result) ResultERR(ERR_UNSPECIFIED);
+        }
+
+        /* overflow check */
+        if(result > S16_MAX / 10) {
+            return (S16Result) ResultERR(ERR_UNSPECIFIED); 
+        }
+        if(result * 10 > S16_MAX - NumFromAscii(c)) {
+            return (S16Result) ResultERR(ERR_UNSPECIFIED); 
+        }
+
+        result = result * 10 + NumFromAscii(c);
+    }
+    
+    if(sign) {
+        result = -result; 
+    }
+
+    return (S16Result) ResultOK(result);
+}
+
+S32Result str8_parse_s32(String8 string) {
+    u64 iter = 0;
+    bool sign = false;
+    u8 c = str8_at(string, 0);
+    u32 result = 0;
+
+    if(c == '+') {
+        iter++; 
+    } else if(c == '-') {
+        sign = true; 
+        iter++; 
+    }
+
+    for(; iter < string.count; iter++) {
+        u8 c = str8_at(string, iter);
+        if(!IsNumber(c)) {
+            return (S32Result) ResultERR(ERR_UNSPECIFIED);
+        }
+
+        /* overflow check */
+        if(result > S32_MAX / 10) {
+            return (S32Result) ResultERR(ERR_UNSPECIFIED); 
+        }
+        if(result * 10 > S32_MAX - NumFromAscii(c)) {
+            return (S32Result) ResultERR(ERR_UNSPECIFIED); 
+        }
+
+        result = result * 10 + NumFromAscii(c);
+    }
+    
+    if(sign) {
+        result = -result; 
+    }
+
+    return (S32Result) ResultOK(result);
+}
+
+S64Result str8_parse_s64(String8 string) {
+    u64 iter = 0;
+    bool sign = false;
+    u8 c = str8_at(string, 0);
+    u64 result = 0;
+
+    if(c == '+') {
+        iter++; 
+    } else if(c == '-') {
+        sign = true; 
+        iter++; 
+    }
+
+    for(; iter < string.count; iter++) {
+        u8 c = str8_at(string, iter);
+        printf("%c\n", c);
+        if(!IsNumber(c)) {
+            return (S64Result) ResultERR(ERR_UNSPECIFIED);
+        }
+
+        /* overflow check */
+        if(result > S64_MAX / 10) {
+            printf("overflow 1\n");
+            return (S64Result) ResultERR(ERR_UNSPECIFIED); 
+        }
+        if(result * 10 > S64_MAX - NumFromAscii(c)) {
+            printf("voerflow 2\n");
+            return (S64Result) ResultERR(ERR_UNSPECIFIED); 
+        }
+
+        result = result * 10 + NumFromAscii(c);
+    }
+    
+    if(sign) {
+        result = -result; 
+    }
+
+    return (S64Result) ResultOK(result);
 }
