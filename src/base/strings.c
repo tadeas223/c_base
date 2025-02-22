@@ -2,9 +2,6 @@
 #include "base/errors.h"
 #include "base/mem.h"
 #include "base/types.h"
-#include <cctype>
-#include <cinttypes>
-#include <threads.h>
 
 /****************************************
  * String creation
@@ -56,6 +53,18 @@ str8_cstr(const char *cstr) {
 /****************************************
  * String manipulation
 ****************************************/
+
+bool
+str8_equals(String8 string1, String8 string2) {
+    if(string1.count != string2.count) return false;
+    
+    u64 i;
+    for(i = 0; i < string1.count; i++) {
+        if(string1.str[i] != string2.str[i]) return false;
+    }
+    
+    return true;
+}
 
 char*
 str8_to_cstr(m_Arena *arena, String8 string) {
@@ -144,10 +153,25 @@ str8_list_push(m_Arena *arena, String8List *list, String8 string) {
 
 String8
 str8_list_pop(String8List *list) {
-    String8 string = list->tail->string;
-    list->tail = list->tail->prev;
-    list->node_count--;
+    String8 string;
+    
+    if(list->node_count > 2)
+    {
+        string = list->tail->string;
+        list->tail = list->tail->prev;
+    } else if(list->node_count == 2) {
+        string = list->head->string;
+        list->head->next = null;
+        list->tail = null;
+    } else if(list->node_count == 1) {
+        string = list->head->string;
+        list->head = null;
+    } else {
+        return Str8Lit(""); /* I don't know how to handle this error */
+    }
+
     list->str_count -= string.count;
+    list->node_count--;
     return string;
 }
 
@@ -166,13 +190,10 @@ bool
 is_number(u8 c) { return IsNumber(c); }
 
 bool
-is_space(u8 c) { return IsSpace(c); }
-
-bool
 is_alpha(u8 c) { return IsAlpha(c); }
 
 bool
-is_alhpanum(u8 c) { return IsAlphaNum(c); }
+is_alhpa_num(u8 c) { return IsAlphaNum(c); }
 
 bool
 is_upper(u8 c) { return IsUpper(c); }
@@ -180,241 +201,281 @@ is_upper(u8 c) { return IsUpper(c); }
 bool
 is_lower(u8 c) { return IsLower(c); }
 
-bool
-is_new_line(u8 c) { return IsNewLine(c); }
-
-
-/**************************************** Integer and Float parsing
+/****************************************
+ * Unsigned integer parsing 
 ****************************************/
-U8Result str8_parse_u8(String8 str) {
-    u8 num;
-    u8 i;
-    for(i = 0; i < str.count; i++) {
-        u8 c = str8_at(str, i);
+U8Result
+str8_parse_u8(String8 string) {
+    u64 iter = 0; 
+    u8 c = str8_at(string, 0);
+    u8 result = 0;
+
+    if(c == '+') {
+        iter++; 
+    }
+
+    for(; iter < string.count; iter++) {
+        u8 c = str8_at(string, iter);
         if(!IsNumber(c)) {
+            return (U8Result) ResultERR(ERR_UNSPECIFIED);
+        }
+
+        /* overflow check */
+        if(result > U8_MAX / 10) {
             return (U8Result) ResultERR(ERR_UNSPECIFIED); 
         }
-        
-        u8 cur_num = NumFromAscii(c);
-        
-        if(num + cur_num < num) {
-             return (U8Result) ResultERR(ERR_UNSPECIFIED);
+        if(result * 10 > U8_MAX) {
+            return (U8Result) ResultERR(ERR_UNSPECIFIED); 
         }
 
-        num += cur_num;
-
+        result = result * 10 + NumFromAscii(c);
     }
-
-    return (U8Result) ResultOK(num);
+    
+    return (U8Result) ResultOK(result);
 }
 
-U16Result str8_parse_u16(String8 str) {
-    u16 num;
-    u8 i;
-    for(i = 0; i < str.count; i++) {
-        u8 c = str8_at(str, i);
+U16Result
+str8_parse_u16(String8 string) {
+    u64 iter = 0; 
+    u8 c = str8_at(string, 0);
+    u16 result = 0;
+
+    if(c == '+') {
+        iter++; 
+    }
+
+    for(; iter < string.count; iter++) {
+        u8 c = str8_at(string, iter);
         if(!IsNumber(c)) {
+            return (U16Result) ResultERR(ERR_UNSPECIFIED);
+        }
+        
+        /* overflow check */
+        if(result * 10 > U16_MAX / 10) {
             return (U16Result) ResultERR(ERR_UNSPECIFIED); 
         }
-        
-        u8 cur_num = NumFromAscii(c);
-        
-        if(num + cur_num < num) {
-             return (U16Result) ResultERR(ERR_UNSPECIFIED);
+        if(result * 10 > U16_MAX - NumFromAscii(c)) {
+            return (U16Result) ResultERR(ERR_UNSPECIFIED); 
         }
 
-        num += cur_num;
-
+        result = result * 10 + NumFromAscii(c);
     }
-
-    return (U16Result) ResultOK(num);
+    
+    return (U16Result) ResultOK(result);
 }
 
-U32Result str8_parse_u32(String8 str) {
-    u32 num;
-    u8 i;
-    for(i = 0; i < str.count; i++) {
-        u8 c = str8_at(str, i);
+U32Result
+str8_parse_u32(String8 string) {
+    u64 iter = 0; 
+    u8 c = str8_at(string, 0);
+    u32 result = 0;
+
+    if(c == '+') {
+        iter++; 
+    }
+
+    for(; iter < string.count; iter++) {
+        u8 c = str8_at(string, iter);
         if(!IsNumber(c)) {
+            return (U32Result) ResultERR(ERR_UNSPECIFIED);
+        }
+
+        /* overflow check */
+        if(result * 10 > U32_MAX / 10) {
             return (U32Result) ResultERR(ERR_UNSPECIFIED); 
         }
-        
-        u8 cur_num = NumFromAscii(c);
-        
-        if(num + cur_num < num) {
-             return (U32Result) ResultERR(ERR_UNSPECIFIED);
+        if(result * 10 > U32_MAX - NumFromAscii(c)) {
+            return (U32Result) ResultERR(ERR_UNSPECIFIED); 
         }
 
-        num += cur_num;
+        result = result * 10 + NumFromAscii(c);
+    }
+    
+    return (U32Result) ResultOK(result);
+}
 
+U64Result
+str8_parse_u64(String8 string) {
+    u64 iter = 0; 
+    u8 c = str8_at(string, 0);
+    u64 result = 0;
+
+    if(c == '+') {
+        iter++; 
     }
 
-    return (U32Result) ResultOK(num);
-}
-U64Result str8_parse_u64(String8 str) {
-    u64 num;
-    u8 i;
-    for(i = 0; i < str.count; i++) {
-        u8 c = str8_at(str, i);
+    for(; iter < string.count; iter++) {
+        u8 c = str8_at(string, iter);
         if(!IsNumber(c)) {
+            return (U64Result) ResultERR(ERR_UNSPECIFIED);
+        }
+
+        /* overflow check */
+        if(result * 10 > U64_MAX / 10) {
             return (U64Result) ResultERR(ERR_UNSPECIFIED); 
         }
-        
-        u8 cur_num = NumFromAscii(c);
-        
-        if(num + cur_num < num) {
-             return (U64Result) ResultERR(ERR_UNSPECIFIED);
+        if(result * 10 > U64_MAX - NumFromAscii(c)) {
+            return (U64Result) ResultERR(ERR_UNSPECIFIED); 
         }
 
-        num += cur_num;
-
+        result = result * 10 + NumFromAscii(c);
     }
-
-    return (U64Result) ResultOK(num);
+    
+    return (U64Result) ResultOK(result);
 }
 
-S8Result str8_parse_s8(String8 str) {
-    s8 num;
-    u8 i = 0;
-    bool is_positive;
-    
-    u8 c = str8_at(str, i);
-    if(c == '-') {
-         is_positive = false;
-         i++;
-    } else if(c == '+') {
-        is_positive = true;
-         i++;
+/****************************************
+ * signed integer parsing
+****************************************/
+
+S8Result
+str8_parse_s8(String8 string) {
+    u64 iter = 0;
+    bool negative = false;
+    u8 c = str8_at(string, 0);
+    u8 result = 0;
+
+    if(c == '+') {
+        iter++; 
+    } else if(c == '-') {
+        negative = true; 
+        iter++; 
     }
 
-    
-    for(; i < str.count; i++) {
-        u8 c = str8_at(str, i);
+    for(; iter < string.count; iter++) {
+        u8 c = str8_at(string, iter);
         if(!IsNumber(c)) {
+            return (S8Result) ResultERR(ERR_UNSPECIFIED);
+        }
+
+        /* overflow check */
+        if(result > S8_MAX / 10) {
             return (S8Result) ResultERR(ERR_UNSPECIFIED); 
         }
-        
-        u8 cur_num = NumFromAscii(c);
-        
-        if((is_positive && num + cur_num < num) || (!is_positive && num + cur_num > num)) {
-             return (S8Result) ResultERR(ERR_UNSPECIFIED);
+        if(result * 10 > S8_MAX - NumFromAscii(c)) {
+            return (S8Result) ResultERR(ERR_UNSPECIFIED); 
         }
-        
-        if(is_positive) {
-            num += cur_num;
-        } else {
-            num -= cur_num;
-        }
+
+        result = result * 10 + NumFromAscii(c);
+    }
+    
+    if(negative) {
+        result = -result; 
     }
 
-    return (S8Result) ResultOK(num);
+    return (S8Result) ResultOK(result);
 }
 
-S16Result str8_parse_s16(String8 str) {
-    s16 num;
-    u8 i = 0;
-    bool is_positive;
-    
-    u8 c = str8_at(str, i);
-    if(c == '-') {
-         is_positive = false;
-         i++;
-    } else if(c == '+') {
-        is_positive = true;
-         i++;
+S16Result
+str8_parse_s16(String8 string) {
+    u64 iter = 0;
+    bool negative = false;
+    u8 c = str8_at(string, 0);
+    u16 result = 0;
+
+    if(c == '+') {
+        iter++; 
+    } else if(c == '-') {
+        negative = true; 
+        iter++; 
     }
 
-    
-    for(; i < str.count; i++) {
-        u8 c = str8_at(str, i);
+    for(; iter < string.count; iter++) {
+        u8 c = str8_at(string, iter);
         if(!IsNumber(c)) {
+            return (S16Result) ResultERR(ERR_UNSPECIFIED);
+        }
+
+        /* overflow check */
+        if(result > S16_MAX / 10) {
             return (S16Result) ResultERR(ERR_UNSPECIFIED); 
         }
-        
-        u8 cur_num = NumFromAscii(c);
-        
-        if((is_positive && num + cur_num < num) || (!is_positive && num + cur_num > num)) {
-             return (S16Result) ResultERR(ERR_UNSPECIFIED);
+        if(result * 10 > S16_MAX - NumFromAscii(c)) {
+            return (S16Result) ResultERR(ERR_UNSPECIFIED); 
         }
-        
-        if(is_positive) {
-            num += cur_num;
-        } else {
-            num -= cur_num;
-        }
+
+        result = result * 10 + NumFromAscii(c);
+    }
+    
+    if(negative) {
+        result = -result; 
     }
 
-    return (S16Result) ResultOK(num);
+    return (S16Result) ResultOK(result);
 }
-S32Result str8_parse_s32(String8 str) {
-    s32 num;
-    u8 i = 0;
-    bool is_positive;
-    
-    u8 c = str8_at(str, i);
-    if(c == '-') {
-         is_positive = false;
-         i++;
-    } else if(c == '+') {
-        is_positive = true;
-         i++;
+
+S32Result
+str8_parse_s32(String8 string) {
+    u64 iter = 0;
+    bool negative = false;
+    u8 c = str8_at(string, 0);
+    u32 result = 0;
+
+    if(c == '+') {
+        iter++; 
+    } else if(c == '-') {
+        negative = true; 
+        iter++; 
     }
 
-    
-    for(; i < str.count; i++) {
-        u8 c = str8_at(str, i);
+    for(; iter < string.count; iter++) {
+        u8 c = str8_at(string, iter);
         if(!IsNumber(c)) {
+            return (S32Result) ResultERR(ERR_UNSPECIFIED);
+        }
+
+        /* overflow check */
+        if(result > S32_MAX / 10) {
             return (S32Result) ResultERR(ERR_UNSPECIFIED); 
         }
-        
-        u8 cur_num = NumFromAscii(c);
-        
-        if((is_positive && num + cur_num < num) || (!is_positive && num + cur_num > num)) {
-             return (S32Result) ResultERR(ERR_UNSPECIFIED);
+        if(result * 10 > S32_MAX - NumFromAscii(c)) {
+            return (S32Result) ResultERR(ERR_UNSPECIFIED); 
         }
-        
-        if(is_positive) {
-            num += cur_num;
-        } else {
-            num -= cur_num;
-        }
+
+        result = result * 10 + NumFromAscii(c);
+    }
+    
+    if(negative) {
+        result = -result; 
     }
 
-    return (S32Result) ResultOK(num);
+    return (S32Result) ResultOK(result);
 }
-S64Result str8_parse_s64(String8 str) {
-    s64 num;
-    u8 i = 0;
-    bool is_positive;
-    
-    u8 c = str8_at(str, i);
-    if(c == '-') {
-         is_positive = false;
-         i++;
-    } else if(c == '+') {
-        is_positive = true;
-         i++;
+
+S64Result
+str8_parse_s64(String8 string) {
+    u64 iter = 0;
+    bool negative = false;
+    u8 c = str8_at(string, 0);
+    u64 result = 0;
+
+    if(c == '+') {
+        iter++; 
+    } else if(c == '-') {
+        negative = true; 
+        iter++; 
     }
 
-    
-    for(; i < str.count; i++) {
-        u8 c = str8_at(str, i);
+    for(; iter < string.count; iter++) {
+        u8 c = str8_at(string, iter);
         if(!IsNumber(c)) {
+            return (S64Result) ResultERR(ERR_UNSPECIFIED);
+        }
+
+        /* overflow check */
+        if(result > S64_MAX / 10) {
             return (S64Result) ResultERR(ERR_UNSPECIFIED); 
         }
-        
-        u8 cur_num = NumFromAscii(c);
-        
-        if((is_positive && num + cur_num < num) || (!is_positive && num + cur_num > num)) {
-             return (S64Result) ResultERR(ERR_UNSPECIFIED);
+        if(result * 10 > S64_MAX - NumFromAscii(c)) {
+            return (S64Result) ResultERR(ERR_UNSPECIFIED); 
         }
-        
-        if(is_positive) {
-            num += cur_num;
-        } else {
-            num -= cur_num;
-        }
+
+        result = result * 10 + NumFromAscii(c);
+    }
+    
+    if(negative) {
+        result = -result; 
     }
 
-    return (S64Result) ResultOK(num);
+    return (S64Result) ResultOK(result);
 }
