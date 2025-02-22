@@ -192,7 +192,7 @@ char* str8_to_cstr(m_Arena *arena, String8 string);
  * \param string Original string
  * \param start Index of the first character in the new string
  * \param count Length of the substring 
- *
+ * 
  * \returns Substring
  */
 String8 str8_substr(String8 string, u64 start, u64 count);
@@ -263,6 +263,18 @@ String8 str8_list_pop(String8List *list);
 ****************************************/
 
 /*!
+ * \brief Checks if two strings are equal.
+ * 
+ * The checking is done on the characters in the strings and not on the pointers to the strings.
+ * This function iterates over every character in the strings.
+ * 
+ * \param string1 first string
+ * \param string2 second string
+ * \return true it the strings are equal, false otherwise
+ */
+bool str8_equals(String8 string1, String8 string2);
+
+/*!
  * \brief Returns a character at the specified index from string
  *
  * \pre Pos must be positive and within bounds of the string.
@@ -271,16 +283,15 @@ String8 str8_list_pop(String8List *list);
  * \param pos Index of the character
  * \returns Character at pos
  */
-u8 str8_at(String8 view, u64 pos);
+u8 str8_at(String8 string, u64 pos);
 
 
 /****************************************
  * Char checking 
 ****************************************/
 bool is_number(u8 c);
-bool is_space(u8 c);
 bool is_alpha(u8 c);
-bool is_alhpanum(u8 c);
+bool is_alhpa_num(u8 c);
 bool is_upper(u8 c);
 bool is_lower(u8 c);
 
@@ -288,11 +299,6 @@ bool is_lower(u8 c);
  * \brief Expression checking if an ascii character is a number. 
  */
 #define IsNumber(c) (c >= '0' && c <= '9')
-
-/*!
- * \brief Expression checking if an ascii character is a space. 
- */
-#define IsSpace(c) (c == ' ')
 
 /*!
  * \brief Expression checking if an ascii character is a upper case letter. 
@@ -303,11 +309,6 @@ bool is_lower(u8 c);
  * \brief Expression checking if an ascii character is a lower case letter. 
  */
 #define IsLower(c) (c >= 'a' && c <= 'z')
-
-/*!
- * \brief Expression checking if an ascii character is a new line. 
- */
-#define IsNewLine(c) (c == '\n')
 
 /*!
  * \brief Expression checking if an ascii character is a letter. 
@@ -322,7 +323,7 @@ bool is_lower(u8 c);
 #define NumFromAscii(c) (u8)(c - 48)
 
 /****************************************
- * Integer and parsing
+ * Integer parsing
 ****************************************/
 U8Result str8_parse_u8(String8 str);
 U16Result str8_parse_u16(String8 str);

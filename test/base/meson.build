@@ -1,2 +1,7 @@
 test_strings = executable('test_strings', 'test_strings.c', link_with: lib, dependencies: cmocka_dep,  include_directories: include_dirs)
-test('base/strings 0', test_strings, args: ['0'])
+test('base/strings 0 creation', test_strings, args: ['0'])
+test('base/strings 1 manipulation', test_strings, args: ['1'])
+test('base/strings 2 string list', test_strings, args: ['2'])
+test('base/strings 3 simple functions', test_strings, args: ['3'])
+test('base/strings 4 char checking', test_strings, args: ['4'])
+test('base/strings 5 int parsing', test_strings, args: ['5'])

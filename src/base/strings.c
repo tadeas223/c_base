@@ -2,7 +2,6 @@
 #include "base/errors.h"
 #include "base/mem.h"
 #include "base/types.h"
-#include <stdio.h>
 
 /****************************************
  * String creation
@@ -54,6 +53,18 @@ str8_cstr(const char *cstr) {
 /****************************************
  * String manipulation
 ****************************************/
+
+bool
+str8_equals(String8 string1, String8 string2) {
+    if(string1.count != string2.count) return false;
+    
+    u64 i;
+    for(i = 0; i < string1.count; i++) {
+        if(string1.str[i] != string2.str[i]) return false;
+    }
+    
+    return true;
+}
 
 char*
 str8_to_cstr(m_Arena *arena, String8 string) {
@@ -142,10 +153,25 @@ str8_list_push(m_Arena *arena, String8List *list, String8 string) {
 
 String8
 str8_list_pop(String8List *list) {
-    String8 string = list->tail->string;
-    list->tail = list->tail->prev;
-    list->node_count--;
+    String8 string;
+    
+    if(list->node_count > 2)
+    {
+        string = list->tail->string;
+        list->tail = list->tail->prev;
+    } else if(list->node_count == 2) {
+        string = list->head->string;
+        list->head->next = null;
+        list->tail = null;
+    } else if(list->node_count == 1) {
+        string = list->head->string;
+        list->head = null;
+    } else {
+        return Str8Lit(""); /* I don't know how to handle this error */
+    }
+
     list->str_count -= string.count;
+    list->node_count--;
     return string;
 }
 
@@ -164,13 +190,10 @@ bool
 is_number(u8 c) { return IsNumber(c); }
 
 bool
-is_space(u8 c) { return IsSpace(c); }
-
-bool
 is_alpha(u8 c) { return IsAlpha(c); }
 
 bool
-is_alhpanum(u8 c) { return IsAlphaNum(c); }
+is_alhpa_num(u8 c) { return IsAlphaNum(c); }
 
 bool
 is_upper(u8 c) { return IsUpper(c); }
@@ -178,14 +201,11 @@ is_upper(u8 c) { return IsUpper(c); }
 bool
 is_lower(u8 c) { return IsLower(c); }
 
-bool
-is_new_line(u8 c) { return IsNewLine(c); }
-
-
 /****************************************
- * Integer and Float parsing
+ * Unsigned integer parsing 
 ****************************************/
-U8Result str8_parse_u8(String8 string) {
+U8Result
+str8_parse_u8(String8 string) {
     u64 iter = 0; 
     u8 c = str8_at(string, 0);
     u8 result = 0;
@@ -214,7 +234,8 @@ U8Result str8_parse_u8(String8 string) {
     return (U8Result) ResultOK(result);
 }
 
-U16Result str8_parse_u16(String8 string) {
+U16Result
+str8_parse_u16(String8 string) {
     u64 iter = 0; 
     u8 c = str8_at(string, 0);
     u16 result = 0;
@@ -243,7 +264,8 @@ U16Result str8_parse_u16(String8 string) {
     return (U16Result) ResultOK(result);
 }
 
-U32Result str8_parse_u32(String8 string) {
+U32Result
+str8_parse_u32(String8 string) {
     u64 iter = 0; 
     u8 c = str8_at(string, 0);
     u32 result = 0;
@@ -272,7 +294,8 @@ U32Result str8_parse_u32(String8 string) {
     return (U32Result) ResultOK(result);
 }
 
-U64Result str8_parse_u64(String8 string) {
+U64Result
+str8_parse_u64(String8 string) {
     u64 iter = 0; 
     u8 c = str8_at(string, 0);
     u64 result = 0;
@@ -305,16 +328,17 @@ U64Result str8_parse_u64(String8 string) {
  * signed integer parsing
 ****************************************/
 
-S8Result str8_parse_s8(String8 string) {
+S8Result
+str8_parse_s8(String8 string) {
     u64 iter = 0;
-    bool sign = false;
+    bool negative = false;
     u8 c = str8_at(string, 0);
     u8 result = 0;
 
     if(c == '+') {
         iter++; 
     } else if(c == '-') {
-        sign = true; 
+        negative = true; 
         iter++; 
     }
 
@@ -335,23 +359,24 @@ S8Result str8_parse_s8(String8 string) {
         result = result * 10 + NumFromAscii(c);
     }
     
-    if(sign) {
+    if(negative) {
         result = -result; 
     }
 
     return (S8Result) ResultOK(result);
 }
 
-S16Result str8_parse_s16(String8 string) {
+S16Result
+str8_parse_s16(String8 string) {
     u64 iter = 0;
-    bool sign = false;
+    bool negative = false;
     u8 c = str8_at(string, 0);
     u16 result = 0;
 
     if(c == '+') {
         iter++; 
     } else if(c == '-') {
-        sign = true; 
+        negative = true; 
         iter++; 
     }
 
@@ -372,23 +397,24 @@ S16Result str8_parse_s16(String8 string) {
         result = result * 10 + NumFromAscii(c);
     }
     
-    if(sign) {
+    if(negative) {
         result = -result; 
     }
 
     return (S16Result) ResultOK(result);
 }
 
-S32Result str8_parse_s32(String8 string) {
+S32Result
+str8_parse_s32(String8 string) {
     u64 iter = 0;
-    bool sign = false;
+    bool negative = false;
     u8 c = str8_at(string, 0);
     u32 result = 0;
 
     if(c == '+') {
         iter++; 
     } else if(c == '-') {
-        sign = true; 
+        negative = true; 
         iter++; 
     }
 
@@ -409,47 +435,45 @@ S32Result str8_parse_s32(String8 string) {
         result = result * 10 + NumFromAscii(c);
     }
     
-    if(sign) {
+    if(negative) {
         result = -result; 
     }
 
     return (S32Result) ResultOK(result);
 }
 
-S64Result str8_parse_s64(String8 string) {
+S64Result
+str8_parse_s64(String8 string) {
     u64 iter = 0;
-    bool sign = false;
+    bool negative = false;
     u8 c = str8_at(string, 0);
     u64 result = 0;
 
     if(c == '+') {
         iter++; 
     } else if(c == '-') {
-        sign = true; 
+        negative = true; 
         iter++; 
     }
 
     for(; iter < string.count; iter++) {
         u8 c = str8_at(string, iter);
-        printf("%c\n", c);
         if(!IsNumber(c)) {
             return (S64Result) ResultERR(ERR_UNSPECIFIED);
         }
 
         /* overflow check */
         if(result > S64_MAX / 10) {
-            printf("overflow 1\n");
             return (S64Result) ResultERR(ERR_UNSPECIFIED); 
         }
         if(result * 10 > S64_MAX - NumFromAscii(c)) {
-            printf("voerflow 2\n");
             return (S64Result) ResultERR(ERR_UNSPECIFIED); 
         }
 
         result = result * 10 + NumFromAscii(c);
     }
     
-    if(sign) {
+    if(negative) {
         result = -result; 
     }
 
