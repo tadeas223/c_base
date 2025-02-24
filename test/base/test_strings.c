@@ -1,4 +1,6 @@
+#include "base/errors.h"
 #include "base/mem.h"
+#include "os/os_io.h"
 #include "os/os_mem.h"
 #include <stdio.h>
 #include <stdlib.h>

@@ -26,6 +26,18 @@
 #include "base/types.h"
 
 /*!
+ * \brief Macro for betting a result value without checking
+ *
+ * This macro just appends .value.
+ * The purpose of this is to make getting result values easyer.
+ * 
+ * \code
+ * int value = func_returning_result()f;
+ * \endcode
+ */
+#define f .value
+
+/*!
  * \brief Macro for easier creation of the Result structs.
  *
  * Example of this macro:
