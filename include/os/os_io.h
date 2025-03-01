@@ -35,11 +35,11 @@
 /*!
  * \brief Reads from console until a new line character.
  */
-#define ConsoleReadLn(arena) os_console_read_until(arena, '\n').value
+#define ConsoleReadLn(arena) os_console_read_until(arena, '\n')
 /*!
  * \brief Reads from console until a the specified character
  */
-#define ConsoleReadUntil(arena, splitter) os_console_read_until(arena, splitter).value
+#define ConsoleReadUntil(arena, splitter) os_console_read_until(arena, splitter)
 
 
 /****************************************
