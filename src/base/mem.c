@@ -1,10 +1,8 @@
 #include "base/mem.h"
 #include "base/types.h"
+#include <stdio.h>
 
 static m_MemoryBase *base_default;
-
-void
-m_memory_change_noop(void* ctx, void* ptr, u64 size) {}
 
 void
 m_memory_base_set_default(m_MemoryBase *base) {
@@ -31,7 +29,7 @@ m_align_backward(u64 ptr, u64 align) {
     u64 modulo = ptr % align;
 
     if(modulo != 0) {
-        ptr -= align + modulo;
+        ptr -= modulo;
     }
     return ptr;
 }
