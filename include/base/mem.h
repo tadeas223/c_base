@@ -97,14 +97,6 @@ typedef struct {
 } m_MemoryBase;
 
 /*!
- * \brief Function that does nothing.
- * 
- * If an allocator does not support functions like commit or decommit
- * than the allcoator can point to this function.
- */
-void m_memory_change_noop(void* ctx, void* ptr, u64 size);
-
-/*!
  * \brief Setter for the global memory base.
  *
  * This function sets the default memory base that all the other 

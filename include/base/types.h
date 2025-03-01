@@ -56,15 +56,15 @@ typedef double f64;
 /*!
  * \brief Calculates the number of bytes in x Kilobytes
  */
-#define Kilobytes(x) (x * 1024)
+#define Kilobytes(x) (u64)((x) * 1024)
 /*!
  * \brief Calculates the number of bytes in x Megabytes 
  */
-#define Megabytes(x) (x * 1024 * 1024)
+#define Megabytes(x) (u64)((x) * 1024 * 1024)
 /*!
  * \brief Calculates the number of bytes in x Gigabytes 
  */
-#define Gigabytes(x) (x * 1024 * 1024 * 1024)
+#define Gigabytes(x) (u64)((x) * 1024 * 1024 * 1024)
 
 /****************************************
  * min, max values

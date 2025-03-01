@@ -1,3 +1,4 @@
+#include "base/errors.h"
 #include "base/mem.h"
 #include "os/os_mem.h"
 #include <stdio.h>
@@ -11,6 +12,7 @@
 #include <setjmp.h>
 #include <stdint.h>
 #include <cmocka.h>
+
 #include "base/strings.h"
 
 
@@ -133,6 +135,7 @@ static void test_str8_split()
 
         assert_null(split.tail);
     }
+    m_arena_end(&arena);
 }
 
 static void test_str8_join()

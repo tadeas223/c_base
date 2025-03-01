@@ -69,7 +69,6 @@ str8_equals(String8 string1, String8 string2) {
 char*
 str8_to_cstr(m_Arena *arena, String8 string) {
     char* cstr = m_arena_alloc(arena, sizeof(char) * string.count + 1);
-    
     m_copy(cstr, string.str, string.count);
     cstr[string.count] = '\0';
 
