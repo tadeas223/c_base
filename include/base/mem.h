@@ -42,7 +42,6 @@ u64 m_align_backward(u64 ptr, u64 align);
  *
  * This function coppies the size bytes from source
  * to destination.
- *
  * When src > dest the memory is coppied from left to right 
  * 
  * When src < dest the memory is coppied from right to left 
@@ -120,7 +119,7 @@ void m_memory_base_set_default(m_MemoryBase *base);
 m_MemoryBase* m_memory_base_get_default();
 
 /************************************************************
- * 64-bit arena
+ * 64-bit Arena
 ************************************************************/
 
 /*!
@@ -151,7 +150,7 @@ typedef struct {
 } m_Arena;
 
 /****************************************
- * 64-bit arena initializers
+ * 64-bit Arena - initializers
 ****************************************/
 
 /*!
@@ -189,7 +188,7 @@ void m_arena_begin_reserve_base(m_Arena *arena, m_MemoryBase *base, u64 reserve)
 
 
 /****************************************
- * 64-bit arena - destructors
+ * 64-bit Arena - destructors
 ****************************************/
 
 /*!
@@ -210,7 +209,7 @@ void m_arena_reset(m_Arena *arena);
 
 
 /****************************************
- * 64-bit arena - Allocations
+ * 64-bit Arena - allocations
 ****************************************/
 
 /*!
@@ -254,7 +253,7 @@ void m_arena_dealloc(m_Arena *arena, u64 size);
 void m_arena_dealloc_to(m_Arena *arena, u64 pos);
 
 /****************************************
- * temporary arenas
+ * Temporary Arenas
 ****************************************/
 
 /*!
@@ -322,7 +321,7 @@ struct m_PoolFreeNode {
  * \base Memory base that will do the allocations
  * \memory Memory in which the elements are stored
  * \cap Maximum memory in bytes that can be stored in the pool
- * \commit_pos Current position of the commited memory
+ * \commit_pos Current position of the commited memory in bytes
  * \data_size Size of the memory cells
  * \head Start of the free node list
  */
@@ -334,6 +333,11 @@ typedef struct {
     u64 data_size;
     struct m_PoolFreeNode *head;    
 } m_Pool;
+
+
+/****************************************
+ * 64-bit Pool - initializers
+****************************************/
 
 /*!
  * \brief Initializes the pool
@@ -380,42 +384,10 @@ void m_pool_begin_base(m_Pool *pool, m_MemoryBase *base, u64 data_size);
  */
 void m_pool_begin_reserve_base(m_Pool * pool, m_MemoryBase *base, u64 reserve, u64 data_size);
 
-/*!
- * \brief Allocates memory inside the pool
- *
- * This funcion allocates memory in the pool and returns a pointer to it.
- * When the memory exceeds the pools capacity null is returned.
- *
- * When the pool's memory exceeds the commit_pos the M_POOL_COMMIT_BLOCK * data_size of memory is allocated.
- *
- * \param pool Pool to alocate in
- * \returns Pointer to the allocated memory
- */
-void* m_pool_alloc(m_Pool *pool);
-/*!
- * \brief Deallocates memory from the pool
- *
- * This function deallocates memory from the pool and changes the pool's free list accordingly.
- *
- * \pre ptr must be prevously allocated inside the pool
- *
- * \param pool Pool to dealocate from
- * \param ptr Pointer to the memory to be deallocated
- */
-void m_pool_dealloc(m_Pool *pool, void* ptr);
-/*!
- * \brief Dealocates an array of elements from the pool
- *
- * This function deallocates an array of memory from the pool and changes the pool's free list accordingly.
- *
- * \pre ptr must be prevously allocated inside the pool
- * 
- * \param pool Pool to dealocate from
- * \param ptr Pointer to the memory to be deallocated
- * \param count Number of elements to deallocate
- */
-void m_pool_dealloc_count(m_Pool *pool, void* ptr, u64 count);
 
+/****************************************
+ * 64-bit Pool - destructors
+****************************************/
 
 /*!
  * \brief Releases all the memory used by the pool 
@@ -432,4 +404,47 @@ void m_pool_end(m_Pool *pool);
  * The pool is useable even after this function.
  */
 void m_pool_reset(m_Pool *pool);
+
+/****************************************
+ * 64-bit Pool - allocations
+****************************************/
+
+/*!
+ * \brief Allocates memory inside the pool
+ *
+ * This funcion allocates memory in the pool and returns a pointer to it.
+ * When the memory exceeds the pools capacity null is returned.
+ *
+ * When the pool's memory exceeds the commit_pos the M_POOL_COMMIT_BLOCK * data_size of memory is allocated.
+ *
+ * \param pool Pool to alocate in
+ * \returns Pointer to the allocated memory
+ */
+void* m_pool_alloc(m_Pool *pool);
+
+/*!
+ * \brief Deallocates memory from the pool
+ *
+ * This function deallocates memory from the pool and changes the pool's free list accordingly.
+ *
+ * \pre ptr must be prevously allocated inside the pool
+ *
+ * \param pool Pool to dealocate from
+ * \param ptr Pointer to the memory to be deallocated
+ */
+void m_pool_dealloc(m_Pool *pool, void* ptr);
+
+/*!
+ * \brief Dealocates an array of elements from the pool
+ *
+ * This function deallocates an array of memory from the pool and changes the pool's free list accordingly.
+ *
+ * \pre ptr must be prevously allocated inside the pool
+ * 
+ * \param pool Pool to dealocate from
+ * \param ptr Pointer to the memory to be deallocated
+ * \param count Number of elements to deallocate
+ */
+void m_pool_dealloc_count(m_Pool *pool, void* ptr, u64 count);
+
 #endif

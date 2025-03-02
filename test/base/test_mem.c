@@ -88,7 +88,7 @@ static const struct CMUnitTest grp_memory_base[] = {
 };
 
 /****************************************
- * 64-bit arena initializers
+ * 64-bit Arena - initializers
 ****************************************/
 
 static void test_m_arena_begin() {
@@ -138,7 +138,7 @@ static const struct CMUnitTest grp_arena_initializers[] = {
 };
 
 /****************************************
- * 64-bit arena - destructors
+ * 64-bit Arena - destructors
 ****************************************/
 
 static void test_m_arena_end() {
@@ -165,7 +165,7 @@ static const struct CMUnitTest grp_arena_destructors[] = {
 
 
 /****************************************
- * 64-bit arena - Allocations
+ * 64-bit Arena - allocations
 ****************************************/
 
 static void test_m_arena_alloc() {
@@ -174,26 +174,26 @@ static void test_m_arena_alloc() {
     {
         u64 size = m_align_forward(4, M_DEFAULT_ALIGN);
         u64 size2 = m_align_forward(M_ARENA_COMMIT_BLOCK, M_DEFAULT_ALIGN);
-        /* 
-        u64 size3 = m_align_forward(M_ARENA_COMMIT_BLOCK * 2 + Kilobytes(1), M_DEFAULT_ALIGN);
-        */
+        u64 size3 = m_align_forward(M_ARENA_COMMIT_BLOCK * 2, M_DEFAULT_ALIGN);
+        
         void* ptr = m_arena_alloc(&arena, 4);
         assert_ptr_equal(arena.memory, ptr);
         assert_ptr_equal(arena.pos, size);
         assert_ptr_equal(arena.commit_pos, M_ARENA_COMMIT_BLOCK);
 
-        void* ptr2 = m_arena_alloc(&arena, M_ARENA_COMMIT_BLOCK + Kilobytes(1));
+        void* ptr2 = m_arena_alloc(&arena, M_ARENA_COMMIT_BLOCK);
         assert_ptr_equal(arena.memory + size, ptr2);
         assert_ptr_equal(arena.pos,  size + size2);
         
-        printf("pos = %llu, commit = %llu\n", arena.pos, arena.commit_pos);
         assert_ptr_equal(arena.commit_pos, M_ARENA_COMMIT_BLOCK * 2);
    
-        /*void* ptr3 = m_arena_alloc(&arena, M_ARENA_COMMIT_BLOCK * 2 + Kilobytes(1));
-        assert_ptr_equal(arena.memory + size, ptr3);
+        void* ptr3 = m_arena_alloc(&arena, M_ARENA_COMMIT_BLOCK * 2);
+        assert_ptr_equal(arena.memory + size + size2, ptr3);
         assert_ptr_equal(arena.pos,  size + size2 + size3);
         assert_ptr_equal(arena.commit_pos, M_ARENA_COMMIT_BLOCK * 4);
-        */ 
+
+        void* ptr4 = m_arena_alloc(&arena, M_ARENA_DEFAULT_RESERVE);
+        assert_null(ptr4);
     }
     m_arena_end(&arena);
 }
@@ -203,14 +203,19 @@ static void test_m_arena_dealloc() {
     m_arena_begin_base(&arena, os_memory_base());
     {
         m_arena_alloc(&arena, 4);
-        m_arena_dealloc(&arena, 4); 
+        m_arena_dealloc(&arena, 4);
         assert_ptr_equal(arena.pos, 0);
         assert_ptr_equal(arena.commit_pos, 0);
 
-        m_arena_alloc(&arena, Kilobytes(5));
-        m_arena_dealloc(&arena, Kilobytes(4)); 
-        assert_ptr_equal(arena.pos,  Kilobytes(1));
-        assert_ptr_equal(arena.commit_pos, M_ARENA_COMMIT_BLOCK);
+        m_arena_alloc(&arena, M_ARENA_COMMIT_BLOCK * 2);
+        m_arena_dealloc(&arena, M_ARENA_COMMIT_BLOCK); 
+        assert_ptr_equal(arena.pos,  0);
+        assert_ptr_equal(arena.commit_pos, 0);
+    
+        m_arena_alloc(&arena, 4);
+        m_arena_dealloc(&arena, Kilobytes(1));
+        assert_ptr_equal(arena.pos, 0);
+        assert_ptr_equal(arena.commit_pos, 0);
     }
     m_arena_end(&arena);
 }
@@ -249,8 +254,8 @@ static void test_m_temp_begin() {
         m_Temp temp;
         m_temp_begin(&arena, &temp);
         {
-            assert_true(temp.arena = &arena);
-            assert_true(temp.pos = temp.pos);
+            assert_true(temp.arena == &arena);
+            assert_true(temp.pos == temp.pos);
         }
         m_temp_end(&temp);
     }
@@ -283,7 +288,7 @@ static const struct CMUnitTest grp_temp_arena[] = {
 };
 
 /****************************************
- * 64-bit Pool
+ * 64-bit Pool - initializers
 ****************************************/
 
 static void test_m_pool_begin() {
@@ -295,7 +300,8 @@ static void test_m_pool_begin() {
         assert_int_equal(pool.data_size, sizeof(u64));
         assert_int_equal(pool.cap, M_POOL_DEFAULT_RESERVE); 
         assert_int_equal(pool.base, os_memory_base()); 
-        assert_int_equal(pool.commit_pos, M_POOL_COMMIT_BLOCK); 
+        assert_int_equal(pool.commit_pos, 0); 
+        assert_null(pool.head); 
     }
     m_pool_end(&pool);
 }
@@ -307,28 +313,140 @@ static void test_m_pool_begin_base() {
         assert_int_equal(pool.data_size, sizeof(u64));
         assert_int_equal(pool.cap, M_POOL_DEFAULT_RESERVE); 
         assert_int_equal(pool.base, os_memory_base()); 
-        assert_int_equal(pool.commit_pos, M_POOL_COMMIT_BLOCK); 
+        assert_int_equal(pool.commit_pos, 0); 
+        assert_null(pool.head); 
     }
     m_pool_end(&pool);
 }
 
 static void test_m_pool_begin_base_reserve() {
     m_Pool pool;
-    m_pool_begin_reserve_base(&pool, os_memory_base(), Kilobytes(1),sizeof(u64));
+    m_pool_begin_reserve_base(&pool, os_memory_base(), Kilobytes(1), sizeof(u64));
     {
         assert_int_equal(pool.data_size, sizeof(u64));
         assert_int_equal(pool.cap, Kilobytes(1)); 
         assert_int_equal(pool.base, os_memory_base()); 
-        assert_int_equal(pool.commit_pos, M_POOL_COMMIT_BLOCK); 
+        assert_int_equal(pool.commit_pos, 0); 
+        assert_null(pool.head); 
     }
     m_pool_end(&pool);
 }
 
-static const struct CMUnitTest grp_pool[] = {
+static const struct CMUnitTest grp_pool_initializers[] = {
     cmocka_unit_test(test_m_pool_begin),
     cmocka_unit_test(test_m_pool_begin_base),
     cmocka_unit_test(test_m_pool_begin_base_reserve),
 };
+
+/****************************************
+ * 64-bit Pool - destructors
+****************************************/
+
+static void test_m_pool_end() {
+    /*
+     * This function does not change anything.
+     * Therfore it cannot be tested.
+     */
+}
+
+static void test_m_pool_reset() {
+    m_Pool pool;
+    m_pool_begin_base(&pool, os_memory_base(), sizeof(u64));
+    {
+        /* Do nothing here. */
+    }
+    m_pool_reset(&pool);
+    {
+        assert_int_equal(pool.data_size, sizeof(u64));
+        assert_int_equal(pool.cap, M_POOL_DEFAULT_RESERVE); 
+        assert_int_equal(pool.base, os_memory_base()); 
+        assert_int_equal(pool.commit_pos, 0); 
+    }
+    m_pool_end(&pool);
+}
+
+static const struct CMUnitTest grp_pool_destructors[] = {
+    cmocka_unit_test(test_m_pool_end),
+    cmocka_unit_test(test_m_pool_reset),
+};
+
+/****************************************
+ * 64-bit Pool - allcations
+****************************************/
+
+static void test_m_pool_alloc() {
+    m_Pool pool;
+    m_pool_begin_base(&pool, os_memory_base(), sizeof(u16));
+    {
+        u16 *ptr1 = m_pool_alloc(&pool);
+        *ptr1 = 5; 
+        assert_ptr_equal(pool.commit_pos, M_POOL_COMMIT_BLOCK * pool.data_size);
+    
+        u8 i;
+        for(i = 0; i < M_POOL_COMMIT_BLOCK; i++) {
+            u16 *ptr2 = m_pool_alloc(&pool);
+            *ptr2 = 5;
+        }
+        assert_ptr_equal(pool.commit_pos, M_POOL_COMMIT_BLOCK * 2 * pool.data_size);
+    }
+    m_pool_end(&pool);
+}
+
+static void test_m_pool_dealloc() {
+    m_Pool pool;
+    m_pool_begin_base(&pool, os_memory_base(), sizeof(u16));
+    {
+
+        u16 *ptr1 = m_pool_alloc(&pool);
+        void* head = pool.head;
+        m_pool_dealloc(&pool, ptr1);
+        assert_ptr_not_equal(head, ptr1);
+
+        /* dealloc all */
+        u16 *ptrs[M_POOL_COMMIT_BLOCK];
+        u8 i;
+        for(i = 0; i < M_POOL_COMMIT_BLOCK; i++) {
+            ptrs[i] = m_pool_alloc(&pool);
+            *ptrs[i] = 5; 
+        }
+
+        for(i = 0; i < M_POOL_COMMIT_BLOCK; i++) {
+            m_pool_dealloc(&pool, ptrs[i]);
+        }
+
+        m_pool_dealloc(&pool, ptr1);
+    }
+    m_pool_end(&pool);
+}
+
+static void test_m_pool_dealloc_count() {
+    m_Pool pool;
+    m_pool_begin_base(&pool, os_memory_base(), sizeof(u16));
+    {
+
+        u16 *ptr1 = m_pool_alloc(&pool);
+        void* head = pool.head;
+        m_pool_dealloc_count(&pool, ptr1, 1);
+        assert_ptr_not_equal(head, ptr1);
+
+        /* dealloc all */
+        u8 i;
+        for(i = 0; i < M_POOL_COMMIT_BLOCK; i++) {
+            u16 *ptr2 = m_pool_alloc(&pool);
+            *ptr2 = 5; 
+        }
+
+        m_pool_dealloc_count(&pool, ptr1, M_POOL_COMMIT_BLOCK + 1);
+    }
+    m_pool_end(&pool);
+}
+
+static const struct CMUnitTest grp_pool_allocations[] = {
+    cmocka_unit_test(test_m_pool_alloc),
+    cmocka_unit_test(test_m_pool_dealloc),
+    cmocka_unit_test(test_m_pool_dealloc_count),
+};
+
 
 
 int main(int argc, char **argv) {
@@ -347,7 +465,11 @@ int main(int argc, char **argv) {
             case '5': 
                 return cmocka_run_group_tests(grp_temp_arena, NULL, NULL);
             case '6': 
-                return cmocka_run_group_tests(grp_pool, NULL, NULL);
+                return cmocka_run_group_tests(grp_pool_initializers, NULL, NULL);
+            case '7': 
+                return cmocka_run_group_tests(grp_pool_destructors, NULL, NULL);
+            case '8': 
+                return cmocka_run_group_tests(grp_pool_allocations, NULL, NULL);
             default:
                 printf("Missing group");
                 exit(1);
