@@ -6,6 +6,7 @@
 ************************************************************/
 #ifndef MEM_H
 #define MEM_H
+#include "base/errors.h"
 #include "base/types.h"
 
 /*!
@@ -226,7 +227,7 @@ void m_arena_reset(m_Arena *arena);
  *
  * \returns Pointer to the start of the allocated memory or null when no more memory is reserved.
  */
-void* m_arena_alloc(m_Arena *arena, u64 size);
+VoidPtrResult m_arena_alloc(m_Arena *arena, u64 size);
 
 /*!
  * \brief Deallocates memory from the m_Arena
@@ -420,7 +421,7 @@ void m_pool_reset(m_Pool *pool);
  * \param pool Pool to alocate in
  * \returns Pointer to the allocated memory
  */
-void* m_pool_alloc(m_Pool *pool);
+VoidPtrResult m_pool_alloc(m_Pool *pool);
 
 /*!
  * \brief Deallocates memory from the pool

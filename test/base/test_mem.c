@@ -176,23 +176,23 @@ static void test_m_arena_alloc() {
         u64 size2 = m_align_forward(M_ARENA_COMMIT_BLOCK, M_DEFAULT_ALIGN);
         u64 size3 = m_align_forward(M_ARENA_COMMIT_BLOCK * 2, M_DEFAULT_ALIGN);
         
-        void* ptr = m_arena_alloc(&arena, 4);
+        void* ptr = m_arena_alloc(&arena, 4)f;
         assert_ptr_equal(arena.memory, ptr);
         assert_ptr_equal(arena.pos, size);
         assert_ptr_equal(arena.commit_pos, M_ARENA_COMMIT_BLOCK);
 
-        void* ptr2 = m_arena_alloc(&arena, M_ARENA_COMMIT_BLOCK);
+        void* ptr2 = m_arena_alloc(&arena, M_ARENA_COMMIT_BLOCK)f;
         assert_ptr_equal(arena.memory + size, ptr2);
         assert_ptr_equal(arena.pos,  size + size2);
         
         assert_ptr_equal(arena.commit_pos, M_ARENA_COMMIT_BLOCK * 2);
    
-        void* ptr3 = m_arena_alloc(&arena, M_ARENA_COMMIT_BLOCK * 2);
+        void* ptr3 = m_arena_alloc(&arena, M_ARENA_COMMIT_BLOCK * 2)f;
         assert_ptr_equal(arena.memory + size + size2, ptr3);
         assert_ptr_equal(arena.pos,  size + size2 + size3);
         assert_ptr_equal(arena.commit_pos, M_ARENA_COMMIT_BLOCK * 4);
 
-        void* ptr4 = m_arena_alloc(&arena, M_ARENA_DEFAULT_RESERVE);
+        void* ptr4 = m_arena_alloc(&arena, M_ARENA_DEFAULT_RESERVE)f;
         assert_null(ptr4);
     }
     m_arena_end(&arena);
@@ -378,13 +378,13 @@ static void test_m_pool_alloc() {
     m_Pool pool;
     m_pool_begin_base(&pool, os_memory_base(), sizeof(u16));
     {
-        u16 *ptr1 = m_pool_alloc(&pool);
+        u16 *ptr1 = m_pool_alloc(&pool)f;
         *ptr1 = 5; 
         assert_ptr_equal(pool.commit_pos, M_POOL_COMMIT_BLOCK * pool.data_size);
     
         u8 i;
         for(i = 0; i < M_POOL_COMMIT_BLOCK; i++) {
-            u16 *ptr2 = m_pool_alloc(&pool);
+            u16 *ptr2 = m_pool_alloc(&pool)f;
             *ptr2 = 5;
         }
         assert_ptr_equal(pool.commit_pos, M_POOL_COMMIT_BLOCK * 2 * pool.data_size);
@@ -397,7 +397,7 @@ static void test_m_pool_dealloc() {
     m_pool_begin_base(&pool, os_memory_base(), sizeof(u16));
     {
 
-        u16 *ptr1 = m_pool_alloc(&pool);
+        u16 *ptr1 = m_pool_alloc(&pool)f;
         void* head = pool.head;
         m_pool_dealloc(&pool, ptr1);
         assert_ptr_not_equal(head, ptr1);
@@ -406,7 +406,7 @@ static void test_m_pool_dealloc() {
         u16 *ptrs[M_POOL_COMMIT_BLOCK];
         u8 i;
         for(i = 0; i < M_POOL_COMMIT_BLOCK; i++) {
-            ptrs[i] = m_pool_alloc(&pool);
+            ptrs[i] = m_pool_alloc(&pool)f;
             *ptrs[i] = 5; 
         }
 
@@ -424,7 +424,7 @@ static void test_m_pool_dealloc_count() {
     m_pool_begin_base(&pool, os_memory_base(), sizeof(u16));
     {
 
-        u16 *ptr1 = m_pool_alloc(&pool);
+        u16 *ptr1 = m_pool_alloc(&pool)f;
         void* head = pool.head;
         m_pool_dealloc_count(&pool, ptr1, 1);
         assert_ptr_not_equal(head, ptr1);
@@ -432,7 +432,7 @@ static void test_m_pool_dealloc_count() {
         /* dealloc all */
         u8 i;
         for(i = 0; i < M_POOL_COMMIT_BLOCK; i++) {
-            u16 *ptr2 = m_pool_alloc(&pool);
+            u16 *ptr2 = m_pool_alloc(&pool)f;
             *ptr2 = 5; 
         }
 
