@@ -140,7 +140,8 @@ m_MemoryBase* m_memory_base_get_default();
  * \param pos Position of the end of the used space in the memory pool
  * \param commit_pos Position of the end of the commited space
  * \param cap Ammout of memory that was reserved for the arena
- */ typedef struct {
+ */
+typedef struct {
     m_MemoryBase *base;
     u8 *memory;
     u64 pos;
