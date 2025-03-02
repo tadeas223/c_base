@@ -1,18 +1,9 @@
 #include "base/mem.h"
 #include "base/types.h"
-#include <stdio.h>
 
-static m_MemoryBase *base_default;
-
-void
-m_memory_base_set_default(m_MemoryBase *base) {
-    base_default = base;
-}
-
-m_MemoryBase*
-m_memory_base_get_default() {
-    return base_default;
-}
+/****************************************
+ * Memory Opearations
+****************************************/
 
 u64
 m_align_forward(u64 ptr, u64 align) {
@@ -52,10 +43,31 @@ m_copy(void *dest, void *src, u64 size) {
     }
 }
 
-/* Arena allocator */
+
+/****************************************
+ * Base Memory
+****************************************/
+
+static m_MemoryBase *base_default;
+
+void
+m_memory_base_set_default(m_MemoryBase *base) {
+    base_default = base;
+}
+
+m_MemoryBase*
+m_memory_base_get_default() {
+    return base_default;
+}
+
+
+/****************************************
+ * 64-bit Arena - initializers
+****************************************/
+
 void
 m_arena_begin(m_Arena *arena) {
-    m_arena_begin_base(arena, base_default);
+    m_arena_begin_reserve_base(arena, base_default, M_ARENA_DEFAULT_RESERVE);
 }
 
 void
@@ -65,12 +77,7 @@ m_arena_begin_reserve(m_Arena *arena, u64 reserve) {
 
 void
 m_arena_begin_base(m_Arena *arena, m_MemoryBase *base) {
-    arena->base = base;
-    arena->memory = base->reserve(base->ctx, M_ARENA_DEFAULT_RESERVE);
-    arena->cap = M_ARENA_DEFAULT_RESERVE;
-
-    arena->pos = 0;
-    arena->commit_pos = 0;
+    m_arena_begin_reserve_base(arena, base, M_ARENA_DEFAULT_RESERVE);
 }
 
 void
@@ -82,6 +89,26 @@ m_arena_begin_reserve_base(m_Arena *arena, m_MemoryBase *base, u64 reserve) {
     arena->pos = 0;
     arena->commit_pos = 0;
 }
+
+
+/****************************************
+ * 64-bit Arena - destructors
+****************************************/
+
+void
+m_arena_end(m_Arena *arena) {
+    arena->base->release(arena->base->ctx, arena->memory, arena->commit_pos);
+}
+
+void
+m_arena_reset(m_Arena *arena) {
+    arena->base->release(arena->base->ctx, arena->memory, arena->commit_pos);
+    m_arena_begin_reserve_base(arena, arena->base, arena->cap);
+}
+
+/****************************************
+ * 64-bit Arena - allocations
+****************************************/
 
 void*
 m_arena_alloc(m_Arena *arena, u64 size) {
@@ -109,11 +136,12 @@ void
 m_arena_dealloc(m_Arena *arena, u64 size) {
     u64 free_space;
     
-    /* align backward!!! */
-    size = m_align_backward(size, M_DEFAULT_ALIGN);
-   
-    if(arena->pos - size <= 0) {
-        arena->pos = 0;
+    /* align forward!!! */
+    size = m_align_forward(size, M_DEFAULT_ALIGN);
+    
+    /* overflow check */
+    if(arena->pos - size > U64_MAX + size || arena->pos - size == 0) {
+        arena->pos = 0; 
     } else {
         arena->pos -= size;
     }
@@ -147,18 +175,11 @@ m_arena_dealloc_to(m_Arena *arena, u64 pos) {
     }
 }
 
-void
-m_arena_end(m_Arena *arena) {
-    arena->base->release(arena->base->ctx, arena->memory, arena->commit_pos);
-}
 
-void
-m_arena_reset(m_Arena *arena) {
-    arena->base->release(arena->base->ctx, arena->memory, arena->commit_pos);
-    m_arena_begin_reserve_base(arena, arena->base, arena->cap);
-}
+/****************************************
+ * Temporary Arena
+****************************************/
 
-/* scatch arena */
 void
 m_temp_begin(m_Arena *arena, m_Temp *temp) {
     *temp = (m_Temp) {.pos = arena->pos, .arena = arena};
@@ -170,17 +191,10 @@ m_temp_end(m_Temp *temp) {
     *temp= (m_Temp){0};
 }
 
-/* Pool allocator */
-void
-m_pool_begin_reserve_base(m_Pool *pool, m_MemoryBase *base, u64 reserve, u64 data_size) {
-    pool->base = base;
-    pool->memory = base->reserve(base->ctx, reserve);
 
-    pool->data_size = data_size;
-    pool->cap = reserve;
-
-    pool->commit_pos = 0;
-}
+/****************************************
+ * 64-bit Pool - initializers
+****************************************/
 
 void
 m_pool_begin(m_Pool *pool, u64 data_size) {
@@ -197,21 +211,54 @@ m_pool_begin_base(m_Pool *pool, m_MemoryBase *base, u64 data_size) {
     m_pool_begin_reserve_base(pool, base, M_POOL_DEFAULT_RESERVE, data_size);
 }
 
+void
+m_pool_begin_reserve_base(m_Pool *pool, m_MemoryBase *base, u64 reserve, u64 data_size) {
+    pool->base = base;
+    pool->memory = base->reserve(base->ctx, reserve);
+    
+    /* align forward :( */
+    pool->data_size = m_align_forward(data_size, M_DEFAULT_ALIGN);
+    pool->cap = reserve;
+
+    pool->commit_pos = 0;
+    pool->head = null;
+}
+
+/****************************************
+ * 64-bit Pool - destructors
+****************************************/
+
+void
+m_pool_end(m_Pool *pool) {
+    pool->base->release(pool->base->ctx, pool->memory, pool->commit_pos * pool->data_size);
+}
+
+void
+m_pool_reset(m_Pool *pool) {
+    pool->base->release(pool->base->ctx, pool->memory, pool->commit_pos * pool->data_size);
+    m_pool_begin_reserve_base(pool, pool->base, pool->cap, pool->data_size);
+}
+
+/****************************************
+ * 64-bit Pool - allocations
+****************************************/
+
 void*
 m_pool_alloc(m_Pool *pool) {
-    if(pool->head) {
+    if(pool->head != null) {
         void* result = pool->head;
         pool->head = pool->head->next;
         return result;
     } else {
-        if(pool->commit_pos * pool->data_size > pool->cap) {
+        if(pool->commit_pos > pool->cap) {
             return null;
         }
-        u8 *commit_ptr = pool->memory + pool->commit_pos * pool->data_size;
-        pool->base->commit(pool->base->ctx, commit_ptr, M_POOL_COMMIT_BLOCK * pool->data_size);
+        u64 real_commit_block = M_POOL_COMMIT_BLOCK * pool->data_size;
+        u8 *commit_ptr = pool->memory + pool->commit_pos;
+        pool->base->commit(pool->base->ctx, commit_ptr, real_commit_block);
         m_pool_dealloc_count(pool, commit_ptr, M_POOL_COMMIT_BLOCK);
         
-        pool->commit_pos += M_POOL_COMMIT_BLOCK;
+        pool->commit_pos += real_commit_block;
 
         return(m_pool_alloc(pool));
     }
@@ -233,15 +280,4 @@ m_pool_dealloc_count(m_Pool *pool, void *ptr, u64 count) {
         pool->head = (struct m_PoolFreeNode*) iter;
         iter += pool->data_size;
     }
-}
-
-void
-m_pool_end(m_Pool *pool) {
-    pool->base->release(pool->base->ctx, pool->memory, pool->commit_pos * pool->data_size);
-}
-
-void
-m_pool_reset(m_Pool *pool) {
-    pool->base->release(pool->base->ctx, pool->memory, pool->commit_pos * pool->data_size);
-    m_pool_begin_reserve_base(pool, pool->base, pool->cap, pool->data_size);
 }
