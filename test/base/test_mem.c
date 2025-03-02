@@ -19,7 +19,8 @@
  * Memory Operations
 ****************************************/
 
-static void test_m_align_forward() {
+static void
+test_m_align_forward() {
     assert_int_equal(m_align_forward(10, 16), 16);
     assert_int_equal(m_align_forward(14, 16), 16);
     assert_int_equal(m_align_forward(1, 16), 16);
@@ -33,7 +34,8 @@ static void test_m_align_forward() {
     assert_int_equal(m_align_forward(243, 64), 256);
 }
 
-static void test_m_align_backward() {
+static void
+test_m_align_backward() {
     assert_int_equal(m_align_backward(10, 16), 0);
     assert_int_equal(m_align_backward(14, 16), 0);
     assert_int_equal(m_align_backward(1, 16), 0);
@@ -47,7 +49,8 @@ static void test_m_align_backward() {
     assert_int_equal(m_align_backward(243, 64), 192);
 }
 
-static void test_m_copy() {
+static void
+test_m_copy() {
     char arr1[] = "hello";
     char arr2[] = "world";
 
@@ -76,7 +79,8 @@ static const struct CMUnitTest grp_memory_operations[] = {
  * Memory Base 
 ****************************************/
 
-static void test_m_memory_base_set_get_default() {
+static void
+test_m_memory_base_set_get_default() {
     int test = 0;
     /* Test the poiter idk */
     m_memory_base_set_default((void*)&test);
@@ -91,7 +95,8 @@ static const struct CMUnitTest grp_memory_base[] = {
  * 64-bit Arena - initializers
 ****************************************/
 
-static void test_m_arena_begin() {
+static void
+test_m_arena_begin() {
     m_memory_base_set_default(os_memory_base());
 
     m_Arena arena;
@@ -105,7 +110,8 @@ static void test_m_arena_begin() {
     m_arena_end(&arena);
 }
 
-static void test_m_arena_begin_reserve() {
+static void
+test_m_arena_begin_reserve() {
     m_memory_base_set_default(os_memory_base());
 
     m_Arena arena;
@@ -119,7 +125,8 @@ static void test_m_arena_begin_reserve() {
     m_arena_end(&arena);
 }
 
-static void test_m_arena_begin_reserve_base() {
+static void
+test_m_arena_begin_reserve_base() {
     m_Arena arena;
     m_arena_begin_reserve_base(&arena, os_memory_base(), 1024);
     {
@@ -131,6 +138,7 @@ static void test_m_arena_begin_reserve_base() {
     }
     m_arena_end(&arena);
 }
+
 static const struct CMUnitTest grp_arena_initializers[] = {
     cmocka_unit_test(test_m_arena_begin),
     cmocka_unit_test(test_m_arena_begin_reserve),
@@ -141,14 +149,16 @@ static const struct CMUnitTest grp_arena_initializers[] = {
  * 64-bit Arena - destructors
 ****************************************/
 
-static void test_m_arena_end() {
+static void
+test_m_arena_end() {
     /* 
      * This cannot be tested.
      * This function does not change anything
     */ 
 }
 
-static void test_m_arena_reset() {
+static void
+test_m_arena_reset() {
     m_Arena arena;
     m_arena_begin_reserve_base(&arena, os_memory_base(), 1024);
     m_arena_reset(&arena);
@@ -168,7 +178,8 @@ static const struct CMUnitTest grp_arena_destructors[] = {
  * 64-bit Arena - allocations
 ****************************************/
 
-static void test_m_arena_alloc() {
+static void
+test_m_arena_alloc() {
     m_Arena arena;
     m_arena_begin_base(&arena, os_memory_base());
     {
@@ -176,29 +187,30 @@ static void test_m_arena_alloc() {
         u64 size2 = m_align_forward(M_ARENA_COMMIT_BLOCK, M_DEFAULT_ALIGN);
         u64 size3 = m_align_forward(M_ARENA_COMMIT_BLOCK * 2, M_DEFAULT_ALIGN);
         
-        void* ptr = m_arena_alloc(&arena, 4);
+        void* ptr = m_arena_alloc(&arena, 4)f;
         assert_ptr_equal(arena.memory, ptr);
         assert_ptr_equal(arena.pos, size);
         assert_ptr_equal(arena.commit_pos, M_ARENA_COMMIT_BLOCK);
 
-        void* ptr2 = m_arena_alloc(&arena, M_ARENA_COMMIT_BLOCK);
+        void* ptr2 = m_arena_alloc(&arena, M_ARENA_COMMIT_BLOCK)f;
         assert_ptr_equal(arena.memory + size, ptr2);
         assert_ptr_equal(arena.pos,  size + size2);
         
         assert_ptr_equal(arena.commit_pos, M_ARENA_COMMIT_BLOCK * 2);
    
-        void* ptr3 = m_arena_alloc(&arena, M_ARENA_COMMIT_BLOCK * 2);
+        void* ptr3 = m_arena_alloc(&arena, M_ARENA_COMMIT_BLOCK * 2)f;
         assert_ptr_equal(arena.memory + size + size2, ptr3);
         assert_ptr_equal(arena.pos,  size + size2 + size3);
         assert_ptr_equal(arena.commit_pos, M_ARENA_COMMIT_BLOCK * 4);
 
-        void* ptr4 = m_arena_alloc(&arena, M_ARENA_DEFAULT_RESERVE);
+        void* ptr4 = m_arena_alloc(&arena, M_ARENA_DEFAULT_RESERVE)f;
         assert_null(ptr4);
     }
     m_arena_end(&arena);
 }
 
-static void test_m_arena_dealloc() {
+static void
+test_m_arena_dealloc() {
     m_Arena arena;
     m_arena_begin_base(&arena, os_memory_base());
     {
@@ -220,7 +232,8 @@ static void test_m_arena_dealloc() {
     m_arena_end(&arena);
 }
 
-static void test_m_arena_dealloc_to() {
+static void
+test_m_arena_dealloc_to() {
     m_Arena arena;
     m_arena_begin_base(&arena, os_memory_base());
     {
@@ -247,7 +260,8 @@ static const struct CMUnitTest grp_arena_allocations[] = {
  * Temporary arenas
 ****************************************/
 
-static void test_m_temp_begin() {
+static void
+test_m_temp_begin() {
     m_Arena arena;
     m_arena_begin_base(&arena, os_memory_base());
     {
@@ -262,7 +276,8 @@ static void test_m_temp_begin() {
     m_arena_end(&arena);
 }
 
-static void test_m_temp_end() {
+static void
+test_m_temp_end() {
     
     m_Arena arena;
     m_arena_begin_base(&arena, os_memory_base());
@@ -291,7 +306,8 @@ static const struct CMUnitTest grp_temp_arena[] = {
  * 64-bit Pool - initializers
 ****************************************/
 
-static void test_m_pool_begin() {
+static void
+test_m_pool_begin() {
     m_memory_base_set_default(os_memory_base());
     
     m_Pool pool;
@@ -306,7 +322,8 @@ static void test_m_pool_begin() {
     m_pool_end(&pool);
 }
 
-static void test_m_pool_begin_base() {
+static void
+test_m_pool_begin_base() {
     m_Pool pool;
     m_pool_begin_base(&pool, os_memory_base(), sizeof(u64));
     {
@@ -319,7 +336,8 @@ static void test_m_pool_begin_base() {
     m_pool_end(&pool);
 }
 
-static void test_m_pool_begin_base_reserve() {
+static void
+test_m_pool_begin_base_reserve() {
     m_Pool pool;
     m_pool_begin_reserve_base(&pool, os_memory_base(), Kilobytes(1), sizeof(u64));
     {
@@ -342,14 +360,16 @@ static const struct CMUnitTest grp_pool_initializers[] = {
  * 64-bit Pool - destructors
 ****************************************/
 
-static void test_m_pool_end() {
+static void
+test_m_pool_end() {
     /*
      * This function does not change anything.
      * Therfore it cannot be tested.
      */
 }
 
-static void test_m_pool_reset() {
+static void
+test_m_pool_reset() {
     m_Pool pool;
     m_pool_begin_base(&pool, os_memory_base(), sizeof(u64));
     {
@@ -374,17 +394,18 @@ static const struct CMUnitTest grp_pool_destructors[] = {
  * 64-bit Pool - allcations
 ****************************************/
 
-static void test_m_pool_alloc() {
+static void
+test_m_pool_alloc() {
     m_Pool pool;
     m_pool_begin_base(&pool, os_memory_base(), sizeof(u16));
     {
-        u16 *ptr1 = m_pool_alloc(&pool);
+        u16 *ptr1 = m_pool_alloc(&pool)f;
         *ptr1 = 5; 
         assert_ptr_equal(pool.commit_pos, M_POOL_COMMIT_BLOCK * pool.data_size);
     
         u8 i;
         for(i = 0; i < M_POOL_COMMIT_BLOCK; i++) {
-            u16 *ptr2 = m_pool_alloc(&pool);
+            u16 *ptr2 = m_pool_alloc(&pool)f;
             *ptr2 = 5;
         }
         assert_ptr_equal(pool.commit_pos, M_POOL_COMMIT_BLOCK * 2 * pool.data_size);
@@ -392,12 +413,13 @@ static void test_m_pool_alloc() {
     m_pool_end(&pool);
 }
 
-static void test_m_pool_dealloc() {
+static void
+test_m_pool_dealloc() {
     m_Pool pool;
     m_pool_begin_base(&pool, os_memory_base(), sizeof(u16));
     {
 
-        u16 *ptr1 = m_pool_alloc(&pool);
+        u16 *ptr1 = m_pool_alloc(&pool)f;
         void* head = pool.head;
         m_pool_dealloc(&pool, ptr1);
         assert_ptr_not_equal(head, ptr1);
@@ -406,7 +428,7 @@ static void test_m_pool_dealloc() {
         u16 *ptrs[M_POOL_COMMIT_BLOCK];
         u8 i;
         for(i = 0; i < M_POOL_COMMIT_BLOCK; i++) {
-            ptrs[i] = m_pool_alloc(&pool);
+            ptrs[i] = m_pool_alloc(&pool)f;
             *ptrs[i] = 5; 
         }
 
@@ -419,12 +441,13 @@ static void test_m_pool_dealloc() {
     m_pool_end(&pool);
 }
 
-static void test_m_pool_dealloc_count() {
+static void
+test_m_pool_dealloc_count() {
     m_Pool pool;
     m_pool_begin_base(&pool, os_memory_base(), sizeof(u16));
     {
 
-        u16 *ptr1 = m_pool_alloc(&pool);
+        u16 *ptr1 = m_pool_alloc(&pool)f;
         void* head = pool.head;
         m_pool_dealloc_count(&pool, ptr1, 1);
         assert_ptr_not_equal(head, ptr1);
@@ -432,7 +455,7 @@ static void test_m_pool_dealloc_count() {
         /* dealloc all */
         u8 i;
         for(i = 0; i < M_POOL_COMMIT_BLOCK; i++) {
-            u16 *ptr2 = m_pool_alloc(&pool);
+            u16 *ptr2 = m_pool_alloc(&pool)f;
             *ptr2 = 5; 
         }
 
@@ -449,7 +472,8 @@ static const struct CMUnitTest grp_pool_allocations[] = {
 
 
 
-int main(int argc, char **argv) {
+int
+main(int argc, char **argv) {
     if(argc > 1) {
         switch (argv[1][0]) {
             case '0': 

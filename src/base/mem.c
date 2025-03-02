@@ -1,4 +1,5 @@
 #include "base/mem.h"
+#include "base/errors.h"
 #include "base/types.h"
 
 /****************************************
@@ -110,14 +111,13 @@ m_arena_reset(m_Arena *arena) {
  * 64-bit Arena - allocations
 ****************************************/
 
-void*
+VoidPtrResult
 m_arena_alloc(m_Arena *arena, u64 size) {
     void* result = 0;
     
     size = m_align_forward(size, M_DEFAULT_ALIGN);
 
-    if(arena->pos + size > arena->cap) return null;
-    
+    if(arena->pos + size > arena->cap) return (VoidPtrResult) ResultERR(ERR_UNSPECIFIED);
     if(arena->pos + size > arena->commit_pos) {
         u64 commit_size = size;
         commit_size += M_ARENA_COMMIT_BLOCK - 1;
@@ -129,7 +129,7 @@ m_arena_alloc(m_Arena *arena, u64 size) {
     
     result = arena->memory + arena->pos;
     arena->pos += size;
-    return result;
+    return (VoidPtrResult) ResultOK(result);
 }
 
 void
@@ -243,15 +243,15 @@ m_pool_reset(m_Pool *pool) {
  * 64-bit Pool - allocations
 ****************************************/
 
-void*
+VoidPtrResult
 m_pool_alloc(m_Pool *pool) {
     if(pool->head != null) {
         void* result = pool->head;
         pool->head = pool->head->next;
-        return result;
+        return (VoidPtrResult) ResultOK(result);
     } else {
         if(pool->commit_pos > pool->cap) {
-            return null;
+            return (VoidPtrResult) ResultERR(ERR_UNSPECIFIED);
         }
         u64 real_commit_block = M_POOL_COMMIT_BLOCK * pool->data_size;
         u8 *commit_ptr = pool->memory + pool->commit_pos;
@@ -260,9 +260,8 @@ m_pool_alloc(m_Pool *pool) {
         
         pool->commit_pos += real_commit_block;
 
-        return(m_pool_alloc(pool));
+        return m_pool_alloc(pool);
     }
-
 }
 
 void

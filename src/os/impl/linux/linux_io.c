@@ -21,7 +21,8 @@ struct File {
     int descriptor;
 };
 
-static mode_t os_file_convert_mode(FileMode mode) {
+static mode_t
+os_file_convert_mode(FileMode mode) {
     switch(mode) {
         case FILE_R:
             return O_RDONLY;
@@ -37,7 +38,8 @@ static mode_t os_file_convert_mode(FileMode mode) {
     }
 }
 
-bool os_file_exists(m_Arena *arena, String8 path) {
+bool
+os_file_exists(m_Arena *arena, String8 path) {
     m_Temp temp;
     bool value = false;
     m_temp_begin(arena, &temp);
@@ -68,7 +70,7 @@ os_file_open(m_Arena *arena, String8 path, FileMode mode) {
         return (FileResult) ResultERR(ERR_UNSPECIFIED); 
     }
 
-    File *file = m_arena_alloc(arena, sizeof(*file));
+    File *file = m_arena_alloc(arena, sizeof(*file))f;
     file->descriptor = descriptor;
     
     return (FileResult) ResultOK(file);
@@ -90,7 +92,7 @@ os_file_create(m_Arena *arena, String8 path, FileMode mode) {
         return (FileResult) ResultERR(ERR_UNSPECIFIED);    
     }
 
-    File *file = m_arena_alloc(arena, sizeof(*file));
+    File *file = m_arena_alloc(arena, sizeof(*file))f;
     file->descriptor = descriptor;
     return (FileResult) ResultOK(file);
 }
@@ -199,7 +201,7 @@ os_console_read_until(m_Arena *arena, u8 splitter) {
             }
         }
         
-        void* ptr = m_arena_alloc(arena, i);
+        void* ptr = m_arena_alloc(arena, i)f;
         if(ptr == null) {
             m_arena_dealloc_to(arena, arena_pos);
             return (String8AllocResult) ResultERR(ERR_UNSPECIFIED);

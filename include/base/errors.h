@@ -195,4 +195,13 @@ typedef struct {
     ResultVars(f64);
 } F64Result;
 
+
+/****************************************
+ * C type Results
+****************************************/
+
+typedef struct { 
+    ResultVars(void*);
+} VoidPtrResult;
+
 #endif

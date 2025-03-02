@@ -22,7 +22,7 @@ str8_range(u8 *start, u8 *end) {
 
 String8Alloc
 str8_alloc(m_Arena *arena, u64 count) {
-    u8* str = m_arena_alloc(arena, sizeof(u8) * count);
+    u8* str = m_arena_alloc(arena, sizeof(u8) * count)f;
     String8Alloc result = (String8Alloc){.string = {.str = str, .count = count}};
     return result;
 }
@@ -68,7 +68,7 @@ str8_equals(String8 string1, String8 string2) {
 
 char*
 str8_to_cstr(m_Arena *arena, String8 string) {
-    char* cstr = m_arena_alloc(arena, sizeof(char) * string.count + 1);
+    char* cstr = m_arena_alloc(arena, sizeof(char) * string.count + 1)f;
     m_copy(cstr, string.str, string.count);
     cstr[string.count] = '\0';
 
@@ -130,7 +130,7 @@ str8_list_begin(String8List *list) {
 
 void
 str8_list_push(m_Arena *arena, String8List *list, String8 string) {
-    String8Node *node = m_arena_alloc(arena, sizeof(*node));
+    String8Node *node = m_arena_alloc(arena, sizeof(*node))f;
     node->string = string;
     node->next = null;
     node->prev = null;
@@ -203,6 +203,7 @@ is_lower(u8 c) { return IsLower(c); }
 /****************************************
  * Unsigned integer parsing 
 ****************************************/
+
 U8Result
 str8_parse_u8(String8 string) {
     u64 iter = 0; 
