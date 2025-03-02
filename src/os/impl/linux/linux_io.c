@@ -21,7 +21,8 @@ struct File {
     int descriptor;
 };
 
-static mode_t os_file_convert_mode(FileMode mode) {
+static mode_t
+os_file_convert_mode(FileMode mode) {
     switch(mode) {
         case FILE_R:
             return O_RDONLY;
@@ -37,7 +38,8 @@ static mode_t os_file_convert_mode(FileMode mode) {
     }
 }
 
-bool os_file_exists(m_Arena *arena, String8 path) {
+bool
+os_file_exists(m_Arena *arena, String8 path) {
     m_Temp temp;
     bool value = false;
     m_temp_begin(arena, &temp);

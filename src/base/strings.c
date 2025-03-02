@@ -203,6 +203,7 @@ is_lower(u8 c) { return IsLower(c); }
 /****************************************
  * Unsigned integer parsing 
 ****************************************/
+
 U8Result
 str8_parse_u8(String8 string) {
     u64 iter = 0; 

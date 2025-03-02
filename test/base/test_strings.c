@@ -20,8 +20,8 @@
  * String creation
 ****************************************/
 
-static void test_str8()
-{
+static void
+test_str8() {
     /* idk what to test */
     char arr[] = "hello";
     String8 string = str8((u8*) arr, 5);
@@ -30,8 +30,8 @@ static void test_str8()
     assert_int_equal(5, string.count);
 }
 
-static void test_str8_range()
-{
+static void
+test_str8_range() {
     char arr[] = "hello";
     String8 string = str8_range((u8*) arr, (u8*) arr + 5);
 
@@ -39,8 +39,8 @@ static void test_str8_range()
     assert_int_equal(5, string.count);
 }
 
-static void test_str8_alloc()
-{
+static void
+test_str8_alloc() {
     m_Arena arena;
     m_arena_begin_base(&arena, os_memory_base());
     {
@@ -57,8 +57,8 @@ static void test_str8_alloc()
     m_arena_end(&arena);
 }
 
-static void test_str8_cstr_count()
-{
+static void
+test_str8_cstr_count() {
     const char* cstr = "hello";
     String8 string = str8_cstr_count(cstr, 5);
     
@@ -66,8 +66,8 @@ static void test_str8_cstr_count()
     assert_ptr_equal(string.str, cstr);
 }
 
-static void test_str8_cstr()
-{
+static void
+test_str8_cstr() {
     const char* cstr = "hello";
     String8 string = str8_cstr(cstr);
     
@@ -88,8 +88,8 @@ static const struct CMUnitTest grp_creation[] = {
  * String manipulation
 ****************************************/
 
-static void test_str8_to_cstr()
-{
+static void
+test_str8_to_cstr() {
     m_Arena arena;
     m_arena_begin_base(&arena, os_memory_base());
     {
@@ -101,8 +101,8 @@ static void test_str8_to_cstr()
     m_arena_end(&arena);
 }
 
-static void test_str8_substr()
-{
+static void
+test_str8_substr() {
     String8 string = str8_cstr("hello,world");
     String8 substr = str8_substr(string, 6, 5);
     String8 substr2 = str8_substr(string, 0, 5);
@@ -111,8 +111,8 @@ static void test_str8_substr()
     assert_true(str8_equals(substr2, Str8Lit("hello")));
 }
 
-static void test_str8_split()
-{
+static void
+test_str8_split() {
     m_Arena arena;
     m_arena_begin_base(&arena, os_memory_base());
     {
@@ -138,8 +138,8 @@ static void test_str8_split()
     m_arena_end(&arena);
 }
 
-static void test_str8_join()
-{
+static void
+test_str8_join() {
     m_Arena arena;
     m_arena_begin_base(&arena, os_memory_base());
     {
@@ -165,8 +165,8 @@ static const struct CMUnitTest grp_manipulation[] = {
  * String list
 ****************************************/
 
-static void test_str8_list_begin()
-{
+static void
+test_str8_list_begin() {
     String8List list;
     str8_list_begin(&list);
     
@@ -177,8 +177,8 @@ static void test_str8_list_begin()
     assert_int_equal(list.node_count, 0);
 }
 
-static void test_str8_list_push()
-{
+static void
+test_str8_list_push() {
     m_Arena arena;
     m_arena_begin_base(&arena, os_memory_base());
     {
@@ -216,8 +216,8 @@ static void test_str8_list_push()
     m_arena_end(&arena);
 }
 
-static void test_str8_list_pop()
-{
+static void
+test_str8_list_pop() {
     m_Arena arena;
     m_arena_begin_base(&arena, os_memory_base());
     {
@@ -265,8 +265,8 @@ static const struct CMUnitTest grp_string_list[] = {
  * Simple finctions and macros
 ****************************************/
 
-static void test_str8_equals()
-{
+static void
+test_str8_equals() {
     String8 string = str8_cstr("hello");
     String8 string2 = str8_cstr("hello");
     String8 string3 = str8_cstr("world");
@@ -275,8 +275,8 @@ static void test_str8_equals()
     assert_false(str8_equals(string, string3));
 }
 
-static void test_str8_at()
-{
+static void
+test_str8_at() {
     String8 string = str8_cstr("hello");
     
     assert_true(str8_at(string, 0) == 'h');
@@ -296,8 +296,8 @@ static const struct CMUnitTest grp_simple_functions[] = {
  * Char checking
 ****************************************/
 
-static void test_IsNumber()
-{
+static void
+test_IsNumber() {
     assert_true(IsNumber('0'));
     assert_true(IsNumber('4'));
     assert_true(IsNumber('9'));
@@ -305,8 +305,8 @@ static void test_IsNumber()
     assert_false(IsNumber('c'));
 }
 
-static void test_IsUpper()
-{
+static void
+test_IsUpper() {
     assert_true(IsUpper('A'));
     assert_true(IsUpper('C'));
     assert_true(IsUpper('F'));
@@ -315,8 +315,8 @@ static void test_IsUpper()
     assert_false(IsUpper('f'));
 }
 
-static void test_IsLower()
-{
+static void
+test_IsLower() {
     assert_true(IsLower('a'));
     assert_true(IsLower('c'));
     assert_true(IsLower('f'));
@@ -325,8 +325,8 @@ static void test_IsLower()
     assert_false(IsLower('F'));
 }
 
-static void test_IsAlpha()
-{
+static void
+test_IsAlpha() {
     assert_true(IsAlpha('A'));
     assert_true(IsAlpha('C'));
     assert_true(IsAlpha('F'));
@@ -338,8 +338,8 @@ static void test_IsAlpha()
     assert_false(IsAlpha(' '));
 }
 
-static void test_IsAlphaNum()
-{
+static void
+test_IsAlphaNum() {
     assert_true(IsAlphaNum('A'));
     assert_true(IsAlphaNum('C'));
     assert_true(IsAlphaNum('F'));
@@ -353,8 +353,8 @@ static void test_IsAlphaNum()
     assert_false(IsAlphaNum(':'));
 }
 
-static void test_NumFromAscii()
-{
+static void
+test_NumFromAscii() {
     assert_int_equal(0, NumFromAscii('0'));
     assert_int_equal(1, NumFromAscii('1'));
     assert_int_equal(2, NumFromAscii('2'));
@@ -363,8 +363,8 @@ static void test_NumFromAscii()
     assert_int_equal(5, NumFromAscii('5'));
 }
 
-static void test_is_number()
-{
+static void
+test_is_number() {
     assert_true(is_number('0'));
     assert_true(is_number('4'));
     assert_true(is_number('9'));
@@ -372,8 +372,8 @@ static void test_is_number()
     assert_false(is_number('c'));
 }
 
-static void test_is_upper()
-{
+static void
+test_is_upper() {
     assert_true(is_upper('A'));
     assert_true(is_upper('C'));
     assert_true(is_upper('F'));
@@ -382,8 +382,8 @@ static void test_is_upper()
     assert_false(is_upper('f'));
 }
 
-static void test_is_lower()
-{
+static void
+test_is_lower() {
     assert_true(is_lower('a'));
     assert_true(is_lower('c'));
     assert_true(is_lower('f'));
@@ -392,8 +392,8 @@ static void test_is_lower()
     assert_false(is_lower('F'));
 }
 
-static void test_is_alpha()
-{
+static void
+test_is_alpha() {
     assert_true(is_alpha('A'));
     assert_true(is_alpha('C'));
     assert_true(is_alpha('F'));
@@ -405,8 +405,8 @@ static void test_is_alpha()
     assert_false(is_alpha(' '));
 }
 
-static void test_is_alpha_num()
-{
+static void
+test_is_alpha_num() {
     assert_true(is_alhpa_num('A'));
     assert_true(is_alhpa_num('C'));
     assert_true(is_alhpa_num('F'));
@@ -434,12 +434,12 @@ static const struct CMUnitTest grp_char_checking[] = {
     cmocka_unit_test(test_is_alpha_num),
 };
 
-
 /****************************************
  * Integer parsing
 ****************************************/
 
-static void test_parse_u8() {
+static void
+test_parse_u8() {
     String8 str1 = Str8Lit("123");
     String8 str2 = Str8Lit("+123");
     String8 str3 = Str8Lit("abc");
@@ -462,7 +462,8 @@ static void test_parse_u8() {
     assert_int_equal(123, r_str2.value);
 }
 
-static void test_parse_u16() {
+static void
+test_parse_u16() {
     String8 str1 = Str8Lit("500");
     String8 str2 = Str8Lit("+500");
     String8 str3 = Str8Lit("abc");
@@ -485,7 +486,8 @@ static void test_parse_u16() {
     assert_int_equal(500, r_str2.value);
 }
 
-static void test_parse_u32() {
+static void
+test_parse_u32() {
     String8 str1 = Str8Lit("100000");
     String8 str2 = Str8Lit("+100000");
     String8 str3 = Str8Lit("abc");
@@ -508,7 +510,8 @@ static void test_parse_u32() {
     assert_int_equal(100000, r_str2.value);
 }
 
-static void test_parse_u64() {
+static void
+test_parse_u64() {
     String8 str1 = Str8Lit("5000000000");
     String8 str2 = Str8Lit("+5000000000");
     String8 str3 = Str8Lit("abc");
@@ -531,7 +534,8 @@ static void test_parse_u64() {
     assert_int_equal(5000000000, r_str2.value);
 }
 
-static void test_parse_s8() {
+static void
+test_parse_s8() {
     String8 str1 = Str8Lit("50");
     String8 str2 = Str8Lit("+50");
     String8 str3 = Str8Lit("-50");
@@ -558,7 +562,8 @@ static void test_parse_s8() {
     assert_int_equal(-50, r_str3.value);
 }
 
-static void test_parse_s16() {
+static void
+test_parse_s16() {
     String8 str1 = Str8Lit("10000");
     String8 str2 = Str8Lit("+10000");
     String8 str3 = Str8Lit("-10000");
@@ -585,7 +590,8 @@ static void test_parse_s16() {
     assert_int_equal(-10000, r_str3.value);
 }
 
-static void test_parse_s32() {
+static void
+test_parse_s32() {
     String8 str1 = Str8Lit("100000");
     String8 str2 = Str8Lit("+100000");
     String8 str3 = Str8Lit("-100000");
@@ -612,7 +618,8 @@ static void test_parse_s32() {
     assert_int_equal(-100000, r_str3.value);
 }
 
-static void test_parse_s64() {
+static void
+test_parse_s64() {
     String8 str1 = Str8Lit("2000000000");
     String8 str2 = Str8Lit("+2000000000");
     String8 str3 = Str8Lit("-2000000000");
@@ -650,7 +657,8 @@ static const struct CMUnitTest grp_int_parsing[] = {
     cmocka_unit_test(test_parse_s64),
 };
 
-int main(int argc, char **argv) {
+int
+main(int argc, char **argv) {
     if(argc > 1) {
         switch (argv[1][0]) {
             case '0': 
