@@ -163,7 +163,7 @@ os_file_size(File *file) {
                 return (U64Result) ResultERR(UnspecifiedError);
         }
     }
-    return (U64Result) ResultOK(file_info.st_size - 1); /* remove the EOF character */
+    return (U64Result) ResultOK(file_info.st_size);
 }
 
 Result
@@ -190,7 +190,6 @@ os_file_write(File* file, String8 string) {
 String8AllocResult
 os_file_read_count(m_Arena *arena, File *file, u64 count) {
     String8Alloc a_str = str8_alloc(arena, count);
-    if(count == 0) return (String8AllocResult) ResultOK(a_str);
     ssize_t read_out = read(file->descriptor,a_str.string.str, count);
     if(read_out < 0) {
         switch(errno) {
