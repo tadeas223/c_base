@@ -1,6 +1,6 @@
 /*!**********************************************************
- * \file errors.h
- * \brief Error handling for the library.
+ * \file results.h
+ * \brief Results for easier error handinng of the library.
  *
  * If a function possibly returns an error it's return
  * type should be some kind of Result.
@@ -24,6 +24,72 @@
 #define ERRORS_H
 
 #include "base/types.h"
+#include <sys/types.h>
+
+/*!
+ * \brief error type.
+ */
+typedef const u64 Error;
+
+/*!
+ * \brief Creates a error variable.
+ * 
+ * Use this macro in a .c file to avoid multiple definitions.
+ * To add the error in a header file use the ExternError() macro.
+ *
+ * The variable that is crated is a plain u8 number.
+ * The pointer of this variable can be used to distinguish errors.
+ * 
+ * \param err_name Name of the error
+ */
+#define DefineError(err_name) u8 val_##err_name = 0x55; Error err_name = (u64) &val_##err_name
+
+/*!
+ * \brief Defines an error in a header file.
+ * 
+ * This macro should be used to define an error in a header file.
+ * The error should be than define with the DefineError() macro in the 
+ * coresponding .c file.
+ *
+ * \param err_name Name of the error
+ */
+#define ExternError(err_name) extern Error err_name;
+
+/*!
+ * \brief Converts the error into a string
+ */
+#define ErrorStr(err_name) Str8Lit(#err_name)
+
+/****************************************
+ * Generic error types
+****************************************/
+
+/*!
+ * \brief Default error for everything
+ *
+ * It is adviced to use more specific messages than this.
+ *
+ * \see DefineError()
+ */
+ExternError(UnspecifiedError);
+
+
+/*!
+ * \brief Error returned when a unhandled null address appeares. 
+ */
+ExternError(NullPoniterError);
+
+/*!
+ * \brief Error for int overflows
+ *
+ * This eror should be returned when an overflow happens.
+ */
+ExternError(OverflowError);
+
+/*!
+ * \brief Error for indication invalid arguments passed in functions.
+ */
+ExternError(InvalidArgumentError);
 
 /*!
  * \brief Macro for betting a result value without checking
@@ -38,6 +104,17 @@
 #define f .value
 
 /*!
+ * \brief Checks an error type
+ *
+ * An expression that checks if the err_name and err are equal.
+ *
+ * \param err_name Name of the error to check.
+ * \param err error to check
+ * \returns true if the err is error of the err_name type, false otherwise
+ */
+#define IsError(err_name, err) ((err_name) == (err))
+
+/*!
  * \brief Macro for easier creation of the Result structs.
  *
  * Example of this macro:
@@ -50,12 +127,12 @@
  * };
  * \endcode
  */
-#define ResultVars(type) type value; u32 err; bool ok
+#define ResultVars(type) type value; Error err; bool ok
 
 /*!
  * \brief Same as ResultVars() but for empty Results
  */
-#define EmptyResultVars() u32 err; bool ok
+#define EmptyResultVars() Error err; bool ok
 
 /*!
  * \brief Macro that crates a successfull Result
@@ -63,18 +140,18 @@
  * This macro sets these variables of the Result:
  *  - ok = true
  *  - value = val
- *  - err = 0
+ *  - err = null
  *
  * Example of this macro:
  * \code
- * IntResult func() {
- *     return (IntResult) ResultOK(1) // returns a IntResult containing a int value 1
+ * U8Result func() {
+ *     return (U8Result) ResultOK(1) // returns a IntResult containing a int value 1
  * }
  * \endcode
  *  
  * \param val value that should be returned on successfull function call
  */
-#define ResultOK(val) {.ok = true, .value = val, .err = 0 }
+#define ResultOK(val) {.ok = true, .value = (val), .err = null }
 
 /*!
  * \brief Macro that crates a unsuccessful Result
@@ -82,35 +159,27 @@
  * This macro sets these variables of the Result:
  *  - ok = false 
  *  - value = null
- *  - err = code
+ *  - err = &err_name
  *  
  * Example of this macro:
  * \code
- * IntResult func() {
- *     return (IntResult) ResultERR(1) // returns a IntResult with an error code 1
+ * U8Result func() {
+ *     return (U8Result) ResultERR(ERR_UNSPECIFIED) // returns a U8Result with an unspecified error
  * }
  * \endcode
  *
- * \param code error code, indicating a unsuccessful state
+ * \param err_name name of the error, indicating a unsuccessful state
  */
-#define ResultERR(code) {.ok = false, .err = code }
+#define ResultERR(err_name) {.ok = false, .err = err_name}
 
 /*!
  * \brief Same as ResultOK() but for Results without an value.
  */
-#define EmptyResultOK() {.ok = true, .err = 0 }
+#define EmptyResultOK() {.ok = true, .err = null }
 /*!
  * \brief Same as ResultERR() but for Results without an value.
  */
-#define EmptyResultERR(code) {.ok = false, .err = code }
-
-/*!
- * \brief Global error codes.
- * \warning These codes should not overlap with any other error codes.
- */
-typedef enum { 
-    ERR_UNSPECIFIED = U32_MAX,
-} ErrorCode;
+#define EmptyResultERR(err_name) {.ok = false, .err = err_name}
 
 /*!
  * \brief Result that does not contain a value.
@@ -194,7 +263,6 @@ typedef struct {
 typedef struct {
     ResultVars(f64);
 } F64Result;
-
 
 /****************************************
  * C type Results

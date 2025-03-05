@@ -6,8 +6,13 @@
 ************************************************************/
 #ifndef MEM_H
 #define MEM_H
+
 #include "base/errors.h"
-#include "base/types.h"
+
+/*!
+ * \brief Error indication that the system or allocator is out of memory.
+ */
+ExternError(OutOfMemoryError);
 
 /*!
  * \brief Default memory alignment that allocators should use.

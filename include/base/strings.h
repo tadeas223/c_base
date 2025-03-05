@@ -8,8 +8,8 @@
 #ifndef STRINGS_H
 #define STRINGS_H
 
-#include "base/mem.h"
 #include "base/errors.h"
+#include "base/mem.h"
 #include "base/types.h"
 
 /*!
@@ -81,26 +81,19 @@ typedef struct {
     u64 str_count;
 } String8List;
 
-/*!
- * \brief String8 result for error handling.
- * \see errors.h
- */
+
+/****************************************
+ * String Results
+****************************************/
+
 typedef struct {
     ResultVars(String8);
 } String8Result;
 
-/*!
- * \brief String8Alloc result for error handling.
- * \see errors.h
- */
 typedef struct {
     ResultVars(String8Alloc);
 } String8AllocResult;
 
-/*!
- * \brief String8List result for error handling.
- * \see errors.h
- */
 typedef struct {
     ResultVars(String8List);
 } String8ListResult;
@@ -142,6 +135,7 @@ String8 str8_range(u8* start, u8* end);
  * \param count Number of characters inside the string
  * \returns String with a poniter to allocated memory in the arena.
  */
+
 String8Alloc str8_alloc(m_Arena *arena, u64 count);
 
 /*!
@@ -325,6 +319,9 @@ bool is_lower(u8 c);
 /****************************************
  * Integer parsing
 ****************************************/
+
+ExternError(ParseError);
+
 U8Result str8_parse_u8(String8 str);
 U16Result str8_parse_u16(String8 str);
 U32Result str8_parse_u32(String8 str);
@@ -334,4 +331,5 @@ S8Result str8_parse_s8(String8 str);
 S16Result str8_parse_s16(String8 str);
 S32Result str8_parse_s32(String8 str);
 S64Result str8_parse_s64(String8 str);
+
 #endif

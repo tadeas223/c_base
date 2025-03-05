@@ -11,6 +11,15 @@
 
 
 /****************************************
+ * Error types
+****************************************/
+
+ExternError(FileNotFoundError);
+ExternError(OutOfDiskSpaceError);
+ExternError(PermissionError);
+ExternError(InvalidOperationError);
+
+/****************************************
  * Console write macros
 ****************************************/
 
@@ -19,14 +28,14 @@
  * 
  * \see os_console_write()
  */
-#define ConsoleWrite(string) os_console_write(string);
+#define ConsoleWrite(string) os_console_write(string)
 /*!
  * \brief Macro that writes to console and inserts new line at the end.
  * 
  * This macro calls os_console_write() funtion for the string and again for a new line character
  * \see os_console_write()
  */
-#define ConsoleWriteLn(string) os_console_write(string); os_console_write(Str8Lit("\n"));
+#define ConsoleWriteLn(string) os_console_write(string); os_console_write(Str8Lit("\n"))
 
 
 /****************************************
@@ -74,6 +83,7 @@ typedef enum {
     FILE_A, /* append mode */
     FILE_AR,
 } FileMode;
+
 
 /****************************************
  * Files
