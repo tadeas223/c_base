@@ -1,6 +1,6 @@
 /*!**********************************************************
- * \file results.h
- * \brief Results for easier error handinng of the library.
+ * \file errors.h
+ * \brief Error handling for the library.
  *
  * If a function possibly returns an error it's return
  * type should be some kind of Result.
@@ -29,7 +29,7 @@
 /*!
  * \brief error type.
  */
-typedef const u64 Error;
+typedef u64 Error;
 
 /*!
  * \brief Creates a error variable.
