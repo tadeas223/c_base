@@ -2,6 +2,8 @@
 #include "base/errors.h"
 #include "base/types.h"
 
+DefineError(OutOfMemoryError);
+
 /****************************************
  * Memory Opearations
 ****************************************/
@@ -117,7 +119,7 @@ m_arena_alloc(m_Arena *arena, u64 size) {
     
     size = m_align_forward(size, M_DEFAULT_ALIGN);
 
-    if(arena->pos + size > arena->cap) return (VoidPtrResult) ResultERR(ERR_UNSPECIFIED);
+    if(arena->pos + size > arena->cap) return (VoidPtrResult) ResultERR(OutOfMemoryError);
     if(arena->pos + size > arena->commit_pos) {
         u64 commit_size = size;
         commit_size += M_ARENA_COMMIT_BLOCK - 1;
@@ -251,7 +253,7 @@ m_pool_alloc(m_Pool *pool) {
         return (VoidPtrResult) ResultOK(result);
     } else {
         if(pool->commit_pos > pool->cap) {
-            return (VoidPtrResult) ResultERR(ERR_UNSPECIFIED);
+            return (VoidPtrResult) ResultERR(OutOfMemoryError);
         }
         u64 real_commit_block = M_POOL_COMMIT_BLOCK * pool->data_size;
         u8 *commit_ptr = pool->memory + pool->commit_pos;

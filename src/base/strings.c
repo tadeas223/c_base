@@ -3,6 +3,8 @@
 #include "base/mem.h"
 #include "base/types.h"
 
+DefineError(ParseError);
+
 /****************************************
  * String creation
 ****************************************/
@@ -217,15 +219,15 @@ str8_parse_u8(String8 string) {
     for(; iter < string.count; iter++) {
         u8 c = str8_at(string, iter);
         if(!IsNumber(c)) {
-            return (U8Result) ResultERR(ERR_UNSPECIFIED);
+            return (U8Result) ResultERR(ParseError);
         }
 
         /* overflow check */
         if(result > U8_MAX / 10) {
-            return (U8Result) ResultERR(ERR_UNSPECIFIED); 
+            return (U8Result) ResultERR(OverflowError); 
         }
         if(result * 10 > U8_MAX) {
-            return (U8Result) ResultERR(ERR_UNSPECIFIED); 
+            return (U8Result) ResultERR(OverflowError); 
         }
 
         result = result * 10 + NumFromAscii(c);
@@ -247,15 +249,15 @@ str8_parse_u16(String8 string) {
     for(; iter < string.count; iter++) {
         u8 c = str8_at(string, iter);
         if(!IsNumber(c)) {
-            return (U16Result) ResultERR(ERR_UNSPECIFIED);
+            return (U16Result) ResultERR(ParseError);
         }
         
         /* overflow check */
         if(result * 10 > U16_MAX / 10) {
-            return (U16Result) ResultERR(ERR_UNSPECIFIED); 
+            return (U16Result) ResultERR(OverflowError); 
         }
         if(result * 10 > U16_MAX - NumFromAscii(c)) {
-            return (U16Result) ResultERR(ERR_UNSPECIFIED); 
+            return (U16Result) ResultERR(OverflowError); 
         }
 
         result = result * 10 + NumFromAscii(c);
@@ -277,15 +279,15 @@ str8_parse_u32(String8 string) {
     for(; iter < string.count; iter++) {
         u8 c = str8_at(string, iter);
         if(!IsNumber(c)) {
-            return (U32Result) ResultERR(ERR_UNSPECIFIED);
+            return (U32Result) ResultERR(ParseError);
         }
 
         /* overflow check */
         if(result * 10 > U32_MAX / 10) {
-            return (U32Result) ResultERR(ERR_UNSPECIFIED); 
+            return (U32Result) ResultERR(OverflowError); 
         }
         if(result * 10 > U32_MAX - NumFromAscii(c)) {
-            return (U32Result) ResultERR(ERR_UNSPECIFIED); 
+            return (U32Result) ResultERR(OverflowError); 
         }
 
         result = result * 10 + NumFromAscii(c);
@@ -307,15 +309,15 @@ str8_parse_u64(String8 string) {
     for(; iter < string.count; iter++) {
         u8 c = str8_at(string, iter);
         if(!IsNumber(c)) {
-            return (U64Result) ResultERR(ERR_UNSPECIFIED);
+            return (U64Result) ResultERR(ParseError);
         }
 
         /* overflow check */
         if(result * 10 > U64_MAX / 10) {
-            return (U64Result) ResultERR(ERR_UNSPECIFIED); 
+            return (U64Result) ResultERR(OverflowError); 
         }
         if(result * 10 > U64_MAX - NumFromAscii(c)) {
-            return (U64Result) ResultERR(ERR_UNSPECIFIED); 
+            return (U64Result) ResultERR(OverflowError); 
         }
 
         result = result * 10 + NumFromAscii(c);
@@ -345,15 +347,15 @@ str8_parse_s8(String8 string) {
     for(; iter < string.count; iter++) {
         u8 c = str8_at(string, iter);
         if(!IsNumber(c)) {
-            return (S8Result) ResultERR(ERR_UNSPECIFIED);
+            return (S8Result) ResultERR(ParseError);
         }
 
         /* overflow check */
         if(result > S8_MAX / 10) {
-            return (S8Result) ResultERR(ERR_UNSPECIFIED); 
+            return (S8Result) ResultERR(OverflowError); 
         }
         if(result * 10 > S8_MAX - NumFromAscii(c)) {
-            return (S8Result) ResultERR(ERR_UNSPECIFIED); 
+            return (S8Result) ResultERR(OverflowError); 
         }
 
         result = result * 10 + NumFromAscii(c);
@@ -383,15 +385,15 @@ str8_parse_s16(String8 string) {
     for(; iter < string.count; iter++) {
         u8 c = str8_at(string, iter);
         if(!IsNumber(c)) {
-            return (S16Result) ResultERR(ERR_UNSPECIFIED);
+            return (S16Result) ResultERR(ParseError);
         }
 
         /* overflow check */
         if(result > S16_MAX / 10) {
-            return (S16Result) ResultERR(ERR_UNSPECIFIED); 
+            return (S16Result) ResultERR(OverflowError); 
         }
         if(result * 10 > S16_MAX - NumFromAscii(c)) {
-            return (S16Result) ResultERR(ERR_UNSPECIFIED); 
+            return (S16Result) ResultERR(OverflowError); 
         }
 
         result = result * 10 + NumFromAscii(c);
@@ -421,15 +423,15 @@ str8_parse_s32(String8 string) {
     for(; iter < string.count; iter++) {
         u8 c = str8_at(string, iter);
         if(!IsNumber(c)) {
-            return (S32Result) ResultERR(ERR_UNSPECIFIED);
+            return (S32Result) ResultERR(ParseError);
         }
 
         /* overflow check */
         if(result > S32_MAX / 10) {
-            return (S32Result) ResultERR(ERR_UNSPECIFIED); 
+            return (S32Result) ResultERR(OverflowError); 
         }
         if(result * 10 > S32_MAX - NumFromAscii(c)) {
-            return (S32Result) ResultERR(ERR_UNSPECIFIED); 
+            return (S32Result) ResultERR(OverflowError); 
         }
 
         result = result * 10 + NumFromAscii(c);
@@ -459,15 +461,15 @@ str8_parse_s64(String8 string) {
     for(; iter < string.count; iter++) {
         u8 c = str8_at(string, iter);
         if(!IsNumber(c)) {
-            return (S64Result) ResultERR(ERR_UNSPECIFIED);
+            return (S64Result) ResultERR(ParseError);
         }
 
         /* overflow check */
         if(result > S64_MAX / 10) {
-            return (S64Result) ResultERR(ERR_UNSPECIFIED); 
+            return (S64Result) ResultERR(OverflowError); 
         }
         if(result * 10 > S64_MAX - NumFromAscii(c)) {
-            return (S64Result) ResultERR(ERR_UNSPECIFIED); 
+            return (S64Result) ResultERR(OverflowError); 
         }
 
         result = result * 10 + NumFromAscii(c);
