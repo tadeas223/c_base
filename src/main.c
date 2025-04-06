@@ -12,8 +12,6 @@ int main(int argc, char *argv[])
     Arena arena;
     arena_init(&arena);
     
-    ConsoleClear();
-
     ConsoleWrite(S("number 1: ")); 
     u32 num1 = TryParse(s32, ConsoleReadLn(&arena).string);
     ConsoleWrite(S("operator: "));

@@ -13,6 +13,7 @@ subdir('include')
 executable('main', sources, include_directories: incl_dirs)
 
 lib = shared_library('c_base', sources, include_directories: incl_dirs, install: true)
+static_lib = static_library('c_base', sources, include_directories: incl_dirs, install: true)
 
 pkgconfig = import('pkgconfig')
 
