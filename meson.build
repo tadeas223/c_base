@@ -14,7 +14,13 @@ subdir('include')
 # executable('main', sources, include_directories: incl_dirs)
 
 shared_lib = shared_library('c_base', sources, include_directories: incl_dirs, install: true)
-static_lib = static_library('c_base', sources, include_directories: incl_dirs, install: true)
+static_lib = static_library('c_base', sources, include_directories: incl_dirs)
+
+# install static library, because meson refuses to do so
+install_data(
+  static_lib.full_path(),
+  install_dir: get_option('libdir'),
+)
 
 pkgconfig = import('pkgconfig')
 
