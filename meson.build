@@ -3,12 +3,11 @@ project('c_base', 'c',
   default_options: ['c_std=c99', 'c_args=-Wall'])
 
 name = meson.project_name()
-incl_dirs = include_directories('src', 'include')
+incl_dirs = include_directories('src', 'include/' + name)
 
 sources = []
 
 subdir('src')
-subdir('include')
 
 # testing executable
 # will be removed
@@ -17,11 +16,14 @@ subdir('include')
 
 lib = library('c_base', sources, include_directories: incl_dirs, install: true)
 
+install_subdir('include', install_dir: get_option('prefix'))
+
 pkgconfig = import('pkgconfig')
 
 pkgconfig.generate(lib,
-  version: '0.0.1',
-  name: 'c_base',
-  libraries: lib,
   description: 'Base library for C projects',
+  version: '0.0.1',
+  name: name,
+  subdirs: name,
+  libraries: lib,
 )
