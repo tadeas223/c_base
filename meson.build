@@ -1,4 +1,4 @@
-project('c_base', 'c', default_options: ['c_std=c99', 'c_args=-Wall'])
+project('c_base', 'c', default_options: ['c_std=c99', 'c_args=-Wall', 'includedir=include'])
 
 incl_dirs = include_directories('src', 'include')
 
@@ -17,7 +17,7 @@ pkgconfig.generate(lib,
   description: 'Base library for C projects'
 )
 
-install_subdir('include', install_dir: join_paths(get_option('prefix'), 'include/c_base'))
+install_subdir('include', install_dir: join_paths(get_option('includedir'), 'c_base'))
 
 
 executable('main', sources, include_directories: incl_dirs)
