@@ -4,26 +4,32 @@ pkgrel=1
 url="https://github.com/tadeas223/c_base/"
 cksums=("SKIP")
 arch=("x86_64")
-depends=()
 makedepends=("meson" "ninja")
 source=("git+https://github.com/tadeas223/c_base.git")
 
-build() {
-    cd "$srcdir/$pkgname"
+build_c_base() {
+    cd "$srcdir/c_base"
     meson setup build --prefix=/usr -Ddefault_library=both
     meson compile -C build
 }
 
 package_c_base() {
     pkgdesc="Shared base library for C projects"
-    cd "$srcdir/$pkgname"
+    depends=()
+
+    cd "$srcdir/c_base"
     DESTDIR="$pkgdir" meson install -C build
-    rm -f "$pkgdir/usr/lib/lib_c_base.a"
+    rm "$pkgdir/usr/lib/libc_base.a"
 }
 
 package_c_base-static() {
     pkgdesc="Static base library for C projects"
-    cd "$srcdir/$pkgname"
+    depends=('c_base')
+    
+    cd "$srcdir/c_base"
     DESTDIR="$pkgdir" meson install -C build
-    rm -f "$pkgdir/usr/lib/lib_c_base.so"
+
+    rm "$pkgdir/usr/lib/libc_base.so"
+    rm -r "$pkgdir/usr/lib/pkgconfig/"
+    rm -r "$pkgdir/usr/include/"
 }
