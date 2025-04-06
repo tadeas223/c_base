@@ -12,3 +12,5 @@ base_headers = files(
 )
 
 install_headers(base_headers, subdir: join_paths(name, 'base'))
+
+subdir('ds')
