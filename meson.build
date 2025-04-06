@@ -10,7 +10,8 @@ subdir('include')
 
 # testing executable
 # will be removed
-executable('main', sources, include_directories: incl_dirs)
+# sources += files('main.c')
+# executable('main', sources, include_directories: incl_dirs)
 
 lib = shared_library('c_base', sources, include_directories: incl_dirs, install: true)
 static_lib = static_library('c_base', sources, include_directories: incl_dirs, install: true)
