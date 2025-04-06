@@ -3,4 +3,4 @@ os_headers = files(
   'os_mem.h',
 )
 
-install_headers(os_headers, subdir: join_path(name, 'os'))
+install_headers(os_headers, subdir: join_paths(name, 'os'))

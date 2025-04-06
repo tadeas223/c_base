@@ -6,6 +6,7 @@ incl_dirs = include_directories('src', 'include')
 sources = []
 
 subdir('src')
+subdir('include')
 
 # testing executable
 # will be removed
