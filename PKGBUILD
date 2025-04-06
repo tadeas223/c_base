@@ -17,5 +17,8 @@ build() {
 
 package() {
     cd "$srcdir/$pkgname"
+    meson configure -Dinstall_static=false
+    DESTDIR="$pkgdir" meson install -C build
+    meson configure -Dinstall_static=true
     DESTDIR="$pkgdir" meson install -C build
 }
