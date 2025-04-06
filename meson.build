@@ -15,13 +15,7 @@ subdir('include')
 # sources += files('main.c')
 # executable('main', sources, include_directories: incl_dirs)
 
-if get_option('install_static')
-  message('static lib selected')  
-  lib = static_library('c_base', sources, include_directories: incl_dirs, install: true)
-else
-  message('shared lib selected')  
-  lib = shared_library('c_base', sources, include_directories: incl_dirs, install: true)
-endif
+lib = library('c_base', sources, include_directories: incl_dirs, install: true)
 
 pkgconfig = import('pkgconfig')
 
