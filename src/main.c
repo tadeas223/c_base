@@ -11,15 +11,19 @@ int main(int argc, char *argv[])
 
     Arena arena;
     arena_init(&arena);
+    
+    ConsoleClear();
 
-    ConsoleWrite(S("number 1: ")); s32 num1 = TryParse(s32, ConsoleReadLn(&arena).string); ConsoleWrite(S("operator: "));
+    ConsoleWrite(S("number 1: ")); 
+    u32 num1 = TryParse(s32, ConsoleReadLn(&arena).string);
+    ConsoleWrite(S("operator: "));
     u8 operator = ConsoleRead(&arena);
    
     while(ConsoleRead(&arena) != '\n') {} // flush stdin
 
     ConsoleWrite(S("number 2: "));
 
-    s32 num2 = TryParse(s32, ConsoleReadLn(&arena).string);
+    u32 num2 = TryParse(s32, ConsoleReadLn(&arena).string);
     
     switch(operator) {
         case '+':
