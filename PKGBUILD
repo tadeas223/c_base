@@ -7,7 +7,7 @@ cksums=("SKIP")
 arch=("x86_64")
 depends=()
 makedepends=("meson" "ninja")
-source=("git+https://github.com/tadeas/c_base.git")
+source=("git+https://github.com/tadeas223/c_base.git")
 
 build() {
     cd "$srcdir/$pkgname"
