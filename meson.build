@@ -17,7 +17,7 @@ pkgconfig.generate(lib,
   description: 'Base library for C projects'
 )
 
-install_subdir('include', install_dir: 'include')
+install_subdir('include', install_dir: join_paths(get_option('prefix'), 'c_base/'))
 
 
 executable('main', sources, include_directories: incl_dirs)
