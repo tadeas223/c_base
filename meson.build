@@ -13,13 +13,21 @@ subdir('include')
 # sources += files('main.c')
 # executable('main', sources, include_directories: incl_dirs)
 
-lib = shared_library('c_base', sources, include_directories: incl_dirs, install: true)
+shared_lib = shared_library('c_base', sources, include_directories: incl_dirs, install: true)
 static_lib = static_library('c_base', sources, include_directories: incl_dirs, install: true)
 
 pkgconfig = import('pkgconfig')
 
-pkgconfig.generate(lib,
+pkgconfig.generate(shared_lib,
   version: '0.0.1',
   name: 'c_base',
+  libraries: shared_lib,
+  description: 'Base library for C projects',
+)
+
+pkgconfig.generate(static_lib,
+  version: '0.0.1',
+  name: 'c_base',
+  libraries: static_lib,
   description: 'Base library for C projects'
 )
