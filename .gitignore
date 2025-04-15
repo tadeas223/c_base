@@ -1,0 +1,5 @@
+# clangd stuff
+/.cache
+
+# build dir
+/build
