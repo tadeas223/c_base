@@ -2,6 +2,7 @@
 #include "base/mem.h"
 #include "base/strdef.h"
 #include "base/strings.h"
+#include "base/varargs.h"
 #include "os/os_io.h"
 #include "os/os_mem.h"
 
@@ -13,7 +14,7 @@ int main(int argc, char *argv[])
     arena_init(&arena);
     
     ConsoleWrite(S("number 1: ")); 
-    u32 num1 = TryParse(s32, ConsoleReadLn(&arena).string);
+    u32 num1 = TryParse(s32, ConsoleReadLn(&arena));
     ConsoleWrite(S("operator: "));
     u8 operator = ConsoleRead(&arena);
    
@@ -21,7 +22,7 @@ int main(int argc, char *argv[])
 
     ConsoleWrite(S("number 2: "));
 
-    u32 num2 = TryParse(s32, ConsoleReadLn(&arena).string);
+    u32 num2 = TryParse(s32, ConsoleReadLn(&arena));
     
     switch(operator) {
         case '+':

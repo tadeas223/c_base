@@ -3,3 +3,7 @@
 
 # build dir
 /build
+
+# docs dir
+/docs/html
+/docs/latex
