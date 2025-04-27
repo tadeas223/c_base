@@ -171,18 +171,18 @@ Result(u8) os_file_read(Arena *arena, File* file) {
     return ResultOk(u8, c);
 }
 
-Result(StringAlloc) os_file_read_len(Arena *arena, File* file, u32 len) {
+Result(String) os_file_read_len(Arena *arena, File* file, u32 len) {
     u8 stack_buf[len]; 
     ssize_t result = read(file->descriptor, &stack_buf, len);
     if(result < 0) {
-        return ResultErr(StringAlloc, E(EG_OS_IO, E_Unspecified, S("read failed")));
+        return ResultErr(String, E(EG_OS_IO, E_Unspecified, S("read failed")));
     } else if(result == 0) {
-        return ResultErr(StringAlloc, E(EG_OS_IO, E_Unspecified, S("end of file reached")));
+        return ResultErr(String, E(EG_OS_IO, E_Unspecified, S("end of file reached")));
     } 
     
-    StringAlloc a_str = str_allocate(arena, result);
-    mem_copy(a_str.string.chars, stack_buf, result);
-    return ResultOk(StringAlloc, a_str);
+    StringMut mut_str = str_allocate(arena, result);
+    mem_copy(mut_str.str.chars, stack_buf, result);
+    return ResultOk(String, mut_str.str);
 
 }
 
@@ -207,8 +207,8 @@ u8 os_console_read(Arena *arena) {
     return TryCrash(u8, os_file_read(arena, file_stdin));
 }
 
-StringAlloc os_console_read_len(Arena *arena, u32 len) {
-    return TryCrash(StringAlloc, os_file_read_len(arena, file_stdin, len));
+String os_console_read_len(Arena *arena, u32 len) {
+    return TryCrash(String, os_file_read_len(arena, file_stdin, len));
 }
 
 void os_console_raw_mode(bool raw_mode) {

@@ -9,5 +9,5 @@ var dir_35deeb11581879012b21f6bd5147bea2 =
     [ "strdef.h", "strdef_8h.html", "strdef_8h" ],
     [ "strings.h", "strings_8h_source.html", null ],
     [ "types.h", "types_8h.html", "types_8h" ],
-    [ "varargs.h", "varargs_8h_source.html", null ]
+    [ "varargs.h", "varargs_8h.html", "varargs_8h" ]
 ];

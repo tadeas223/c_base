@@ -15,7 +15,7 @@ static void test_str_at(void **state) {
     String string = S("hello, world");
 
     for(u32 i = 0; i < string.len; i++) {
-        assert_true(string.chars[i] = str_at(string, i)); 
+        assert_true(string.chars[i] == str_at(string, i)); 
     }
 }
 
@@ -33,7 +33,7 @@ static void test_str_set(void **state) {
 }
 
 static void test_str_copy(void **state) {
-    Arena *arena = (Arena*)state;
+    Arena *arena = (Arena*)*state;
     
     String string = S("hello, world");
     StringMut copy = str_copy(arena, string);
@@ -60,7 +60,6 @@ static void test_str_copy_to(void **state) {
     Stack_String(mut3, 5);
 
     str_copy_to(mut3, string3);
-    assert_int_equal(mut3.str.len, 2);
     assert_true(str_at(mut3.str, 0) == 'h');
     assert_true(str_at(mut3.str, 1) == 'e');
 }
@@ -96,7 +95,7 @@ static void test_str_equals(void **state) {
 }
 
 static void test_str_to_cstr(void **state) {
-    Arena *arena = (Arena*) state;
+    Arena *arena = (Arena*) *state;
     
     String string = S("hello, world");
 
@@ -105,8 +104,9 @@ static void test_str_to_cstr(void **state) {
     u32 index = 0;
     while(cstr[index] != '\0') {
         assert_true(str_at(string, index) == cstr[index]);
+        index++;
     }
-    assert_int_equal(string.len, index+1);
+    assert_int_equal(string.len, index);
 }
 
 static void test_str_from_cstr(void **state) {

@@ -14,7 +14,7 @@ GenericImpl_List(String);
 GenericImpl_List(StringMut);
 
 
-StringMut jstr_allocate(Arena *arena, u32 len) {
+StringMut str_allocate(Arena *arena, u32 len) {
     u8* chars = arena_alloc(arena, len);
     return (StringMut) {.str = (String) {.chars = chars, .len = len} };
 }
@@ -39,11 +39,12 @@ StringMut str_copy(Arena *arena, String original) {
 }
 
 void str_copy_to(StringMut dest, String src) {
-    if(src.len >= dest.str.len) {
-        mem_copy(dest.str.chars, src.chars, dest.str.len);  
-    } else {
+    if(src.len > dest.str.len) {
         mem_copy(dest.str.chars, src.chars, src.len);  
+    } else {
+        mem_copy(dest.str.chars, src.chars, dest.str.len);  
     }
+
 }
 
 bool str_equals(String a, String b) {

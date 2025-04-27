@@ -1,8 +1,22 @@
 var searchData=
 [
-  ['generictype_5fresult_0',['GenericType_Result',['../errors_8h.html#a8c8e21b05dff31f8c29b77205686355d',1,'errors.h']]],
-  ['gigabytes_1',['Gigabytes',['../types_8h.html#a0c8539fd70cc4663ddf34391278ddbde',1,'types.h']]],
-  ['global_5fmemory_5fbase_5fget_2',['global_memory_base_get',['../mem_8h.html#aaa0911bd39cbd943b9f726c9c75555f3',1,'mem.h']]],
-  ['global_5fmemory_5fbase_5fset_3',['global_memory_base_set',['../mem_8h.html#aee771a7ad85fb132830abc8585c7142e',1,'mem.h']]],
-  ['grp_4',['grp',['../structError.html#a01fe3fe50f3d59fad8269b9a16adab86',1,'Error']]]
+  ['e_0',['E',['../errors_8h.html#a2dd46cfd1077d72345054eacf7d1cfb7',1,'errors.h']]],
+  ['e_5finvalidargument_1',['E_InvalidArgument',['../errors_8h.html#a87ddac19a3b6b76125fb4a099a0b7609',1,'errors.h']]],
+  ['e_5fnullargument_2',['E_NullArgument',['../errors_8h.html#ab64848de61db7b3f470047b9b6e8eee6',1,'errors.h']]],
+  ['e_5foutofbounds_3',['E_OutOfBounds',['../errors_8h.html#ad35f3bb3371057c40181688e9c430722',1,'errors.h']]],
+  ['e_5foutofmemory_4',['E_OutOfMemory',['../errors_8h.html#af0ee56082bc2495f6cfd840a33353ab6',1,'errors.h']]],
+  ['e_5funimplemented_5',['E_Unimplemented',['../errors_8h.html#a75fe93243ecd0f9d153641e9bf8dbbc3',1,'errors.h']]],
+  ['e_5funinitialzied_6',['E_Uninitialzied',['../errors_8h.html#a4d9f4e07549327eadb9269cc10828151',1,'errors.h']]],
+  ['e_5funspecified_7',['E_Unspecified',['../errors_8h.html#aff08074b91e5ebf57c2695fe1cd3da6c',1,'errors.h']]],
+  ['eg_5fmemory_8',['EG_Memory',['../mem_8h.html#af1f97f3a28cc4092acb19ee6cd5ea945',1,'mem.h']]],
+  ['eg_5funspecified_9',['EG_Unspecified',['../errors_8h.html#aad652751f02c1229effae1a7c412d780',1,'errors.h']]],
+  ['error_10',['Error',['../structError.html',1,'']]],
+  ['error_11',['error',['../errors_8h.html#a98076b35733b22acda16edf377bee690',1,'errors.h']]],
+  ['errorcode_12',['ErrorCode',['../errors_8h.html#aa40ed725036cda7f492e5fd185bb1017',1,'errors.h']]],
+  ['errorgroup_13',['ErrorGroup',['../errors_8h.html#a9a2f3a5300815ec9387931233fc523dc',1,'errors.h']]],
+  ['errorgroupname_14',['ErrorGroupName',['../errors_8h.html#ae54584986327598f612e924882f06488',1,'errors.h']]],
+  ['errorname_15',['ErrorName',['../errors_8h.html#ac43dc805cd9db21f83b718a3cc4dcd4b',1,'errors.h']]],
+  ['errors_2eh_16',['errors.h',['../errors_8h.html',1,'']]],
+  ['extern_5ferror_17',['Extern_Error',['../errors_8h.html#a809c89d3633999c54518a282af87e21c',1,'errors.h']]],
+  ['extern_5ferrorgroup_18',['Extern_ErrorGroup',['../errors_8h.html#a71203d579f0f12bff14c43dd3be091b9',1,'errors.h']]]
 ];

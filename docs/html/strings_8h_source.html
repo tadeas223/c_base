@@ -111,7 +111,7 @@ $(function(){initNavTree('strings_8h_source.html',''); initResizable(true); });
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;ds/list.h&quot;</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="errors_8h.html">base/errors.h</a>&quot;</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;base/varargs.h&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="varargs_8h.html">base/varargs.h</a>&quot;</span></div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><a class="code hl_define" href="errors_8h.html#a71203d579f0f12bff14c43dd3be091b9">Extern_ErrorGroup</a>(EG_Strings);</div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
@@ -148,8 +148,8 @@ $(function(){initNavTree('strings_8h_source.html',''); initResizable(true); });
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>List(<a class="code hl_struct" href="structString.html">String</a>) str_split(<a class="code hl_struct" href="structArena.html">Arena</a> *arena, <a class="code hl_struct" href="structString.html">String</a> original, u8 splitter);</div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><a class="code hl_struct" href="structString.html">String</a> str_join(<a class="code hl_struct" href="structArena.html">Arena</a> *arena, List(<a class="code hl_struct" href="structString.html">String</a>) list);</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><a class="code hl_struct" href="structString.html">String</a> str_glue(<a class="code hl_struct" href="structArena.html">Arena</a> *arena, <span class="comment">/* String */</span> Varargs);</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><a class="code hl_struct" href="structString.html">String</a> str_glue_varlist(<a class="code hl_struct" href="structArena.html">Arena</a> *arena, <span class="comment">/* String */</span> Varlist);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><a class="code hl_struct" href="structString.html">String</a> str_glue(<a class="code hl_struct" href="structArena.html">Arena</a> *arena, <span class="comment">/* String */</span> <a class="code hl_define" href="varargs_8h.html#acf8975b1559064721de04b2af878482b">Varargs</a>);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><a class="code hl_struct" href="structString.html">String</a> str_glue_varlist(<a class="code hl_struct" href="structArena.html">Arena</a> *arena, <span class="comment">/* String */</span> <a class="code hl_define" href="varargs_8h.html#ae544236d3dd5035f73fa4f6a54e81cd3">Varlist</a>);</div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="keywordtype">bool</span> is_number(u8 c);</div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
@@ -191,16 +191,19 @@ $(function(){initNavTree('strings_8h_source.html',''); initResizable(true); });
 <div class="ttc" id="aerrors_8h_html_a23f06e335d24e4ee4422a62cde91475b"><div class="ttname"><a href="errors_8h.html#a23f06e335d24e4ee4422a62cde91475b">Result</a></div><div class="ttdeci">#define Result(type)</div><div class="ttdoc">holds eather a value or error</div><div class="ttdef"><b>Definition</b> errors.h:252</div></div>
 <div class="ttc" id="aerrors_8h_html_a71203d579f0f12bff14c43dd3be091b9"><div class="ttname"><a href="errors_8h.html#a71203d579f0f12bff14c43dd3be091b9">Extern_ErrorGroup</a></div><div class="ttdeci">#define Extern_ErrorGroup(name)</div><div class="ttdoc">externs an error group code</div><div class="ttdef"><b>Definition</b> errors.h:118</div></div>
 <div class="ttc" id="aerrors_8h_html_a8c8e21b05dff31f8c29b77205686355d"><div class="ttname"><a href="errors_8h.html#a8c8e21b05dff31f8c29b77205686355d">GenericType_Result</a></div><div class="ttdeci">#define GenericType_Result(type)</div><div class="ttdoc">defines a generic result</div><div class="ttdef"><b>Definition</b> errors.h:236</div></div>
-<div class="ttc" id="astructArena_html"><div class="ttname"><a href="structArena.html">Arena</a></div><div class="ttdef"><b>Definition</b> arena.h:10</div></div>
+<div class="ttc" id="astructArena_html"><div class="ttname"><a href="structArena.html">Arena</a></div><div class="ttdef"><b>Definition</b> arena.h:11</div></div>
 <div class="ttc" id="astructStringMut_html"><div class="ttname"><a href="structStringMut.html">StringMut</a></div><div class="ttdoc">muttable string type</div><div class="ttdef"><b>Definition</b> strdef.h:53</div></div>
 <div class="ttc" id="astructString_html"><div class="ttname"><a href="structString.html">String</a></div><div class="ttdoc">immutable string type</div><div class="ttdef"><b>Definition</b> strdef.h:32</div></div>
+<div class="ttc" id="avarargs_8h_html"><div class="ttname"><a href="varargs_8h.html">varargs.h</a></div><div class="ttdoc">varargs abstraction for the library</div></div>
+<div class="ttc" id="avarargs_8h_html_acf8975b1559064721de04b2af878482b"><div class="ttname"><a href="varargs_8h.html#acf8975b1559064721de04b2af878482b">Varargs</a></div><div class="ttdeci">#define Varargs</div><div class="ttdoc">variable input for a function</div><div class="ttdef"><b>Definition</b> varargs.h:72</div></div>
+<div class="ttc" id="avarargs_8h_html_ae544236d3dd5035f73fa4f6a54e81cd3"><div class="ttname"><a href="varargs_8h.html#ae544236d3dd5035f73fa4f6a54e81cd3">Varlist</a></div><div class="ttdeci">#define Varlist</div><div class="ttdoc">variable input for a function that should be called in another variable input function</div><div class="ttdef"><b>Definition</b> varargs.h:101</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_59281fd2a2d1169e9233d012c335f4e5.html">c_base</a></li><li class="navelem"><a class="el" href="dir_35deeb11581879012b21f6bd5147bea2.html">base</a></li><li class="navelem"><b>strings.h</b></li>
-    <li class="footer">Generated on Tue Apr 15 2025 19:45:57 for c_base by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
+    <li class="footer">Generated on Sun Apr 27 2025 18:38:56 for c_base by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
   </ul>
 </div>
 </body>

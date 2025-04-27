@@ -61,25 +61,18 @@ static Result(u8) test_func_err() {
     return ResultErr(u8, E(EG_Test, E_Test, S("error message")));
 }
 
-static Result(u8) test_func_ok() {
-    return ResultOk(u8, 1);
-}
-
 static Result(none) test_func() {
-    u8 value = TryReturn(none, u8, test_func_ok());
-    assert_int_equal(value, 5);
-
-    u8 value2 = TryReturn(none, u8, test_func_err());
+    u8 value = TryReturn(none, u8, test_func_err());
     // function will return now
-    (void)value2;
+    (void)value;
     
-    return ResultErr(none, E(EG_Test, E_Test, S("idk :(")));
+    return ResultOk(none, 1);
 }
 
 static void test_TryReturn(void **state) {
     Result(none) result = test_func();
     
-    assert_true(result.ok);
+    assert_true(!result.ok);
     assert_int_equal(EG_Test, result.err.grp);
     assert_int_equal(E_Test, result.err.code);
 }

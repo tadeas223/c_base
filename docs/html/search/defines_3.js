@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['generictype_5fresult_0',['GenericType_Result',['../errors_8h.html#a8c8e21b05dff31f8c29b77205686355d',1,'errors.h']]],
-  ['gigabytes_1',['Gigabytes',['../types_8h.html#a0c8539fd70cc4663ddf34391278ddbde',1,'types.h']]]
+  ['define_5ferror_0',['Define_Error',['../errors_8h.html#ad9639b8d92636613895de761c8ed4b7c',1,'errors.h']]],
+  ['define_5ferrorgroup_1',['Define_ErrorGroup',['../errors_8h.html#aa99347121a6ac8f7ebbb8a2dfc7c1394',1,'errors.h']]]
 ];

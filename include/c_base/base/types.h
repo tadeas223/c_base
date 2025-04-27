@@ -108,7 +108,7 @@ typedef void* ptr;
  * 
  * \returns bytes
 */
-#define Kilobytes(x) (x * 1024)
+#define Kilobytes(x) (x * 1024ULL)
 
 /*!
  * \brief converts megabytes (input) into bytes (output)
@@ -119,7 +119,7 @@ typedef void* ptr;
  * 
  * \returns bytes
  */
-#define Megabytes(x) (x * 1024 * 1024)
+#define Megabytes(x) (x * 1024ULL * 1024ULL)
 
 /*!
  * \brief converts gigabytes (input) into bytes (output)
@@ -130,7 +130,7 @@ typedef void* ptr;
  * 
  * \returns bytes
  */
-#define Gigabytes(x) (x * 1024 * 1024 * 1024)
+#define Gigabytes(x) (x * 1024ULL * 1024ULL * 1024ULL)
 
 /****************************************
  * constants

@@ -32,6 +32,7 @@
  *
  * \warning do not use for more than 50 arguments
  */
+/* tested */
 #define VarargsLen(args...) __VarargsLen(args,\
         50, 49, 48, 47, 46, 45, 44, 43, 42, 41,\
         40, 39, 38, 37, 36, 35, 34, 33, 32, 31,\

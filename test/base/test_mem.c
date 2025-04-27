@@ -30,9 +30,9 @@ static void test_mem_copy(void **state) {
     String string1 = S("hello");
     Stack_String(string2, 5);
 
-    mem_copy(string2.string.chars, string1.chars, 5);
+    mem_copy(string2.str.chars, string1.chars, 5);
 
-    assert_true(str_equals(string1, string2.string));
+    assert_true(str_equals(string1, string2.str));
 }
 
 static void test_func_global_memory_bae_get() {
