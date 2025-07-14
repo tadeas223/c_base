@@ -18,7 +18,6 @@ lib = library(
 # pkg config
 pkgconfig = configuration_data()
 pkgconfig.set('prefix', get_option('prefix'))
-pkgconfig.set('exec_prefix', '${prefix}')
 pkgconfig.set('libdir', get_option('libdir'))
 pkgconfig.set('includedir', get_option('includedir'))
 pkgconfig.set('version', meson.project_version())
