@@ -6,4 +6,4 @@ Name: c_base
 Description: Base library for C projects
 Version: @version@
 Libs: -L${prefix}/${libdir} -lc_base
-Cflags: -I{$prefix}/${includedir}/c_base
+Cflags: -I${prefix}/${includedir}/c_base
