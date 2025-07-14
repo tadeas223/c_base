@@ -1,8 +1,8 @@
 #ifndef OS_IO_H
 #define OS_IO_H
 
-#include "base/errors/results.h"
-#include "base/strings/strings.h"
+#include <c_base/base/errors/results.h>
+#include <c_base/base/strings/strings.h>
 
 GenericVal_ErrorCode(EG_OS_IO)
 

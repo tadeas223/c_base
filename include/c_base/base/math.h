@@ -1,9 +1,9 @@
 #ifndef MATH_H
 #define MATH_H
 
-#include "base/errors/results.h"
-#include "base/types.h"
-#include "base/errors/errors.h"
+#include <c_base/base/errors/results.h>
+#include <c_base/base/types.h>
+#include <c_base/base/errors/errors.h>
 
 #define MATH_E  2.718281828459045235
 #define MATH_PI 3.14159265358979323846

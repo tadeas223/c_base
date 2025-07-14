@@ -1,9 +1,9 @@
-#include "ds/array.h"
-#include "base/errors/errors.h"
-#include "base/memory/allocator.h"
-#include "base/memory/memory.h"
-#include "base/memory/objects.h"
-#include "system.h"
+#include <c_base/ds/array.h>
+#include <c_base/base/errors/errors.h>
+#include <c_base/base/memory/allocator.h>
+#include <c_base/base/memory/memory.h>
+#include <c_base/base/memory/objects.h>
+#include <c_base/system.h>
 
 GenericValImpl_ErrorCode(EG_Array)
 

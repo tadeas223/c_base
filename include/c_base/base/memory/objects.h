@@ -1,10 +1,9 @@
 #ifndef OBJECTS_H
 #define OBJECTS_H
 
-#include "base/memory/allocator.h"
-#include "base/macros.h"
-#include "base/types.h"
-#include <stdio.h>
+#include <c_base/base/memory/allocator.h>
+#include <c_base/base/macros.h>
+#include <c_base/base/types.h>
 
 #define Wrap(T, value) Concat(C_Handle_##T, _new)(value)
 #define Unwrap(T, val) (Concat(C_Handle_##T, _value)(val))

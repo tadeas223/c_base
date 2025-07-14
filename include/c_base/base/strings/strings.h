@@ -1,9 +1,9 @@
 #ifndef STRINGS_H
 #define STRINGS_H
 
-#include "base/strings/string_view.h"
-#include "base/memory/temp.h"
-#include "base/errors/errors.h"
+#include <c_base/base/strings/string_view.h>
+#include <c_base/base/memory/temp.h>
+#include <c_base/base/errors/errors.h>
 
 #define S(cstr) C_String_new((u8*)cstr, sizeof(cstr) - 1)
 #define TS(cstr) temp(S(cstr))

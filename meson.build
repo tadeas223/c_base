@@ -2,7 +2,7 @@ project('c_base', 'c', default_options: ['c_std=c99', 'c_args= -Wall -Wextra -We
 
 add_project_arguments('-pedantic',language: 'c')
 
-incl_dirs = include_directories('include/c_base', 'src')
+incl_dirs = include_directories('include', 'src')
 sources = []
 
 subdir('src')

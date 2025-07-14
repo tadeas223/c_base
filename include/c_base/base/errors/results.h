@@ -1,7 +1,7 @@
 #ifndef RESULTS_H
 #define RESULTS_H
 
-#include "base/errors/errors.h"
+#include <c_base/base/errors/errors.h>
 
 typedef struct C_Result C_Result;
 typedef struct C_EmptyResult C_EmptyResult;

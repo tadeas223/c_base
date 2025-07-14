@@ -1,9 +1,9 @@
-#include "base/math.h"
-#include "base/macros.h"
-#include "base/memory/objects.h"
-#include "base/errors/errors.h"
-#include "base/errors/results.h"
-#include "system.h"
+#include <c_base/base/math.h>
+#include <c_base/base/macros.h>
+#include <c_base/base/memory/objects.h>
+#include <c_base/base/errors/errors.h>
+#include <c_base/base/errors/results.h>
+#include <c_base/system.h>
 
 GenericValImpl_ErrorCode(EG_Math)
 

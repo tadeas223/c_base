@@ -1,8 +1,8 @@
 #ifndef ARRAY_H
 #define ARRAY_H
 
-#include "base/types.h"
-#include "base/errors/errors.h"
+#include <c_base/base/types.h>
+#include <c_base/base/errors/errors.h>
 
 #define C_ArrayForeach(array, code)\
 do {\

@@ -1,8 +1,8 @@
-#include "base/errors/results.h"
-#include "base/math.h"
-#include "base/memory/objects.h"
-#include "base/strings/string_convert.h"
-#include "os/os_io.h"
+#include <c_base/base/errors/results.h>
+#include <c_base/base/math.h>
+#include <c_base/base/memory/objects.h>
+#include <c_base/base/strings/string_convert.h>
+#include <c_base/os/os_io.h>
 
 int main(void) {
   Using(C_String*, S("num1: "), {

@@ -1,8 +1,8 @@
 #ifndef STRING_CONVERT_H
 #define STRING_CONVERT_H
 
-#include "base/errors/results.h"
-#include "base/strings/strings.h"
+#include <c_base/base/errors/results.h>
+#include <c_base/base/strings/strings.h>
 
 C_String* u32_to_str_R(u32 x);
 C_String* s32_to_str_R(s32 x);

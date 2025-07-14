@@ -1,10 +1,10 @@
-#include "base/strings/string_convert.h"
-#include "base/errors/errors.h"
-#include "base/errors/results.h"
-#include "base/math.h"
-#include "base/memory/objects.h"
-#include "base/strings/strings.h"
-#include "system.h"
+#include <c_base/base/strings/string_convert.h>
+#include <c_base/base/errors/errors.h>
+#include <c_base/base/errors/results.h>
+#include <c_base/base/math.h>
+#include <c_base/base/memory/objects.h>
+#include <c_base/base/strings/strings.h>
+#include <c_base/system.h>
 
 C_String* u32_to_str_R(u32 x) {
   u32 len = math_simple_log(x, 10) + ((x == 0)? 1 : 0);

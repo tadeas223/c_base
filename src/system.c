@@ -1,5 +1,5 @@
-#include "system.h"
-#include "os/os_io.h"
+#include <c_base/system.h>
+#include <c_base/os/os_io.h>
 
 void crash(Error err) {
   volatile u8* ptr = null;

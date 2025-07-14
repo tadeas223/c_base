@@ -1,9 +1,9 @@
-#include "base/memory/temp.h"
-#include "base/errors/errors.h"
-#include "base/memory/allocator.h"
-#include "base/memory/objects.h"
-#include "ds/list.h"
-#include "system.h"
+#include <c_base/base/memory/temp.h>
+#include <c_base/base/errors/errors.h>
+#include <c_base/base/memory/allocator.h>
+#include <c_base/base/memory/objects.h>
+#include <c_base/ds/list.h>
+#include <c_base/system.h>
 
 static C_Temp* temp_global = null;
 
