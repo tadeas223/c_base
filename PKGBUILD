@@ -11,10 +11,12 @@ source=("git+https://github.com/tadeas223/c_base.git")
 sha256sums=('SKIP')
 
 build() {
+  cd "$srcdir/c_base"
   meson setup build --prefix=/usr
   meson compile -C build
 }
 
 package() {
+  cd "$srcdir/c_base"
   meson install -C build --destdir="$pkgdir"
 }
