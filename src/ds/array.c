@@ -1,0 +1,123 @@
+#include "ds/array.h"
+#include "base/errors/errors.h"
+#include "base/memory/allocator.h"
+#include "base/memory/memory.h"
+#include "base/memory/objects.h"
+#include "system.h"
+
+GenericValImpl_ErrorCode(EG_Array)
+
+struct C_Array{
+  ComplexBase base;
+  void** data;
+  u32 len;
+};
+
+/******************************
+ * new/dest
+ ******************************/
+C_Array* C_Array_new(u32 len) {
+  C_Array* self = allocate(sizeof(C_Array));
+  new(self, C_Array_destroy);
+
+  self->len = len;
+  self->data = allocate(len * sizeof(void*));
+  
+  mem_set(self->data, 0, len * sizeof(void*));
+
+  return self;
+}
+
+void C_Array_destroy(void* self) {
+  C_Array* self_cast = self;
+  C_ArrayForeach(self_cast, {
+    unref(value);
+  });
+
+  deallocate(self_cast->data);
+}
+
+/******************************
+ * logic
+ ******************************/
+void C_Array_put(C_Array* self, u32 index, void* value) {
+  if(index >= self->len) {
+    crash(E(EG_Array, E_OutOfBounds, SV("C_Array_put -> index is outside of the array"))); 
+  }
+
+  unref(self->data[index]);
+  self->data[index] = value;
+}
+
+static void* __C_Array_at(C_Array* self, u32 index) {
+  if(index >= self->len) {
+    crash(E(EG_Array, E_OutOfBounds, SV("__C_Array_at -> index is outside of the array"))); 
+  }
+
+  ref(self->data[index]);
+  return self->data[index];
+}
+
+static void* __C_Array_peek(C_Array* self) {
+  if(self->len == 0) {
+    crash(E(EG_Array, E_OutOfBounds, SV("__C_Array_peek -> array is empty"))); 
+  }
+
+  ref(self->data[self->len-1]);
+  return self->data[self->len-1];
+}
+
+static void* __C_Array_peek_front(C_Array* self) {
+  if(self->len == 0) {
+    crash(E(EG_Array, E_OutOfBounds, SV("__C_Array_peek_front -> array is empty"))); 
+  }
+  
+  ref(self->data[0]);
+  return self->data[0];
+}
+
+/******************************
+ * get/set
+ ******************************/
+u32 C_Array_get_len(C_Array* self) {
+  return self->len;
+}
+
+// {{{ _B _R wrappers
+/******************************
+ * _B _R wrappers
+ ******************************/
+void* C_Array_at_B(C_Array* self, u32 index) {
+  void* result = __C_Array_at(self, index);
+  unref(result);
+  return result;
+}
+
+void* C_Array_at_R(C_Array* self, u32 index) {
+  void* result = __C_Array_at(self, index);
+  return result;
+}
+
+void* C_Array_peek_B(C_Array* self) {
+  void* result = __C_Array_peek(self);
+  unref(result);
+  return result;
+}
+
+void* C_Array_peek_R(C_Array* self) {
+  void* result = __C_Array_peek(self);
+  return result;
+}
+
+void* C_Array_peek_front_B(C_Array* self) {
+  void* result = __C_Array_peek_front(self);
+  unref(result);
+  return result;
+}
+
+void* C_Array_peek_front_R(C_Array* self) {
+  void* result = __C_Array_peek_front(self);
+  return result;
+}
+
+// }}}
