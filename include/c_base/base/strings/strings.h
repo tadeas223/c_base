@@ -6,7 +6,7 @@
 #include <c_base/base/errors/errors.h>
 
 #define S(cstr) C_String_new((u8*)cstr, sizeof(cstr) - 1)
-#define TS(cstr) temp(S(cstr))
+#define PS(cstr) Pass(S(cstr))
 
 GenericVal_ErrorCode(EG_Strings)
 

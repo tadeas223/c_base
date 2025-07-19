@@ -42,8 +42,8 @@ C_String* s32_to_str_R(s32 x) {
 
   return result;
 }
-
-C_Result* /* u32 */ u32_parse_R(C_String* string) {
+C_Result* /* u32 */ u32_parse_PR(C_String* string) {
+  Ref(string); 
   C_Result* result; 
   u32 result_value = 0;
   u32 start_index = 0;
@@ -66,7 +66,7 @@ C_Result* /* u32 */ u32_parse_R(C_String* string) {
     }
     
     result_value = Unwrap(u32, C_Result_force_B(math_result));
-    unref(math_result);
+    Unref(math_result);
     
     math_result = u32_add_safe_R(result_value, c - '0');
     if(!C_Result_get_ok(math_result)) {
@@ -75,17 +75,21 @@ C_Result* /* u32 */ u32_parse_R(C_String* string) {
     }
     
     result_value = Unwrap(u32, C_Result_force_B(math_result));
-    unref(math_result);
+    Unref(math_result);
 
   }
   
-  result = C_Result_new_ok(Wrap(u32, result_value));
+  C_Handle_u32* handle = C_Handle_u32_new(result_value);
+  result = C_Result_new_ok_P(handle);
+  Unref(handle);
 
 ret:
+  Unref(string); 
   return result;
 }
 
 C_Result* /* s32 */ s32_parse_R(C_String* string) {
+  Ref(string); 
   C_Result* result; 
   s32 result_value = 0;
   u32 start_index = 0;
@@ -113,7 +117,7 @@ C_Result* /* s32 */ s32_parse_R(C_String* string) {
     }
     
     result_value = Unwrap(s32, C_Result_force_B(math_result));
-    unref(math_result);
+    Unref(math_result);
     
     math_result = s32_add_safe_R(result_value, c - '0');
     if(!C_Result_get_ok(math_result)) {
@@ -121,7 +125,7 @@ C_Result* /* s32 */ s32_parse_R(C_String* string) {
     }
     
     result_value = Unwrap(s32, C_Result_force_B(math_result));
-    unref(math_result);
+    Unref(math_result);
 
   }
   
@@ -132,11 +136,14 @@ C_Result* /* s32 */ s32_parse_R(C_String* string) {
     }
     
     result_value = Unwrap(s32, C_Result_force_B(sign_result));
-    unref(sign_result);
+    Unref(sign_result);
   }
-
-  result = C_Result_new_ok(Wrap(s32, result_value));
+  
+  C_Handle_s32* handle = C_Handle_s32_new(result_value);
+  result = C_Result_new_ok_P(handle);
+  Unref(handle);
   
 ret:
+  Unref(string); 
   return result;
 }

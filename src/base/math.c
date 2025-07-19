@@ -77,19 +77,36 @@ f64 math_log(f64 x, f64 base) {
 
 #define AddSafeS(T)\
 C_Result* Concat(T, _add_safe_R)(T a, T b) {\
+  C_Result* result;\
   if((b > 0 && a > Concat(T, _MAX) - b) ||\
      (b < 0 && a < Concat(T, _MIN) - b))  {\
-    return C_Result_new_err(E(EG_Math, E_OutOfBounds, SV("T_add_safe -> would overflow")));\
+    result = C_Result_new_err(E(EG_Math, E_OutOfBounds, SV("T_add_safe -> would overflow")));\
+    goto ret;\
   }\
-  return C_Result_new_ok(Wrap(T, a + b));\
+  \
+  C_Handle_##T* handle = Concat(C_Handle_##T, _new)(a + b);\
+  result = C_Result_new_ok_P(handle);\
+  Unref(handle);\
+\
+  goto ret;\
+ret:\
+  return result;\
 }
 
 #define AddSafeU(T)\
 C_Result* Concat(T, _add_safe_R)(T a, T b) {\
+  C_Result* result; \
   if(a > Concat(T, _MAX) - b) {\
-    return C_Result_new_err(E(EG_Math, E_OutOfBounds, SV("T_add_safe -> would overflow")));\
+    result = C_Result_new_err(E(EG_Math, E_OutOfBounds, SV("T_add_safe -> would overflow")));\
+    goto ret; \
   }\
-  return C_Result_new_ok(Wrap(T, a + b));\
+\
+  C_Handle_##T* handle = Concat(C_Handle_##T, _new)(a + b);\
+  result = C_Result_new_ok_P(handle);\
+  Unref(handle);\
+\
+ret:\
+  return result;\
 }
 
 #define Add(T)\
@@ -98,25 +115,40 @@ T Concat(T, _add)(T a, T b) {\
   \
   T value = Unwrap(T, C_Result_force_B(result));\
   \
-  unref(result);\
+  Unref(result);\
   return value;\
 }
 
 #define SubSafeS(T)\
 C_Result* Concat(T, _sub_safe_R)(T a, T b) {\
+  C_Result* result;\
   if((b > 0 && a < Concat(T, _MIN) + b) ||\
      (b < 0 && a > Concat(T, _MAX) + b)) {\
-    return C_Result_new_err(E(EG_Math, E_OutOfBounds, SV("T_sub_safe -> would overflow")));\
+    result = C_Result_new_err(E(EG_Math, E_OutOfBounds, SV("T_sub_safe -> would overflow")));\
+    goto ret;\
   }\
-  return C_Result_new_ok(Wrap(T, a - b));\
+  \
+  C_Handle_##T* handle = Concat(C_Handle_##T, _new)(a - b);\
+  result = C_Result_new_ok_P(handle);\
+  Unref(handle);\
+\
+ret:\
+  return result;\
 }
 
 #define SubSafeU(T)\
 C_Result* Concat(T, _sub_safe_R)(T a, T b) {\
+  C_Result* result; \
   if(a > b) {\
-    return C_Result_new_err(E(EG_Math, E_OutOfBounds, SV("T_sub_safe -> would overflow")));\
+    result = C_Result_new_err(E(EG_Math, E_OutOfBounds, SV("T_sub_safe -> would overflow")));\
+    goto ret;\
   }\
-  return C_Result_new_ok(Wrap(T, a - b));\
+\
+  C_Handle_##T* handle = Concat(C_Handle_##T, _new)(a - b);\
+  result = C_Result_new_ok_P(handle);\
+  Unref(handle);\
+ret:\
+  return result;\
 }
 
 #define Sub(T)\
@@ -125,43 +157,61 @@ T Concat(T, _sub)(T a, T b) {\
   \
   T value = Unwrap(T, C_Result_force_B(result));\
   \
-  unref(result);\
+  Unref(result);\
   return value;\
 }
 
 #define MultSafeS(T)\
 C_Result* Concat(T, _mult_safe_R)(T a, T b) {\
+  C_Result* result;\
   if(a > 0) {\
     if(b > 0) {\
       if(a > Concat(T, _MAX) / b) {\
-        return C_Result_new_err(E(EG_Math, E_OutOfBounds, SV("T_mult_safe -> would overflow"))); \
+        result = C_Result_new_err(E(EG_Math, E_OutOfBounds, SV("T_mult_safe -> would overflow")));\
+        goto ret;\
       }\
     } else {\
       if(b < Concat(T, _MIN) / a) {\
-        return C_Result_new_err(E(EG_Math, E_OutOfBounds, SV("T_mult_safe -> would overflow"))); \
+        result = C_Result_new_err(E(EG_Math, E_OutOfBounds, SV("T_mult_safe -> would overflow")));\
+        goto ret;\
       }\
     }\
   } else {\
     if(b > 0) {\
       if(a < Concat(T, _MIN) / b) {\
-        return C_Result_new_err(E(EG_Math, E_OutOfBounds, SV("T_mult_safe -> would overflow"))); \
+        result = C_Result_new_err(E(EG_Math, E_OutOfBounds, SV("T_mult_safe -> would overflow")));\
+        goto ret;\
       } else {\
         if(a != 0 && b < Concat(T, _MAX) / a) {\
-          return C_Result_new_err(E(EG_Math, E_OutOfBounds, SV("T_mult_safe -> would overflow"))); \
+          result = C_Result_new_err(E(EG_Math, E_OutOfBounds, SV("T_mult_safe -> would overflow")));\
+          goto ret;\
         }\
       }\
     }\
   }\
 \
-  return C_Result_new_ok(Wrap(T, a * b));\
+  C_Handle_##T* handle = Concat(C_Handle_##T, _new)(a * b);\
+  result = C_Result_new_ok_P(handle);\
+  Unref(handle);\
+\
+ret:\
+  return result;\
 }
 
 #define MultSafeU(T)\
 C_Result* Concat(T, _mult_safe_R)(T a, T b) {\
+  C_Result* result; \
   if(b != 0 && a > Concat(T, _MAX) / b) {\
-    return C_Result_new_err(E(EG_Math, E_OutOfBounds, SV("T_mult_safe -> would overflow")));\
+    result = C_Result_new_err(E(EG_Math, E_OutOfBounds, SV("T_mult_safe -> would overflow")));\
+    goto ret;\
   }\
-  return C_Result_new_ok(Wrap(T, a * b));\
+\
+  C_Handle_##T* handle = Concat(C_Handle_##T, _new)(a * b);\
+  result = C_Result_new_ok_P(handle);\
+  Unref(handle);\
+\
+ret:\
+  return result;\
 }
 
 #define Mult(T)\
@@ -170,28 +220,44 @@ T Concat(T, _mult)(T a, T b) {\
   \
   T value = Unwrap(T, C_Result_force_B(result));\
   \
-  unref(result);\
+  Unref(result);\
   return value;\
 }
 
 #define DivSafeS(T)\
 C_Result* Concat(T, _div_safe_R)(T a, T b) {\
+  C_Result* result;\
   if(b == 0) {\
-    return C_Result_new_err(E(EG_Math, E_InvalidArgument, SV("_safe_div -> division by zero"))); \
+    result = C_Result_new_err(E(EG_Math, E_InvalidArgument, SV("_safe_div -> division by zero"))); \
+    goto ret;\
   }\
   if(a == Concat(T, _MIN) && b == -1) {\
-    return C_Result_new_err(E(EG_Math, E_InvalidArgument, SV("_safe_div -> would overflow"))); \
+    result = C_Result_new_err(E(EG_Math, E_InvalidArgument, SV("_safe_div -> would overflow"))); \
+    goto ret;\
   }\
 \
-  return C_Result_new_ok(Wrap(T, a / b));\
+  C_Handle_##T* handle = Concat(C_Handle_##T, _new)(a / b);\
+  result = C_Result_new_ok_P(handle);\
+  Unref(handle);\
+\
+ret:\
+  return result;\
 }
 
 #define DivSafeU(T)\
 C_Result* Concat(T, _div_safe_R)(T a, T b) {\
+  C_Result* result;\
   if(b == 0) {\
-    return C_Result_new_err(E(EG_Math, E_InvalidArgument, SV("_safe_div -> division by zero")));\
+    result = C_Result_new_err(E(EG_Math, E_InvalidArgument, SV("_safe_div -> division by zero")));\
+    goto ret;\
   }\
-  return C_Result_new_ok(Wrap(T, a / b));\
+\
+  C_Handle_##T* handle = Concat(C_Handle_##T, _new)(a / b);\
+  result = C_Result_new_ok_P(handle);\
+  Unref(handle);\
+\
+ret:\
+  return result;\
 }
 
 #define Div(T)\
@@ -200,7 +266,7 @@ T Concat(T, _div)(T a, T b) {\
   \
   T value = Unwrap(T, C_Result_force_B(result));\
   \
-  unref(result);\
+  Unref(result);\
   return value;\
 }
 

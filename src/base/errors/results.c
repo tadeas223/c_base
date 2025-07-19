@@ -6,14 +6,14 @@
 #include <c_base/system.h>
 
 struct C_Result {
-  ComplexBase base; 
+  ClassObject base; 
   void* value;
   Error err;
   bool ok;
 };
 
 struct C_EmptyResult {
-  ComplexBase base; 
+  ClassObject base; 
   Error err;
   bool ok;
 };
@@ -21,12 +21,12 @@ struct C_EmptyResult {
 /******************************
  * C_Result -> new/dest
  ******************************/
-C_Result* C_Result_new_ok(void* value) {
+C_Result* C_Result_new_ok_P(void* value) {
   C_Result* self = allocate(sizeof(C_Result));
-  new(self, C_Result_destroy);
+  self->base = ClassObject_construct(C_Result_destroy, null);
   
   self->ok = true;
-  self->value = ref(value);
+  self->value = Ref(value);
   SetZero(&self->err);
   
   return self;
@@ -34,7 +34,7 @@ C_Result* C_Result_new_ok(void* value) {
 
 C_Result* C_Result_new_err(Error err) {
   C_Result* self = allocate(sizeof(C_Result));
-  new(self, C_Result_destroy);
+  self->base = ClassObject_construct(C_Result_destroy, null);
 
   self->ok = false;
   self->err = err;
@@ -45,7 +45,7 @@ C_Result* C_Result_new_err(Error err) {
 
 void C_Result_destroy(void* self) {
   C_Result* self_cast = self;
-  unref(self_cast->value);
+  Unref(self_cast->value);
 }
 
 /******************************
@@ -56,7 +56,7 @@ static void* __C_Result_force(C_Result* self) {
     crash(self->err);
   }
 
-  return ref(self->value);
+  return Ref(self->value);
 }
 
 /******************************
@@ -85,7 +85,7 @@ static void* __C_Result_get_value(C_Result* self) {
  ******************************/
 void* C_Result_force_B(C_Result* self) {
   void* result = __C_Result_force(self);
-  unref(result);
+  Unref(result);
   return result;
 }
 
@@ -96,7 +96,7 @@ void* C_Result_force_R(C_Result* self) {
 
 void* C_Result_get_value_R(C_Result* self) {
   void* result = __C_Result_get_value(self);
-  unref(result);
+  Unref(result);
   return result;
 }
 
@@ -111,7 +111,7 @@ void* C_Result_get_value_B(C_Result* self) {
  ******************************/
 C_EmptyResult* C_EmptyResult_new_ok(void) {
   C_EmptyResult* self = allocate(sizeof(C_EmptyResult));
-  new(self, C_EmptyResult_destroy);
+  self->base = ClassObject_construct(C_EmptyResult_destroy, null);
 
   self->ok = true;
   SetZero(&self->err);
@@ -121,7 +121,7 @@ C_EmptyResult* C_EmptyResult_new_ok(void) {
 
 C_EmptyResult* C_EmptyResult_new_err(Error err) {
   C_EmptyResult* self = allocate(sizeof(C_EmptyResult));
-  new(self, C_EmptyResult_destroy);
+  self->base = ClassObject_construct(C_EmptyResult_destroy, null);
 
   self->ok = false;
   self->err = err;

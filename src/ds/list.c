@@ -1,3 +1,4 @@
+#include "c_base/ds/array.h"
 #include <c_base/ds/list.h>
 #include <c_base/base/errors/errors.h>
 #include <c_base/base/memory/allocator.h>
@@ -7,7 +8,7 @@
 GenericValImpl_ErrorCode(EG_List)
 
 struct C_List {
-  ComplexBase base;
+  ClassObject base;
   Node* head;
   Node* tail;
   u32 len;
@@ -18,7 +19,7 @@ struct C_List {
  ******************************/
 C_List* C_List_new(void) {
   C_List* self = allocate(sizeof(C_List));
-  new(self, C_List_destroy);
+  self->base = ClassObject_construct(C_List_destroy, null);
 
   self->len = 0;
   self->head = null;
@@ -36,7 +37,7 @@ void C_List_destroy(void* self) {
 
     node = node->next;
 
-    unref(remove_node->value);
+    Unref(remove_node->value);
     deallocate(remove_node);
   }
 }
@@ -44,7 +45,18 @@ void C_List_destroy(void* self) {
 /******************************
  * logic
  ******************************/
-void C_List_push(C_List* self, void* value) {
+C_Array* C_List_to_array_PR(C_List* self) {
+  Ref(self); 
+  C_Array* array = C_Array_new(self->len);
+  C_ArrayForeach(array, {
+    C_Array_put_P(array, iter, C_List_at_B(self, iter));
+  });
+  Unref(self); 
+  return array;
+}
+
+void C_List_push_P(C_List* self, void* value) {
+  Ref(value);
   Node* new_node = allocate(sizeof(Node));
   new_node->value = value;
   new_node->next = null;
@@ -66,7 +78,8 @@ void C_List_push(C_List* self, void* value) {
   self->len++;
 }
 
-void C_List_push_front(C_List* self, void* value) {
+void C_List_push_front_P(C_List* self, void* value) {
+  Ref(value);
   Node* new_node = allocate(sizeof(Node));
   new_node->value = value;
   new_node->next = self->head;
@@ -130,7 +143,7 @@ static void* __C_List_peek(C_List* self) {
     crash(E(EG_List, E_OutOfBounds, SV("__C_List_peek -> list is empty")));
   }
 
-  return ref(self->tail->value);
+  return Ref(self->tail->value);
 }
 
 static void* __C_List_peek_front(C_List* self) {
@@ -138,18 +151,20 @@ static void* __C_List_peek_front(C_List* self) {
     crash(E(EG_List, E_OutOfBounds, SV("__C_List_peek_front -> list is empty")));
   }
 
-  return ref(self->head->value);
+  return Ref(self->head->value);
 }
 
-void C_List_add(C_List* self, u32 index, void* value) {
+void C_List_add_P(C_List* self, u32 index, void* value) {
   if(self->len == 0) {
     crash(E(EG_List, E_OutOfBounds, SV("C_List_add -> list is empty")));
   } else if(index > self->len) {
     crash(E(EG_List, E_OutOfBounds, SV("C_List_add -> index is outside of the list")));
   }
 
+  Ref(value);
+
   if(index == self->len) {
-    C_List_push(self, value);
+    C_List_push_P(self, value);
     goto ret;
   }
 
@@ -194,7 +209,7 @@ static void* __C_List_at(C_List* self, u32 index) {
   result = node->value;
 
 ret:
-  return ref(result);
+  return Ref(result);
 }
 
 void* C_List_remove_R(C_List* self, u32 index) {
@@ -232,7 +247,7 @@ void C_List_clear(C_List *self) {
   while(node) {
     Node* remove_node = node;
     node = node->next;
-    unref(remove_node->value); 
+    Unref(remove_node->value); 
     deallocate(remove_node); 
   }
 
@@ -244,7 +259,7 @@ void C_List_clear(C_List *self) {
 // {{{ _R _B wrappers
 void* C_List_peek_B(C_List* self) {
   void* result = __C_List_peek(self);
-  unref(result);
+  Unref(result);
   return result;
 }
 
@@ -255,7 +270,7 @@ void* C_List_peek_R(C_List* self) {
 
 void* C_List_peek_front_B(C_List* self) {
   void* result = __C_List_peek_front(self);
-  unref(result);
+  Unref(result);
   return result;
 }
 
@@ -266,7 +281,7 @@ void* C_List_peek_front_R(C_List* self) {
 
 void* C_List_at_B(C_List* self, u32 index) {
   void* result = __C_List_at(self, index);
-  unref(result);
+  Unref(result);
   return result;
 }
 

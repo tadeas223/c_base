@@ -8,7 +8,7 @@
 GenericValImpl_ErrorCode(EG_Array)
 
 struct C_Array{
-  ComplexBase base;
+  ClassObject base;
   void** data;
   u32 len;
 };
@@ -18,7 +18,7 @@ struct C_Array{
  ******************************/
 C_Array* C_Array_new(u32 len) {
   C_Array* self = allocate(sizeof(C_Array));
-  new(self, C_Array_destroy);
+  self->base = ClassObject_construct(C_Array_destroy, null);
 
   self->len = len;
   self->data = allocate(len * sizeof(void*));
@@ -31,7 +31,7 @@ C_Array* C_Array_new(u32 len) {
 void C_Array_destroy(void* self) {
   C_Array* self_cast = self;
   C_ArrayForeach(self_cast, {
-    unref(value);
+    Unref(value);
   });
 
   deallocate(self_cast->data);
@@ -40,12 +40,13 @@ void C_Array_destroy(void* self) {
 /******************************
  * logic
  ******************************/
-void C_Array_put(C_Array* self, u32 index, void* value) {
+void C_Array_put_P(C_Array* self, u32 index, void* value) {
   if(index >= self->len) {
     crash(E(EG_Array, E_OutOfBounds, SV("C_Array_put -> index is outside of the array"))); 
   }
-
-  unref(self->data[index]);
+  
+  Ref(value);
+  Unref(self->data[index]);
   self->data[index] = value;
 }
 
@@ -54,7 +55,7 @@ static void* __C_Array_at(C_Array* self, u32 index) {
     crash(E(EG_Array, E_OutOfBounds, SV("__C_Array_at -> index is outside of the array"))); 
   }
 
-  ref(self->data[index]);
+  Ref(self->data[index]);
   return self->data[index];
 }
 
@@ -63,7 +64,7 @@ static void* __C_Array_peek(C_Array* self) {
     crash(E(EG_Array, E_OutOfBounds, SV("__C_Array_peek -> array is empty"))); 
   }
 
-  ref(self->data[self->len-1]);
+  Ref(self->data[self->len-1]);
   return self->data[self->len-1];
 }
 
@@ -72,7 +73,7 @@ static void* __C_Array_peek_front(C_Array* self) {
     crash(E(EG_Array, E_OutOfBounds, SV("__C_Array_peek_front -> array is empty"))); 
   }
   
-  ref(self->data[0]);
+  Ref(self->data[0]);
   return self->data[0];
 }
 
@@ -89,7 +90,7 @@ u32 C_Array_get_len(C_Array* self) {
  ******************************/
 void* C_Array_at_B(C_Array* self, u32 index) {
   void* result = __C_Array_at(self, index);
-  unref(result);
+  Unref(result);
   return result;
 }
 
@@ -100,7 +101,7 @@ void* C_Array_at_R(C_Array* self, u32 index) {
 
 void* C_Array_peek_B(C_Array* self) {
   void* result = __C_Array_peek(self);
-  unref(result);
+  Unref(result);
   return result;
 }
 
@@ -111,7 +112,7 @@ void* C_Array_peek_R(C_Array* self) {
 
 void* C_Array_peek_front_B(C_Array* self) {
   void* result = __C_Array_peek_front(self);
-  unref(result);
+  Unref(result);
   return result;
 }
 

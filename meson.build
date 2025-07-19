@@ -5,6 +5,8 @@ add_project_arguments('-pedantic',language: 'c')
 incl_dirs = include_directories('include', 'src')
 sources = []
 
+x_dep = dependency('x11')
+
 subdir('src')
 
 # lib 
@@ -12,6 +14,7 @@ lib = library(
   'c_base',
   sources,
   include_directories: incl_dirs,
+  dependencies: x_dep,
   install: true
 )
 

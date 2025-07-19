@@ -27,7 +27,7 @@ void C_Array_destroy(void* self);
 /******************************
  * logic
  ******************************/
-void C_Array_put(C_Array* self, u32 index, void* value);
+void C_Array_put_P(C_Array* self, u32 index, void* value);
 
 void* C_Array_at_B(C_Array* self, u32 index);
 void* C_Array_at_R(C_Array* self, u32 index);

@@ -9,7 +9,7 @@ typedef struct C_EmptyResult C_EmptyResult;
 /******************************
  * C_Result -> new/dest
  ******************************/
-C_Result* C_Result_new_ok(void* value);
+C_Result* C_Result_new_ok_P(void* value);
 C_Result* C_Result_new_err(Error err);
 void C_Result_destroy(void* self);
 

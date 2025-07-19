@@ -8,7 +8,7 @@
 GenericValImpl_ErrorCode(EG_Strings)
 
 struct C_String {
-  ComplexBase base;
+  ClassObject base;
   u32 len;
   u8* chars;
   bool allocated;
@@ -19,7 +19,7 @@ struct C_String {
  ******************************/
 C_String* C_String_new(u8* chars, u32 len) {
   C_String* self = allocate(sizeof(C_String));
-  new(self, C_String_destroy);
+  self->base = ClassObject_construct(C_String_destroy, null);
 
   self->allocated = false;
   self->chars = chars;
@@ -34,7 +34,7 @@ C_String* C_String_new_view(StringView view) {
 
 C_String* C_String_new_empty(u32 len) {
   C_String* self = allocate(sizeof(C_String));
-  new(self, C_String_destroy);
+  self->base = ClassObject_construct(C_String_destroy, null);
 
   self->allocated = true;
   self->chars = allocate(len);

@@ -2,9 +2,9 @@
 #define ENV_H
 
 #if defined(__GNUC__)
-  #define COMPILER_GNU
+  #define COMPILER_GCC
 #elif defined(__clang__)
-  #define COMILER_CLANG
+  #define COMPILER_CLANG
 #else
   #warning "env.h -> unknown compiler"
 #endif
@@ -39,6 +39,10 @@
   #define PLATFORM_WEB
 #else
   #warning "env.h -> unknown platform"
+#endif
+
+#if (defined(COMPILER_GCC) || defined(COMPILER_CLANG)) && defined(OPT_COMPILER_FEATURES)
+  #define ATTR_Cleanup(func) __attribute__((cleanup(func)))
 #endif
 
 #endif

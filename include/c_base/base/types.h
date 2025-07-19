@@ -1,6 +1,11 @@
 #ifndef TYPES_H
 #define TYPES_H
 
+#include <c_base/base/macros.h>
+
+#define Id(name) extern const u64 Concat(name, _id);
+#define IdImpl(name) volatile u8 Concat(__##name, _id) = 0; const u64 Concat(name, _id) = (u64)&Concat(__##name, _id);
+
 typedef unsigned char  u8;
 typedef unsigned short u16;
 typedef unsigned int   u32;
