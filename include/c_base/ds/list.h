@@ -6,13 +6,15 @@
 
 GenericVal_ErrorCode(EG_List)
 
-#define C_List_Foreach(list, code)\
-do {\
-  for(u32 iter = 0; iter < C_List_get_len(list); iter++) {\
-    void* value = C_List_at_B(list, iter);\
-    { code }\
-  }\
-} while(0)
+#define C_List_Foreach(list, code)                                             \
+  do {                                                                         \
+    for (u32 iter = 0; iter < C_List_get_len(list); iter++) {                  \
+      void* value = C_List_at_B(list, iter);                                   \
+      {                                                                        \
+        code                                                                   \
+      }                                                                        \
+    }                                                                          \
+  } while (0)
 
 typedef struct Node {
   struct Node* next;
@@ -52,7 +54,6 @@ void* C_List_at_R(C_List* self, u32 index);
 void* C_List_remove_R(C_List* self, u32 index);
 
 void C_List_clear(C_List* self);
-
 
 /******************************
  * get/set

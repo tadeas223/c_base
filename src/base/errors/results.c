@@ -1,19 +1,19 @@
-#include <c_base/base/errors/results.h>
 #include <c_base/base/errors/errors.h>
+#include <c_base/base/errors/results.h>
 #include <c_base/base/memory/allocator.h>
 #include <c_base/base/memory/memory.h>
 #include <c_base/base/memory/objects.h>
 #include <c_base/system.h>
 
 struct C_Result {
-  ClassObject base; 
+  ClassObject base;
   void* value;
   Error err;
   bool ok;
 };
 
 struct C_EmptyResult {
-  ClassObject base; 
+  ClassObject base;
   Error err;
   bool ok;
 };
@@ -24,11 +24,11 @@ struct C_EmptyResult {
 C_Result* C_Result_new_ok_P(void* value) {
   C_Result* self = allocate(sizeof(C_Result));
   self->base = ClassObject_construct(C_Result_destroy, null);
-  
+
   self->ok = true;
   self->value = Ref(value);
   SetZero(&self->err);
-  
+
   return self;
 }
 
@@ -52,7 +52,7 @@ void C_Result_destroy(void* self) {
  * C_Result -> logic
  ******************************/
 static void* __C_Result_force(C_Result* self) {
-  if(!self->ok) {
+  if (!self->ok) {
     crash(self->err);
   }
 
@@ -62,13 +62,12 @@ static void* __C_Result_force(C_Result* self) {
 /******************************
  * C_Result -> get/set
  ******************************/
-bool C_Result_get_ok(C_Result* self) {
-  return self->ok;
-}
+bool C_Result_get_ok(C_Result* self) { return self->ok; }
 
 Error C_Result_get_err(C_Result* self) {
-  if(self->ok) {
-    crash(E(EG_Unspecified, E_Unspecified, SV("C_Result_get_err -> result is ok, cannot get an error")));
+  if (self->ok) {
+    crash(E(EG_Unspecified, E_Unspecified,
+            SV("C_Result_get_err -> result is ok, cannot get an error")));
   }
 
   return self->err;
@@ -115,7 +114,7 @@ C_EmptyResult* C_EmptyResult_new_ok(void) {
 
   self->ok = true;
   SetZero(&self->err);
-  
+
   return self;
 }
 
@@ -129,14 +128,14 @@ C_EmptyResult* C_EmptyResult_new_err(Error err) {
   return self;
 }
 
-void C_EmptyResult_destroy(void* self) {(void)self;}
+void C_EmptyResult_destroy(void* self) { (void)self; }
 
 /******************************
  * C_EmptyResult -> logic
  ******************************/
 void C_EmptyResult_force(C_EmptyResult* self) {
-  if(!self->ok) {
-    crash(self->err); 
+  if (!self->ok) {
+    crash(self->err);
   }
 }
 
@@ -144,14 +143,12 @@ void C_EmptyResult_force(C_EmptyResult* self) {
  * C_EmptyResult -> get/set
  ******************************/
 Error C_EmptyResult_get_err(C_EmptyResult* self) {
-  if(self->ok) {
-    crash(E(EG_Unspecified, E_Unspecified, SV("C_EmptyResult_get_err -> result is ok, cannot get an error")));
+  if (self->ok) {
+    crash(E(EG_Unspecified, E_Unspecified,
+            SV("C_EmptyResult_get_err -> result is ok, cannot get an error")));
   }
 
   return self->err;
 }
 
-bool C_EmptyResult_get_ok(C_EmptyResult* self) {
-  return self->ok;
-}
-
+bool C_EmptyResult_get_ok(C_EmptyResult* self) { return self->ok; }

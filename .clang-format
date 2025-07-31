@@ -1,0 +1,26 @@
+BasedOnStyle: LLVM
+PointerAlignment: Left
+
+StatementMacros:
+ - Id
+ - IdImpl
+ - GenericVal_ErrorCode
+ - GenericValImpl_ErrorCode
+ - GenericType_C_Handle
+ - GenericTypeImpl_C_Handle
+ - UToStr
+ - SToStr
+ - BToStr
+ - ToStrFormatWrap
+ - Add
+ - Sub
+ - Div
+ - Mult
+ - AddSafeS
+ - AddSafeU
+ - SubSafeS
+ - SubSafeU
+ - MultSafeS
+ - MultSafeU
+ - DivSafeS
+ - DivSafeU

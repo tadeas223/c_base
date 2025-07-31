@@ -1,17 +1,19 @@
 #ifndef ARRAY_H
 #define ARRAY_H
 
-#include <c_base/base/types.h>
 #include <c_base/base/errors/errors.h>
+#include <c_base/base/types.h>
 
-#define C_ArrayForeach(array, code)\
-do {\
-  for(u32 iter = 0; iter < C_Array_get_len(array); iter++) {\
-    void* value = C_Array_at_B(array, iter);\
-    (void)value;\
-    { code }\
-  }\
-} while(0)
+#define C_ArrayForeach(array, code)                                            \
+  do {                                                                         \
+    for (u32 iter = 0; iter < C_Array_get_len(array); iter++) {                \
+      void* value = C_Array_at_B(array, iter);                                 \
+      (void)value;                                                             \
+      {                                                                        \
+        code                                                                   \
+      }                                                                        \
+    }                                                                          \
+  } while (0)
 
 GenericVal_ErrorCode(EG_Array)
 

@@ -1,16 +1,17 @@
 #ifndef MATH_H
 #define MATH_H
 
+#include <c_base/base/errors/errors.h>
 #include <c_base/base/errors/results.h>
 #include <c_base/base/types.h>
-#include <c_base/base/errors/errors.h>
 
-#define MATH_E  2.718281828459045235
+#define MATH_E 2.718281828459045235
 #define MATH_PI 3.14159265358979323846
 
 GenericVal_ErrorCode(EG_Math)
 
-/* this guy is a fucking legend!!! ---> https://www.youtube.com/watch?v=bIDOTWy7gZk */
+/* this guy is a fucking legend!!! --->
+ * https://www.youtube.com/watch?v=bIDOTWy7gZk */
 
 f64 math_abs(f64 val);
 u32 math_simple_log(u32 x, u32 base);

@@ -3,7 +3,7 @@
 /******************************
  * const
  ******************************/
-StringView StringView_construct(u8 *chars, u32 len) {
+StringView StringView_construct(ascii* chars, u32 len) {
   StringView self;
   self.chars = chars;
   self.len = len;

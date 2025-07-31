@@ -33,9 +33,9 @@ static C_KeyValue* C_KeyValue_new_P(void* key, void* value) {
   self->base = ClassObject_construct(C_KeyValue_destroy, null);
   Ref(key);
   Ref(value);
-  self->key= key;
+  self->key = key;
   self->value = value;
-  
+
   return self;
 }
 
@@ -45,8 +45,8 @@ C_HashTable* C_HashTable_new(void) {
 
 C_HashTable* C_HashTable_new_cap(u32 cap) {
   C_HashTable* self = allocate(sizeof(C_HashTable));
-  self->base = ClassObject_construct(C_HashTable_destroy, null); 
-  
+  self->base = ClassObject_construct(C_HashTable_destroy, null);
+
   self->cap = cap;
   self->data = C_Array_new(self->cap);
 
@@ -60,20 +60,21 @@ void C_HashTable_destroy(void* self) {
 
 void C_HashTable_put_P(C_HashTable* self, void* key, void* value) {
   u32 index = IHashable_hash(key) % self->cap;
-  
+
   Ref(key);
   Ref(value);
 
   C_List* list = C_Array_at_B(self->data, index);
-  if(list == null) {
+  if (list == null) {
     list = C_List_new();
     C_Array_put_P(self->data, index, Pass(list));
   }
 
   C_List_Foreach(list, {
-    C_KeyValue* key_value = value; 
-    if(IHashable_equals(key_value->key, key)) {
-      crash(E(EG_HashTable, E_InvalidPointer, SV("C_HashTable_put_P -> key is already in the hash table"))); 
+    C_KeyValue* key_value = value;
+    if (IHashable_equals(key_value->key, key)) {
+      crash(E(EG_HashTable, E_InvalidPointer,
+              SV("C_HashTable_put_P -> key is already in the hash table")));
     }
   });
 
@@ -83,26 +84,27 @@ void C_HashTable_put_P(C_HashTable* self, void* key, void* value) {
 }
 
 static void* __C_HashTable_at_P(C_HashTable* self, void* key) {
-  Ref(key); 
+  Ref(key);
   u32 index = IHashable_hash(key) % self->cap;
 
   C_List* list = C_Array_at_B(self->data, index);
-  
-  if(list == null) {
-    crash(E(EG_HashTable, E_InvalidPointer, SV("__C_HashTable_at -> key is not in the hash table"))); 
+
+  if (list == null) {
+    crash(E(EG_HashTable, E_InvalidPointer,
+            SV("__C_HashTable_at -> key is not in the hash table")));
   }
- 
+
   void* val = 0;
   C_List_Foreach(list, {
     C_KeyValue* key_value = value;
-    if(IHashable_equals(key_value->key, key)) {
+    if (IHashable_equals(key_value->key, key)) {
       val = key_value->value;
       goto ret;
     }
   });
 
 ret:
-  Unref(key); 
+  Unref(key);
   return Ref(val);
 }
 
@@ -110,15 +112,15 @@ bool C_HashTable_contains(C_HashTable* self, void* key) {
   u32 index = IHashable_hash(key) % self->cap;
 
   C_List* list = C_Array_at_B(self->data, index);
-  
+
   bool result = false;
-  if(list == null) {
-    goto ret; 
+  if (list == null) {
+    goto ret;
   }
- 
+
   C_List_Foreach(list, {
     C_KeyValue* key_value = value;
-    if(IHashable_equals(key_value->key, key)) {
+    if (IHashable_equals(key_value->key, key)) {
       result = true;
       goto ret;
     }
@@ -132,23 +134,25 @@ void* C_HashTable_remove_R(C_HashTable* self, void* key) {
   u32 index = IHashable_hash(key) % self->cap;
 
   C_List* list = C_Array_at_B(self->data, index);
-  
+
   void* result = null;
-  if(list == null) {
-    crash(E(EG_HashTable, E_InvalidPointer, SV("C_HashTable_remove_R -> key is not in the hash table"))); 
+  if (list == null) {
+    crash(E(EG_HashTable, E_InvalidPointer,
+            SV("C_HashTable_remove_R -> key is not in the hash table")));
   }
- 
+
   C_List_Foreach(list, {
     C_KeyValue* key_value = value;
-    if(IHashable_equals(key_value->key, key)) {
+    if (IHashable_equals(key_value->key, key)) {
       result = Ref(key_value->value);
       Unref(C_List_remove_R(list, iter));
       goto ret;
     }
   });
 
-  if(result == null) {
-    crash(E(EG_HashTable, E_InvalidPointer, SV("C_HashTable_remove_R -> key is not in the hash table"))); 
+  if (result == null) {
+    crash(E(EG_HashTable, E_InvalidPointer,
+            SV("C_HashTable_remove_R -> key is not in the hash table")));
   }
 
 ret:
@@ -169,10 +173,9 @@ void* C_HashTable_at_PB(C_HashTable* self, void* key) {
   return result;
 }
 
-void* C_HashTable_at_PR(C_HashTable* self, void* key) { 
+void* C_HashTable_at_PR(C_HashTable* self, void* key) {
   void* result = __C_HashTable_at_P(self, key);
   return result;
 }
 
 // }}}
-
