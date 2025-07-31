@@ -152,7 +152,6 @@ void Allocator_deallocate(Allocator* self, void* ptr) {
     prev_node->next = prev_node->next->next;
   }
 }
-
 void* allocate(u64 size) {
   if (allocator.head == null) {
     allocator = Allocator_construct();
@@ -185,3 +184,9 @@ void* reallocate(void* ptr, u64 size) {
 
   return new_ptr;
 }
+
+/* for debugging, because my implementation is dog shit
+void* allocate(u64 size) { return malloc(size); }
+void deallocate(void* ptr) { free(ptr); }
+void* reallocate(void* ptr, u64 size) { return realloc(ptr, size); }
+*/

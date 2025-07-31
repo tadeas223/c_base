@@ -6,11 +6,11 @@ GenericValImpl_ErrorCode(EG_Memory)
 void mem_copy(void* dest, void* src, u64 size) {
   u8* u8_src = src;
   u8* u8_dest = dest;
-  u32 i;
+  u64 i;
 
   if (u8_dest > u8_src && u8_dest < u8_src + size) {
     i = size;
-    while (i > 0) {
+    while (i--) {
       u8_dest[i] = u8_src[i];
     }
   } else {
