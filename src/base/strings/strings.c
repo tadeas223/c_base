@@ -1,4 +1,6 @@
 #include "c_base/base/strings/string_convert.h"
+#include "c_base/ds/array.h"
+#include "c_base/ds/list.h"
 #include <c_base/base/errors/errors.h>
 #include <c_base/base/memory/allocator.h>
 #include <c_base/base/memory/memory.h>
@@ -10,7 +12,7 @@
 GenericValImpl_ErrorCode(EG_Strings)
 IdImpl(IFormattable)
 
-    struct C_String {
+struct C_String {
   ClassObject base;
   u32 len;
   ascii* chars;
@@ -213,6 +215,46 @@ C_String* C_String_concat_PR(C_String* string, ...) {
 
   Unref(string);
   Unref(args);
+  return result;
+}
+
+C_Array* C_String_split_R(C_String* string, ascii splitter) {
+  C_List* list = C_List_new();
+
+  u32 start = 0;
+
+  for (u32 i = 0; i < C_String_get_len(string); i++) {
+    if (C_String_at(string, i) == splitter) {
+      C_String* substr = C_String_substr_R(string, start, i - start);
+      C_List_push_P(list, Pass(substr));
+
+      start = i + 1; // skip the splitter char
+    }
+  }
+
+  // add last string
+  C_String* substr =
+      C_String_substr_R(string, start, C_String_get_len(string) - start);
+  C_List_push_P(list, Pass(substr));
+
+  return C_List_to_array_PR(Pass(list));
+}
+
+C_String* C_String_join_PR(C_Array* strings) {
+  Ref(strings);
+  u32 len = 0;
+  C_ArrayForeach(strings, { len += C_String_get_len(value); });
+
+  C_String* result = C_String_new_empty(len);
+  u32 index = 0;
+  C_ArrayForeach(strings, {
+    mem_copy(C_String_get_chars(result) + index, C_String_get_chars(value),
+             C_String_get_len(value));
+
+    index += C_String_get_len(value);
+  });
+
+  Unref(strings);
   return result;
 }
 
