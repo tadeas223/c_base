@@ -3,7 +3,7 @@
 
 #include <c_base/base/errors/errors.h>
 #include <c_base/base/strings/strings.h>
-#include <c_base/ds/array.h>
+#include <c_base/ds/C_Array.h>
 #include <c_base/ds/ds.h>
 
 #define C_List_Foreach(list, code)                                             \

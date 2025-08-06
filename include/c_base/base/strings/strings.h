@@ -2,6 +2,7 @@
 #define STRINGS_H
 
 #include <c_base/base/errors/errors.h>
+#include <c_base/base/memory/objects.h>
 #include <c_base/base/strings/string_view.h>
 #include <c_base/base/types.h>
 #include <c_base/ds/C_Array.h>
