@@ -7,29 +7,15 @@
 #include "c_base/ds/C_Array.h"
 #include "c_base/os/os_io.h"
 
-int main(int argc, char* argv[]) {
-  C_Array* args;
-  ArgsLoad(args, argc, argv);
+int main(void) {
+  console_set_raw_node(true);
 
-  u32 sum = 0;
-  C_ArrayForeach(args, {
-    if (iter == 0)
-      continue;
-    C_Result* r_parse = u32_parse_PR(value);
-    sum += C_Handle_u32_get_value(C_Result_force_B(r_parse));
-    Unref(r_parse);
-  });
+  while (true) {
+    C_String* input = console_read_until_R('b');
+    console_write_single_ln_P(PS("b"));
+    Unref(input);
+  }
 
-  C_List* list = C_List_new();
-
-  console_write_ln_P(
-      PS("args: "),
-      Pass(IFormattable_to_str_format_PR(list, PS("start={;end=};sep=, "))),
-      ArgsEnd);
-
-  console_write_ln_P(PS("sum: "), Pass(u32_to_str_R(sum)), ArgsEnd);
-
-  Unref(args);
-  Unref(list);
+  console_set_raw_node(false);
   return 0;
 }

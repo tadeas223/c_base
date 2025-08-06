@@ -1,3 +1,4 @@
+#include "c_base/system.h"
 #include <c_base/base/errors/errors.h>
 #include <c_base/base/errors/results.h>
 #include <c_base/base/memory/allocator.h>
@@ -7,7 +8,11 @@
 #include <c_base/os/os_io.h>
 
 #include <fcntl.h>
+#include <termios.h>
 #include <unistd.h>
+
+static struct termios default_console_attribures = {0};
+static bool default_console_attribures_set = false;
 
 C_Result* /* u32 */ console_read_chars_R(ascii* chars, u32 len) {
   C_Result* result;
@@ -44,6 +49,54 @@ C_Result* /* u32 */ console_write_chars_R(ascii* chars, u32 len) {
 
     goto ret;
   }
+
+ret:
+  return result;
+}
+
+C_EmptyResult* console_set_raw_node(bool value) {
+  C_EmptyResult* result;
+  if (!default_console_attribures_set) {
+    int attr_result = tcgetattr(0, &default_console_attribures);
+    if (attr_result < 0) {
+      result = C_EmptyResult_new_err(
+          E(EG_OS_IO, E_Unspecified,
+            SV("console_set_raw_mode -> failed to get terminal attributes")));
+      goto ret;
+    }
+  }
+
+  struct termios new_attrs = default_console_attribures;
+  if (value) {
+
+    new_attrs = default_console_attribures;
+    new_attrs.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
+
+    new_attrs.c_oflag &= ~(OPOST);
+
+    new_attrs.c_cflag |= (CS8);
+
+    new_attrs.c_lflag &= ~(ECHO | ICANON | IEXTEN | ISIG);
+
+    new_attrs.c_cc[VMIN] = 5;
+    new_attrs.c_cc[VTIME] = 8;
+    new_attrs.c_cc[VMIN] = 0;
+    new_attrs.c_cc[VTIME] = 0;
+    new_attrs.c_cc[VMIN] = 2;
+    new_attrs.c_cc[VTIME] = 0;
+    new_attrs.c_cc[VMIN] = 0;
+    new_attrs.c_cc[VTIME] = 8;
+  }
+
+  int set_result = tcsetattr(0, TCSANOW, &new_attrs);
+  if (set_result < 0) {
+    result = C_EmptyResult_new_err(
+        E(EG_OS_IO, E_Unspecified,
+          SV("console_set_raw_mode -> failed to set new terminal attributes")));
+    goto ret;
+  }
+
+  result = C_EmptyResult_new_ok();
 
 ret:
   return result;

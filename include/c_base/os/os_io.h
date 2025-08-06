@@ -18,6 +18,8 @@ void console_write_single_ln_P(void* obj);
 C_String* console_read_until_R(ascii character);
 C_String* console_read_ln_R(void);
 
+C_EmptyResult* console_set_raw_node(bool value);
+
 /******************************
  * files
  ******************************/
