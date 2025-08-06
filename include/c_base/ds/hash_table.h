@@ -1,10 +1,8 @@
 #ifndef HASH_TABLE_H
 #define HASH_TABLE_H
 
-#include "c_base/base/errors/errors.h"
-#include "c_base/base/types.h"
-
-GenericVal_ErrorCode(EG_HashTable)
+#include <c_base/base/types.h>
+#include <c_base/ds/ds.h>
 
 typedef struct C_HashTable C_HashTable;
 

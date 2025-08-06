@@ -1,7 +1,7 @@
 #ifndef OS_MEM_H
 #define OS_MEM_H
 
-#include "c_base/base/memory/memory_base.h"
+#include <c_base/base/memory/memory_base.h>
 
 // if OPT_MEMORY_BASE is defined
 // os_mem.c will not set global memory base

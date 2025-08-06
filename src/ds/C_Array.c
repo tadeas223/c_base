@@ -1,12 +1,10 @@
-#include "c_base/base/strings/strings.h"
 #include <c_base/base/errors/errors.h>
 #include <c_base/base/memory/allocator.h>
 #include <c_base/base/memory/memory.h>
 #include <c_base/base/memory/objects.h>
+#include <c_base/base/strings/strings.h>
 #include <c_base/ds/C_Array.h>
 #include <c_base/system.h>
-
-GenericValImpl_ErrorCode(EG_Array)
 
 static Interface* C_Array_interfaces[2];
 static IFormattable C_Array_i_formattable = {0};
@@ -52,7 +50,7 @@ void C_Array_destroy(void* self) {
  ******************************/
 void C_Array_put_P(C_Array* self, u32 index, void* value) {
   if (index >= self->len) {
-    crash(E(EG_Array, E_OutOfBounds,
+    crash(E(EG_Datastructures, E_OutOfBounds,
             SV("C_Array_put -> index is outside of the array")));
   }
 
@@ -63,7 +61,7 @@ void C_Array_put_P(C_Array* self, u32 index, void* value) {
 
 static void* __C_Array_at(C_Array* self, u32 index) {
   if (index >= self->len) {
-    crash(E(EG_Array, E_OutOfBounds,
+    crash(E(EG_Datastructures, E_OutOfBounds,
             SV("__C_Array_at -> index is outside of the array")));
   }
 
@@ -73,7 +71,8 @@ static void* __C_Array_at(C_Array* self, u32 index) {
 
 static void* __C_Array_peek(C_Array* self) {
   if (self->len == 0) {
-    crash(E(EG_Array, E_OutOfBounds, SV("__C_Array_peek -> array is empty")));
+    crash(E(EG_Datastructures, E_OutOfBounds,
+            SV("__C_Array_peek -> array is empty")));
   }
 
   Ref(self->data[self->len - 1]);
@@ -82,7 +81,7 @@ static void* __C_Array_peek(C_Array* self) {
 
 static void* __C_Array_peek_front(C_Array* self) {
   if (self->len == 0) {
-    crash(E(EG_Array, E_OutOfBounds,
+    crash(E(EG_Datastructures, E_OutOfBounds,
             SV("__C_Array_peek_front -> array is empty")));
   }
 

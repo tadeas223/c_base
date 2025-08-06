@@ -3,6 +3,7 @@
 
 #include <c_base/base/errors/errors.h>
 #include <c_base/base/types.h>
+#include <c_base/ds/ds.h>
 
 #define C_ArrayForeach(array, code)                                            \
   do {                                                                         \
@@ -14,8 +15,6 @@
       }                                                                        \
     }                                                                          \
   } while (0)
-
-GenericVal_ErrorCode(EG_Array)
 
 typedef struct C_Array C_Array;
 

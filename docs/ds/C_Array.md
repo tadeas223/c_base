@@ -7,7 +7,7 @@
 
 ---
 
-## **Overview**
+## *overview**
 
 `C_Array` is a datastructure that should replace normal C array where possible.
 Can store objects which extend `ClassObject`.
@@ -18,8 +18,23 @@ The array has a static length, and the elements can be only added with `C_Array_
 - Not thread-safe
 
 ---
+## **macros**
 
-## **Functions**
+### **C_ArrayForeach(array, code)**
+Iterates over all elements in the array.
+
+exposes variables:
+- `u32 iter`: index of the current value
+- `value`: current value
+
+example of printing all values from an array:
+``` C
+C_ArrayForeach(array, {
+  console_write_single_ln(value);
+});
+```
+
+## functions**
 
 ### **C_Array\* C_Array_new(u32 len)**
 Creates and initializes a new `C_Array` instance.

@@ -1,10 +1,8 @@
 #ifndef DARRAY_H
 #define DARRAY_H
 
-#include "c_base/base/errors/errors.h"
-#include "c_base/base/types.h"
-
-GenericVal_ErrorCode(EG_DArray)
+#include <c_base/base/types.h>
+#include <c_base/ds/ds.h>
 
 #define C_DArrayForeach(darray, code)                                          \
   do {                                                                         \

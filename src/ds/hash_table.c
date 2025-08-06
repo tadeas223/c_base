@@ -1,14 +1,12 @@
-#include "c_base/base/errors/errors.h"
-#include "c_base/base/memory/allocator.h"
-#include "c_base/base/memory/objects.h"
-#include "c_base/ds/C_List.h"
-#include "c_base/ds/array.h"
-#include "c_base/system.h"
+#include <c_base/base/errors/errors.h>
+#include <c_base/base/memory/allocator.h>
+#include <c_base/base/memory/objects.h>
+#include <c_base/ds/C_List.h>
+#include <c_base/ds/array.h>
 #include <c_base/ds/hash_table.h>
+#include <c_base/system.h>
 
 #define HASH_DEFAULT_CAP 256
-
-GenericValImpl_ErrorCode(EG_HashTable)
 
 struct C_HashTable {
   ClassObject base;
@@ -73,7 +71,7 @@ void C_HashTable_put_P(C_HashTable* self, void* key, void* value) {
   C_List_Foreach(list, {
     C_KeyValue* key_value = value;
     if (IHashable_equals(key_value->key, key)) {
-      crash(E(EG_HashTable, E_InvalidPointer,
+      crash(E(EG_Datastructures, E_InvalidPointer,
               SV("C_HashTable_put_P -> key is already in the hash table")));
     }
   });
@@ -90,7 +88,7 @@ static void* __C_HashTable_at_P(C_HashTable* self, void* key) {
   C_List* list = C_Array_at_B(self->data, index);
 
   if (list == null) {
-    crash(E(EG_HashTable, E_InvalidPointer,
+    crash(E(EG_Datastructures, E_InvalidPointer,
             SV("__C_HashTable_at -> key is not in the hash table")));
   }
 
@@ -137,7 +135,7 @@ void* C_HashTable_remove_R(C_HashTable* self, void* key) {
 
   void* result = null;
   if (list == null) {
-    crash(E(EG_HashTable, E_InvalidPointer,
+    crash(E(EG_Datastructures, E_InvalidPointer,
             SV("C_HashTable_remove_R -> key is not in the hash table")));
   }
 
@@ -151,7 +149,7 @@ void* C_HashTable_remove_R(C_HashTable* self, void* key) {
   });
 
   if (result == null) {
-    crash(E(EG_HashTable, E_InvalidPointer,
+    crash(E(EG_Datastructures, E_InvalidPointer,
             SV("C_HashTable_remove_R -> key is not in the hash table")));
   }
 

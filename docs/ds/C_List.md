@@ -7,7 +7,7 @@
 
 ---
 
-## **Overview**
+## **overview**
 
 `C_List` is a singly linked list that stores objects which extend `ClassObject**.  
 Supports pushing, popping, peeking, and indexed access.
@@ -17,8 +17,23 @@ Supports pushing, popping, peeking, and indexed access.
 - Append is **O(N)**, prepend is **O(1)**
 
 ---
+## **macros**
 
-## **Functions**
+### **C_ListForeach(list, code)**
+Iterates over all elements in the list.
+
+exposes variables:
+- `u32 iter`: index of the current value
+- `value`: current value
+
+example of printing all values from a list:
+``` C
+C_ListForeach(list, {
+  console_write_single_ln(value);
+});
+```
+
+## **functions**
 
 ### **C_List\* C_List_new(void)**
 Creates and initializes a new `C_List` instance.

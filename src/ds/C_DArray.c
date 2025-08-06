@@ -1,11 +1,9 @@
-#include "c_base/ds/darray.h"
-#include "c_base/base/errors/errors.h"
-#include "c_base/base/memory/allocator.h"
-#include "c_base/base/memory/memory.h"
-#include "c_base/base/memory/objects.h"
-#include "c_base/system.h"
-
-GenericValImpl_ErrorCode(EG_DArray)
+#include <c_base/base/errors/errors.h>
+#include <c_base/base/memory/allocator.h>
+#include <c_base/base/memory/memory.h>
+#include <c_base/base/memory/objects.h>
+#include <c_base/ds/C_DArray.h>
+#include <c_base/system.h>
 
 struct C_DArray {
   ClassObject base;
@@ -55,7 +53,8 @@ void C_DArray_push_front_P(C_DArray* self, void* value) {
 
 void* C_DArray_pop_R(C_DArray* self) {
   if (self->len == 0) {
-    crash(E(EG_DArray, E_OutOfBounds, SV("C_DArray_pop_R -> darray is empty")));
+    crash(E(EG_Datastructures, E_OutOfBounds,
+            SV("C_DArray_pop_R -> darray is empty")));
   }
 
   void* value = self->data[self->len - 1];
@@ -66,7 +65,7 @@ void* C_DArray_pop_R(C_DArray* self) {
 
 void* C_DArray_pop_front_R(C_DArray* self) {
   if (self->len == 0) {
-    crash(E(EG_DArray, E_OutOfBounds,
+    crash(E(EG_Datastructures, E_OutOfBounds,
             SV("C_DArray_pop_front_R -> darray is empty")));
   }
 
@@ -80,8 +79,8 @@ void* C_DArray_pop_front_R(C_DArray* self) {
 
 static void* __C_DArray_peek(C_DArray* self) {
   if (self->len == 0) {
-    crash(
-        E(EG_DArray, E_OutOfBounds, SV("__C_DArray_peek -> darray is empty")));
+    crash(E(EG_Datastructures, E_OutOfBounds,
+            SV("__C_DArray_peek -> darray is empty")));
   }
 
   return Ref(self->data[self->len - 1]);
@@ -89,7 +88,7 @@ static void* __C_DArray_peek(C_DArray* self) {
 
 static void* __C_DArray_peek_front(C_DArray* self) {
   if (self->len == 0) {
-    crash(E(EG_DArray, E_OutOfBounds,
+    crash(E(EG_Datastructures, E_OutOfBounds,
             SV("__C_DArray_peek_front -> darray is empty")));
   }
 
@@ -98,7 +97,7 @@ static void* __C_DArray_peek_front(C_DArray* self) {
 
 void C_Darray_add_P(C_DArray* self, u32 index, void* value) {
   if (index > self->len) {
-    crash(E(EG_DArray, E_OutOfBounds,
+    crash(E(EG_Datastructures, E_OutOfBounds,
             SV("C_DArray_add_P -> index is outside of the darray")));
   }
 
@@ -120,7 +119,7 @@ void C_Darray_add_P(C_DArray* self, u32 index, void* value) {
 
 void* __C_Darray_at(C_DArray* self, u32 index) {
   if (index >= self->len) {
-    crash(E(EG_DArray, E_OutOfBounds,
+    crash(E(EG_Datastructures, E_OutOfBounds,
             SV("__C_DArray_at -> index is outside of the darray")));
   }
 
@@ -129,7 +128,7 @@ void* __C_Darray_at(C_DArray* self, u32 index) {
 
 void* C_Darray_remove_R(C_DArray* self, u32 index) {
   if (index >= self->len) {
-    crash(E(EG_DArray, E_OutOfBounds,
+    crash(E(EG_Datastructures, E_OutOfBounds,
             SV("C_DArray_remove_R -> index is outside of the darray")));
   }
 
@@ -147,12 +146,12 @@ void* C_Darray_remove_R(C_DArray* self, u32 index) {
 
 void C_DArray_resize(C_DArray* self, u32 cap) {
   if (cap < self->len) {
-    crash(E(EG_DArray, E_OutOfBounds,
+    crash(E(EG_Datastructures, E_OutOfBounds,
             SV("C_DArray_resize -> darray length would be grater that its "
                "capacity")));
   }
   if (cap == 0) {
-    crash(E(EG_DArray, E_OutOfBounds,
+    crash(E(EG_Datastructures, E_OutOfBounds,
             SV("C_DArray_resize -> capacity must be at least one")));
   }
 

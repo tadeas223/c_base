@@ -1,13 +1,11 @@
-#include "c_base/base/strings/format.h"
-#include "c_base/base/strings/strings.h"
-#include "c_base/ds/array.h"
 #include <c_base/base/errors/errors.h>
 #include <c_base/base/memory/allocator.h>
 #include <c_base/base/memory/objects.h>
+#include <c_base/base/strings/format.h>
+#include <c_base/base/strings/strings.h>
 #include <c_base/ds/C_List.h>
+#include <c_base/ds/array.h>
 #include <c_base/system.h>
-
-GenericValImpl_ErrorCode(EG_List)
 
 static Interface* C_List_interfaces[3];
 static IHashable C_List_i_hashable = {0};
@@ -105,7 +103,8 @@ void C_List_push_front_P(C_List* self, void* value) {
 
 void* C_List_pop_R(C_List* self) {
   if (self->len == 0) {
-    crash(E(EG_List, E_OutOfBounds, SV("C_List_pop_R -> list is empty")));
+    crash(E(EG_Datastructures, E_OutOfBounds,
+            SV("C_List_pop_R -> list is empty")));
   }
 
   Node* pop_node;
@@ -138,7 +137,8 @@ void* C_List_pop_R(C_List* self) {
 
 void* C_List_pop_front_R(C_List* self) {
   if (self->len == 0) {
-    crash(E(EG_List, E_OutOfBounds, SV("C_List_pop_front_R -> list is empty")));
+    crash(E(EG_Datastructures, E_OutOfBounds,
+            SV("C_List_pop_front_R -> list is empty")));
   }
 
   Node* pop_node = self->head;
@@ -153,7 +153,8 @@ void* C_List_pop_front_R(C_List* self) {
 
 static void* __C_List_peek(C_List* self) {
   if (self->len == 0) {
-    crash(E(EG_List, E_OutOfBounds, SV("__C_List_peek -> list is empty")));
+    crash(E(EG_Datastructures, E_OutOfBounds,
+            SV("__C_List_peek -> list is empty")));
   }
 
   return Ref(self->tail->value);
@@ -161,8 +162,8 @@ static void* __C_List_peek(C_List* self) {
 
 static void* __C_List_peek_front(C_List* self) {
   if (self->len == 0) {
-    crash(
-        E(EG_List, E_OutOfBounds, SV("__C_List_peek_front -> list is empty")));
+    crash(E(EG_Datastructures, E_OutOfBounds,
+            SV("__C_List_peek_front -> list is empty")));
   }
 
   return Ref(self->head->value);
@@ -170,9 +171,10 @@ static void* __C_List_peek_front(C_List* self) {
 
 void C_List_add_P(C_List* self, u32 index, void* value) {
   if (self->len == 0) {
-    crash(E(EG_List, E_OutOfBounds, SV("C_List_add -> list is empty")));
+    crash(
+        E(EG_Datastructures, E_OutOfBounds, SV("C_List_add -> list is empty")));
   } else if (index > self->len) {
-    crash(E(EG_List, E_OutOfBounds,
+    crash(E(EG_Datastructures, E_OutOfBounds,
             SV("C_List_add -> index is outside of the list")));
   }
 
@@ -202,9 +204,10 @@ ret:
 
 static void* __C_List_at(C_List* self, u32 index) {
   if (self->len == 0) {
-    crash(E(EG_List, E_OutOfBounds, SV("__C_List_at -> list is empty")));
+    crash(E(EG_Datastructures, E_OutOfBounds,
+            SV("__C_List_at -> list is empty")));
   } else if (index >= self->len) {
-    crash(E(EG_List, E_OutOfBounds,
+    crash(E(EG_Datastructures, E_OutOfBounds,
             SV("__C_List_at -> index is outside of the list")));
   }
 
@@ -230,9 +233,10 @@ ret:
 
 void* C_List_remove_R(C_List* self, u32 index) {
   if (self->len == 0) {
-    crash(E(EG_List, E_OutOfBounds, SV("__C_List_remove -> list is empty")));
+    crash(E(EG_Datastructures, E_OutOfBounds,
+            SV("__C_List_remove -> list is empty")));
   } else if (index >= self->len) {
-    crash(E(EG_List, E_OutOfBounds,
+    crash(E(EG_Datastructures, E_OutOfBounds,
             SV("__C_List_remove -> index is outside of the list")));
   }
 

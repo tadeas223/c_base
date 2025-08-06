@@ -1,8 +1,8 @@
 #ifndef OS_DYLIB_H
 #define OS_DYLIB_H
 
-#include "c_base/base/errors/results.h"
-#include "c_base/base/strings/strings.h"
+#include <c_base/base/errors/results.h>
+#include <c_base/base/strings/strings.h>
 
 typedef struct C_DynamicLibrary C_DynamicLibrary;
 

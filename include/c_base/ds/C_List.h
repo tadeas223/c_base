@@ -1,11 +1,10 @@
 #ifndef LIST_H
 #define LIST_H
 
-#include "c_base/base/strings/strings.h"
-#include "c_base/ds/array.h"
 #include <c_base/base/errors/errors.h>
-
-GenericVal_ErrorCode(EG_List)
+#include <c_base/base/strings/strings.h>
+#include <c_base/ds/array.h>
+#include <c_base/ds/ds.h>
 
 #define C_List_Foreach(list, code)                                             \
   do {                                                                         \
