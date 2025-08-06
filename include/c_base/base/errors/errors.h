@@ -29,6 +29,4 @@ GenericVal_ErrorCode(E_InvalidArgument)
 GenericVal_ErrorCode(E_OutOfBounds)
 // }}}
 
-Error Error_construct(ErrorCode grp_code, ErrorCode code, StringView msg);
-
 #endif

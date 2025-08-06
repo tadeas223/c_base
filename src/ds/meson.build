@@ -1,6 +1,6 @@
 sources += files(
-  'array.c',
+  'C_Array.c',
   'darray.c',
-  'list.c',
+  'C_List.c',
   'hash_table.c',
 )

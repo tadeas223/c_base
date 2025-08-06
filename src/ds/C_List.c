@@ -1,12 +1,17 @@
+#include "c_base/base/strings/format.h"
+#include "c_base/base/strings/strings.h"
 #include "c_base/ds/array.h"
 #include <c_base/base/errors/errors.h>
 #include <c_base/base/memory/allocator.h>
 #include <c_base/base/memory/objects.h>
-#include <c_base/ds/list.h>
+#include <c_base/ds/C_List.h>
 #include <c_base/system.h>
 
 GenericValImpl_ErrorCode(EG_List)
 
+static Interface* C_List_interfaces[3];
+static IHashable C_List_i_hashable = {0};
+static IFormattable C_List_i_formattable = {0};
 struct C_List {
   ClassObject base;
   Node* head;
@@ -18,8 +23,18 @@ struct C_List {
  * new/dest
  ******************************/
 C_List* C_List_new(void) {
+  if (!Interface_initialized((Interface*)&C_List_i_hashable)) {
+    C_List_i_hashable = IHashable_construct(C_List_equals, C_List_hash);
+    C_List_i_formattable =
+        IFormattable_construct_format(C_List_to_str_R, C_List_to_str_format_R);
+
+    C_List_interfaces[0] = (Interface*)&C_List_i_hashable;
+    C_List_interfaces[1] = (Interface*)&C_List_i_formattable;
+    C_List_interfaces[2] = null;
+  }
+
   C_List* self = allocate(sizeof(C_List));
-  self->base = ClassObject_construct(C_List_destroy, null);
+  self->base = ClassObject_construct(C_List_destroy, C_List_interfaces);
 
   self->len = 0;
   self->head = null;
@@ -256,6 +271,63 @@ void C_List_clear(C_List* self) {
   self->len = 0;
   self->head = null;
   self->tail = null;
+}
+
+u32 C_List_hash(void* self) {
+  u32 hash_code = 0;
+  C_List_Foreach(self, { hash_code = 31 * hash_code + IHashable_hash(value); });
+  return hash_code;
+}
+
+bool C_List_equals(void* a, void* b) {
+  C_List* a_cast = a;
+  C_List* b_cast = b;
+
+  if (a_cast->len != b_cast->len)
+    return false;
+
+  C_List_Foreach(a_cast, {
+    if (IHashable_equals(C_List_at_B(b_cast, iter), value)) {
+      return false;
+    }
+  });
+
+  return true;
+}
+
+C_String* C_List_to_str_format_R(void* self, C_String* format) {
+  C_String* start = format_get_value_PR(format, PS("start"));
+  C_String* end = format_get_value_PR(format, PS("end"));
+  C_String* sepparator = format_get_value_PR(format, PS("sep"));
+
+  C_List* str_list = C_List_new();
+
+  C_List_push_P(str_list, start);
+
+  C_List_Foreach(self, {
+    C_List_push_P(str_list, Pass(IFormattable_to_str_PR(value)));
+    C_List_push_P(str_list, sepparator);
+  });
+
+  if (C_List_get_len(self) != 0)
+    Unref(C_List_pop_R(str_list));
+  C_List_push_P(str_list, end);
+
+  C_String* result = C_String_join_PR(Pass(C_List_to_array_PR(str_list)));
+
+  Unref(start);
+  Unref(end);
+  Unref(sepparator);
+  Unref(str_list);
+
+  return result;
+}
+
+C_String* C_List_to_str_R(void* self) {
+  C_String* format = S("start=[;end=];sep=, ");
+  C_String* result = C_List_to_str_format_R(self, format);
+  Unref(format);
+  return result;
 }
 
 // {{{ _R _B wrappers

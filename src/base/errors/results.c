@@ -93,13 +93,13 @@ void* C_Result_force_R(C_Result* self) {
   return result;
 }
 
-void* C_Result_get_value_R(C_Result* self) {
+void* C_Result_get_value_B(C_Result* self) {
   void* result = __C_Result_get_value(self);
   Unref(result);
   return result;
 }
 
-void* C_Result_get_value_B(C_Result* self) {
+void* C_Result_get_value_R(C_Result* self) {
   void* result = __C_Result_get_value(self);
   return result;
 }

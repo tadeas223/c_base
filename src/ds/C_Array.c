@@ -1,11 +1,15 @@
+#include "c_base/base/strings/strings.h"
 #include <c_base/base/errors/errors.h>
 #include <c_base/base/memory/allocator.h>
 #include <c_base/base/memory/memory.h>
 #include <c_base/base/memory/objects.h>
-#include <c_base/ds/array.h>
+#include <c_base/ds/C_Array.h>
 #include <c_base/system.h>
 
 GenericValImpl_ErrorCode(EG_Array)
+
+static Interface* C_Array_interfaces[2];
+static IFormattable C_Array_i_formattable = {0};
 
 struct C_Array {
   ClassObject base;
@@ -17,8 +21,16 @@ struct C_Array {
  * new/dest
  ******************************/
 C_Array* C_Array_new(u32 len) {
+  if (!Interface_initialized((Interface*)&C_Array_i_formattable)) {
+    C_Array_i_formattable = IFormattable_construct_format(
+        C_Array_to_str_R, C_Array_to_str_format_R);
+
+    C_Array_interfaces[0] = (Interface*)&C_Array_i_formattable;
+    C_Array_interfaces[1] = null;
+  }
+
   C_Array* self = allocate(sizeof(C_Array));
-  self->base = ClassObject_construct(C_Array_destroy, null);
+  self->base = ClassObject_construct(C_Array_destroy, C_Array_interfaces);
 
   self->len = len;
   self->data = allocate(len * sizeof(void*));

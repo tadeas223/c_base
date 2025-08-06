@@ -1,8 +1,9 @@
 #ifndef VARARGS_H
 #define VARARGS_H
 
+#include "c_base/base/strings/strings.h"
+#include "c_base/ds/C_List.h"
 #include "c_base/ds/array.h"
-#include "c_base/ds/list.h"
 #include <stdarg.h>
 
 #define ArgsEnd (u64)0xDEADAF
@@ -15,6 +16,7 @@
     va_copy(__args_copy, __args);                                              \
                                                                                \
     C_List* args_list = C_List_new();                                          \
+    C_List_push_P(args_list, param);                                           \
     void* value = va_arg(__args_copy, void*);                                  \
     while ((u64)value != ArgsEnd) {                                            \
       C_List_push_P(args_list, value);                                         \
@@ -25,6 +27,15 @@
                                                                                \
     va_end(__args);                                                            \
     va_end(__args_copy);                                                       \
-  } while (0);
+  } while (0)
+
+#define ArgsLoad(args, argc, argv)                                             \
+  do {                                                                         \
+    args = C_Array_new(argc);                                                  \
+    C_ArrayForeach(args, {                                                     \
+      C_Array_put_P(args, iter,                                                \
+                    Pass(C_String_new(argv[iter], cstr_len(argv[iter]))));     \
+    });                                                                        \
+  } while (0)
 
 #endif

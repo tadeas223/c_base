@@ -1,6 +1,7 @@
 #ifndef LIST_H
 #define LIST_H
 
+#include "c_base/base/strings/strings.h"
 #include "c_base/ds/array.h"
 #include <c_base/base/errors/errors.h>
 
@@ -54,6 +55,12 @@ void* C_List_at_R(C_List* self, u32 index);
 void* C_List_remove_R(C_List* self, u32 index);
 
 void C_List_clear(C_List* self);
+
+u32 C_List_hash(void* self);
+bool C_List_equals(void* a, void* b);
+
+C_String* C_List_to_str_format_R(void* self, C_String* format);
+C_String* C_List_to_str_R(void* self);
 
 /******************************
  * get/set

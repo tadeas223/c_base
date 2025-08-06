@@ -1,6 +1,7 @@
+#include "c_base/base/strings/format.h"
 #include "c_base/base/strings/string_convert.h"
+#include "c_base/ds/C_List.h"
 #include "c_base/ds/array.h"
-#include "c_base/ds/list.h"
 #include <c_base/base/errors/errors.h>
 #include <c_base/base/memory/allocator.h>
 #include <c_base/base/memory/memory.h>
@@ -18,6 +19,11 @@ struct C_String {
   ascii* chars;
   bool allocated;
 };
+
+static const ClassObject __ClassObject_zero = {0};
+static C_String __C_StringEmpty = {
+    .base = __ClassObject_zero, .len = 0, .chars = "", .allocated = false};
+C_String* C_StringEmpty = &__C_StringEmpty;
 
 /******************************
  * IFormattable
@@ -136,6 +142,20 @@ C_String* C_String_new_view(StringView view) {
   return C_String_new(view.chars, view.len);
 }
 
+C_String* C_String_new_copy(ascii* chars, u32 len) {
+  ascii* new_chars = allocate(len);
+  mem_copy(new_chars, chars, len);
+
+  C_String* self = C_String_new(new_chars, len);
+  self->allocated = true;
+
+  return self;
+}
+
+C_String* C_String_new_view_copy(StringView view) {
+  return C_String_new_copy(view.chars, view.len);
+}
+
 C_String* C_String_new_empty(u32 len) {
   C_String_init_interfaces();
   C_String* self = allocate(sizeof(C_String));
@@ -193,19 +213,16 @@ C_String* C_String_substr_R(C_String* original, u32 index, u32 len) {
 }
 
 C_String* C_String_concat_PR(C_String* string, ...) {
-  Ref(string);
   C_String* result;
 
   C_Array* args;
   VarargsLoad(args, string);
 
-  u32 len = string->len;
+  u32 len = 0;
   u32 index = 0;
   C_ArrayForeach(args, { len += ((C_String*)value)->len; });
 
   result = C_String_new_empty(len);
-  mem_copy(C_String_get_chars(result), C_String_get_chars(string), string->len);
-  index += string->len;
   C_ArrayForeach(args, {
     C_String* loop_string = value;
     mem_copy(C_String_get_chars(result) + index,
@@ -213,7 +230,6 @@ C_String* C_String_concat_PR(C_String* string, ...) {
     index += loop_string->len;
   });
 
-  Unref(string);
   Unref(args);
   return result;
 }
@@ -264,3 +280,60 @@ C_String* C_String_join_PR(C_Array* strings) {
 ascii* C_String_get_chars(C_String* self) { return self->chars; }
 
 u32 C_String_get_len(C_String* self) { return self->len; }
+
+/******************************
+ * cstr conversion
+ ******************************/
+
+u32 cstr_len(char* cstr) {
+  u32 len = 0;
+  while (cstr[len]) {
+    len++;
+  }
+  return len;
+}
+
+C_Ptr* C_String_to_cstr(C_String* self) {
+  u32 len = C_String_get_len(self);
+  C_Ptr* result = C_Ptr_new_size(len + 1);
+  ((u8*)C_Ptr_get_ptr(result))[len] = '\0';
+
+  mem_copy(C_Ptr_get_ptr(result), C_String_get_chars(self), len);
+
+  return result;
+}
+
+C_String* C_Array_to_str_format_R(void* self, C_String* format) {
+  C_String* start = format_get_value_PR(format, PS("start"));
+  C_String* end = format_get_value_PR(format, PS("end"));
+  C_String* sep = format_get_value_PR(format, PS("sep"));
+
+  C_List* str_list = C_List_new();
+  C_List_push_P(str_list, start);
+
+  C_ArrayForeach(self, {
+    C_List_push_P(str_list, value);
+    C_List_push_P(str_list, sep);
+  });
+
+  if (C_Array_get_len(self) != 0)
+    Unref(C_List_pop_R(str_list));
+
+  C_List_push_P(str_list, end);
+
+  C_String* result = C_String_join_PR(Pass(C_List_to_array_PR(str_list)));
+
+  Unref(start);
+  Unref(end);
+  Unref(sep);
+  Unref(str_list);
+
+  return result;
+}
+
+C_String* C_Array_to_str_R(void* self) {
+  C_String* format = S("start=[;end=];sep=, ");
+  C_String* result = C_Array_to_str_format_R(self, format);
+  Unref(format);
+  return result;
+}

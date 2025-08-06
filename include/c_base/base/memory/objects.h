@@ -78,4 +78,16 @@ u32 IHashable_hash(void* self);
  ******************************/
 u32 hash(void* ptr, u64 size);
 
+/******************************
+ * C_Ptr
+ ******************************/
+typedef struct C_Ptr C_Ptr;
+
+C_Ptr* C_Ptr_new(void* ptr);
+C_Ptr* C_Ptr_new_size(u64 size);
+
+void* C_Ptr_get_ptr(C_Ptr* self);
+
+void C_Ptr_destroy(void* self);
+
 #endif

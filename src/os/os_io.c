@@ -17,39 +17,16 @@ GenericValImpl_ErrorCode(EG_OS_IO)
 #if defined(PLATFORM_LINUX)
 #include "impl/linux/linux_io.c"
 #else
-#error "os_io.h -> unsupported platform"
+#error "os_io.c -> unsupported platform"
 #endif
 
 void console_write_P(void* obj, ...) {
-  Ref(obj);
-
   C_Array* args;
   VarargsLoad(args, obj);
 
-  C_String* text;
-  if (ClassObject_contains_interface(obj, IFormattable_id)) {
-    text = IFormattable_to_str_PR(obj);
-  } else {
-    text = ptr_to_str_R(obj);
-  }
-
-  C_Result* result =
-      console_write_chars_R(C_String_get_chars(text), C_String_get_len(text));
-  if (C_Handle_u32_get_value(C_Result_force_B(result)) !=
-      C_String_get_len(text)) {
-    crash(E(EG_OS_IO, E_Unspecified,
-            SV("console_write -> invalid number or characters written")));
-  }
-  Unref(result);
-  Unref(text);
-
   C_ArrayForeach(args, {
-    C_String* text;
-    if (ClassObject_contains_interface(obj, IFormattable_id)) {
-      text = IFormattable_to_str_PR(obj);
-    } else {
-      text = ptr_to_str_R(obj);
-    }
+    C_String* text = IFormattable_to_str_PR(value);
+
     C_Result* result =
         console_write_chars_R(C_String_get_chars(text), C_String_get_len(text));
     if (C_Handle_u32_get_value(C_Result_force_B(result)) !=
@@ -62,23 +39,17 @@ void console_write_P(void* obj, ...) {
   });
 
   Unref(args);
-  Unref(obj);
 }
 
 void console_write_ln_P(void* obj, ...) {
-  Ref(obj);
-
   C_Array* args;
   VarargsLoad(args, obj);
-
-  console_write_P(obj, ArgsEnd);
 
   C_ArrayForeach(args, { console_write_P(value, ArgsEnd); });
 
   console_write_P(PS("\n"), ArgsEnd);
 
   Unref(args);
-  Unref(obj);
 }
 
 void console_write_single_P(void* obj) {
@@ -86,13 +57,14 @@ void console_write_single_P(void* obj) {
   console_write_P(obj, ArgsEnd);
   Unref(obj);
 }
+
 void console_write_single_ln_P(void* obj) {
   Ref(obj);
   console_write_ln_P(obj, ArgsEnd);
   Unref(obj);
 }
 
-C_String* console_read_until_R(u8 character) {
+C_String* console_read_until_R(ascii character) {
 #define READ_LEN 1024
   ascii buffer[READ_LEN];
   ascii* chars = null;

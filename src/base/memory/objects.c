@@ -29,9 +29,9 @@ bool Interface_initialized(Interface* self) { return self->id != 0; }
  ******************************/
 IdImpl(ClassObject)
 
-    // construct
-    ClassObject
-    ClassObject_construct(void (*destroy)(void* self), Interface** interfaces) {
+// construct
+ClassObject ClassObject_construct(void (*destroy)(void* self),
+                                  Interface** interfaces) {
   ClassObject self;
   self.class = Class_construct(ClassObject_id);
 
@@ -133,9 +133,9 @@ crash:
  ******************************/
 IdImpl(IHashable)
 
-    // construct
-    IHashable IHashable_construct(bool (*equals)(void* a, void* b),
-                                  u32 (*hash)(void* self)) {
+// construct
+IHashable IHashable_construct(bool (*equals)(void* a, void* b),
+                              u32 (*hash)(void* self)) {
   IHashable self;
   self.interface = Interface_construct(IHashable_id);
 
@@ -147,6 +147,8 @@ IdImpl(IHashable)
 
 // methods
 bool IHashable_equals(void* a, void* b) {
+  if (a == b)
+    return true;
   IHashable* i_hashable =
       (IHashable*)ClassObject_get_interface(a, IHashable_id);
   return i_hashable->equals(a, b);
@@ -173,4 +175,36 @@ u32 hash(void* ptr, u64 size) {
   }
 
   return hash;
+}
+
+/******************************
+ * C_Ptr
+ ******************************/
+struct C_Ptr {
+  ClassObject base;
+
+  void* ptr;
+};
+
+C_Ptr* C_Ptr_new(void* ptr) {
+  C_Ptr* self = allocate(sizeof(C_Ptr));
+  self->base = ClassObject_construct(C_Ptr_destroy, null);
+
+  self->ptr = ptr;
+  return self;
+}
+
+C_Ptr* C_Ptr_new_size(u64 size) {
+  C_Ptr* self = allocate(sizeof(C_Ptr));
+  self->base = ClassObject_construct(C_Ptr_destroy, null);
+
+  self->ptr = allocate(size);
+  return self;
+}
+
+void* C_Ptr_get_ptr(C_Ptr* self) { return self->ptr; }
+
+void C_Ptr_destroy(void* self) {
+  C_Ptr* self_cast = self;
+  deallocate(self_cast->ptr);
 }

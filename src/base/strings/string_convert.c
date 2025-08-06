@@ -102,8 +102,10 @@ C_Result* /* u32 */ u32_parse_PR(C_String* string) {
     u32 c = C_String_at(string, i);
 
     if (c < '0' || c > '9') {
-      crash(E(EG_Strings, E_InvalidArgument,
-              SV("u32_parse -> string cannot be parsed to u32")));
+      result = C_Result_new_err(
+          E(EG_Strings, E_InvalidArgument,
+            SV("u32_parse -> string cannot be parsed to u32")));
+      goto ret;
     }
 
     C_Result* math_result = u32_mult_safe_R(result_value, 10);
@@ -153,8 +155,10 @@ C_Result* /* s32 */ s32_parse_R(C_String* string) {
     u32 c = C_String_at(string, i);
 
     if (c < '0' || c > '9') {
-      crash(E(EG_Strings, E_InvalidArgument,
-              SV("u32_parse -> string cannot be parsed to u32")));
+      result = C_Result_new_err(
+          E(EG_Strings, E_InvalidArgument,
+            SV("u32_parse -> string cannot be parsed to u32")));
+      goto ret;
     }
 
     C_Result* math_result = s32_mult_safe_R(result_value, 10);

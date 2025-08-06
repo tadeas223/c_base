@@ -6,7 +6,7 @@
 
 GenericVal_ErrorCode(EG_Memory)
 
-#define SetZero(val) mem_set((val), 0, sizeof(*(val)) - 1)
+#define SetZero(val) mem_set((void*)(val), 0, sizeof(*(val)) - 1)
 #define MemAlign sizeof(void*)
 
 void mem_copy(void* dest, void* src, u64 size);

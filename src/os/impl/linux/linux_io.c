@@ -1,3 +1,5 @@
+#include "c_base/base/memory/allocator.h"
+#include "c_base/base/strings/strings.h"
 #include <c_base/base/errors/errors.h>
 #include <c_base/base/errors/results.h>
 #include <c_base/base/memory/handles.h>
@@ -7,7 +9,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-C_Result* /* u32 */ console_read_chars_R(void* chars, u32 len) {
+C_Result* /* u32 */ console_read_chars_R(ascii* chars, u32 len) {
   C_Result* result;
   int read_result = read(0, chars, len);
   if (read_result < 0) {
@@ -27,7 +29,7 @@ ret:
   return result;
 }
 
-C_Result* /* u32 */ console_write_chars_R(void* chars, u32 len) {
+C_Result* /* u32 */ console_write_chars_R(ascii* chars, u32 len) {
   int write_result = write(1, chars, len);
   C_Result* result;
   if (write_result < 0) {
@@ -44,5 +46,140 @@ C_Result* /* u32 */ console_write_chars_R(void* chars, u32 len) {
   }
 
 ret:
+  return result;
+}
+
+/******************************
+ * files
+ ******************************/
+struct C_File {
+  ClassObject base;
+  int descriptor;
+  bool closed;
+};
+
+static int file_flags(FileMode mode) {
+  switch (mode) {
+  case FILE_R:
+    return O_RDONLY;
+  case FILE_W:
+    return O_WRONLY;
+  case FILE_RW:
+    return O_RDWR;
+  case FILE_A:
+    return O_APPEND | O_WRONLY;
+  case FILE_AR:
+    return O_APPEND | O_RDWR;
+
+  default:
+    return 0;
+  }
+}
+
+C_Result* C_File_new_open_P(C_String* path, FileMode mode) {
+  Ref(path);
+  C_Result* result;
+
+  C_Ptr* cstr = C_String_to_cstr(path);
+  int descriptor = open(C_Ptr_get_ptr(cstr), file_flags(mode));
+  Unref(cstr);
+
+  if (descriptor < 0) {
+    result =
+        C_Result_new_err(E(EG_OS_IO, E_Unspecified,
+                           SV("C_File_new_open_P -> failed to open file")));
+    goto ret;
+  }
+
+  C_File* self = allocate(sizeof(C_File));
+  self->base = ClassObject_construct(C_File_destroy, null);
+
+  self->descriptor = descriptor;
+  self->closed = false;
+
+  result = C_Result_new_ok_P(Pass(self));
+ret:
+  Unref(path);
+  return result;
+}
+
+C_Result* C_File_new_create_P(C_String* path, FileMode mode) {
+  Ref(path);
+  C_Result* result;
+
+  C_Ptr* cstr = C_String_to_cstr(path);
+  int descriptor =
+      open(C_Ptr_get_ptr(cstr), file_flags(mode) | O_CREAT | O_TRUNC, 0644);
+  Unref(cstr);
+
+  if (descriptor < 0) {
+    result =
+        C_Result_new_err(E(EG_OS_IO, E_Unspecified,
+                           SV("C_File_new_create_P -> failed to create file")));
+    goto ret;
+  }
+
+  C_File* self = allocate(sizeof(C_File));
+  self->base = ClassObject_construct(C_File_destroy, null);
+
+  self->descriptor = descriptor;
+  self->closed = false;
+
+  result = C_Result_new_ok_P(Pass(self));
+ret:
+  Unref(path);
+  return result;
+}
+
+C_EmptyResult* C_File_close(C_File* self) {
+  if (self->closed)
+    return C_EmptyResult_new_ok();
+  C_EmptyResult* result;
+
+  int close_result = close(self->descriptor);
+  if (close_result < 0) {
+    result = C_EmptyResult_new_err(
+        E(EG_OS_IO, E_Unspecified, SV("C_File_close -> failed to close file")));
+  } else {
+    self->closed = true;
+    result = C_EmptyResult_new_ok();
+  }
+
+  return result;
+}
+
+void C_File_destroy(void* self) {
+  C_EmptyResult* close_result = C_File_close(self);
+  C_EmptyResult_force(close_result);
+  Unref(close_result);
+}
+
+C_Result* /* u32 */ C_File_read_chars_R(C_File* self, ascii* chars, u32 len) {
+  int read_result = read(self->descriptor, chars, len);
+
+  C_Result* result;
+  if (read_result < 0) {
+    result = C_Result_new_err(
+        E(EG_OS_IO, E_Unspecified,
+          SV("C_File_read_chars_R -> failed to read from file")));
+  } else {
+    result = C_Result_new_ok_P(Pass(C_Handle_u32_new(read_result)));
+  }
+
+  return result;
+}
+
+C_Result* /* u32 */ C_File_write_chars_R(C_File* self, ascii* chars, u32 len) {
+  int write_result = write(self->descriptor, chars, len);
+
+  C_Result* result;
+  if (write_result < 0) {
+    result = C_Result_new_err(
+        E(EG_OS_IO, E_Unspecified,
+          SV("C_File_read_chars_R -> failed to read from file")));
+  } else {
+    result = C_Result_new_ok_P(Pass(C_Handle_u32_new(write_result)));
+  }
+
   return result;
 }

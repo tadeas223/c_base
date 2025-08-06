@@ -15,5 +15,5 @@ MemoryBase* global_memory_base = &os_base;
 #if defined(PLATFORM_LINUX)
 #include "impl/linux/linux_mem.c"
 #else
-#error "os_mem.h -> unsupported platform"
+#error "os_mem.c -> unsupported platform"
 #endif

@@ -2,7 +2,6 @@
 #include "c_base/base/memory/memory_base.h"
 #include "c_base/system.h"
 #include <c_base/base/memory/allocator.h>
-#include <stdlib.h>
 
 typedef struct AllocatorNode {
   struct AllocatorNode* next;
@@ -126,6 +125,10 @@ void Allocator_deallocate(Allocator* self, void* ptr) {
   AllocatorNode* ptr_node = (AllocatorNode*)((b8*)ptr - AllocatorNodeAligned);
 
   while (loop_node < ptr_node) {
+    if (loop_node == null) {
+      break;
+    }
+
     prev_node = loop_node;
     loop_node = loop_node->next;
   }

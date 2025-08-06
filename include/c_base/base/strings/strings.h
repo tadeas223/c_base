@@ -1,11 +1,11 @@
 #ifndef STRINGS_H
 #define STRINGS_H
 
-#include "c_base/ds/array.h"
 #include <c_base/base/errors/errors.h>
 #include <c_base/base/memory/temp.h>
 #include <c_base/base/strings/string_view.h>
 #include <c_base/base/types.h>
+#include <c_base/ds/C_Array.h>
 
 #define S(cstr) C_String_new((ascii*)cstr, sizeof(cstr) - 1)
 #define PS(cstr) Pass(S(cstr))
@@ -14,6 +14,8 @@ GenericVal_ErrorCode(EG_Strings)
 
 // implements: IFormattable, IHashable
 typedef struct C_String C_String;
+
+extern C_String* C_StringEmpty;
 
 typedef struct {
   Interface interface;
@@ -40,6 +42,8 @@ C_String* IFormattable_to_str_format_PR(void* self, C_String* format);
 C_String* C_String_new(ascii* chars, u32 len);
 C_String* C_String_new_view(StringView view);
 C_String* C_String_new_empty(u32 len);
+C_String* C_String_new_view_copy(StringView view);
+C_String* C_String_new_copy(ascii* chars, u32 len);
 
 void C_String_destroy(void* self);
 
@@ -56,10 +60,21 @@ C_String* C_String_concat_PR(C_String* string, ...);
 C_Array* /* C_String* */ C_String_split_R(C_String* string, ascii splitter);
 C_String* C_String_join_PR(C_Array* /* C_String* */ strings);
 
+bool C_String_equals(void* a, void* b);
 /******************************
  * get/set
  ******************************/
 ascii* C_String_get_chars(C_String* self);
 u32 C_String_get_len(C_String* self);
+
+/******************************
+ * cstr conversion
+ ******************************/
+u32 cstr_len(char* cstr);
+C_Ptr* C_String_to_cstr(C_String* self);
+
+/* cyclic dependencies :( */
+C_String* C_Array_to_str_format_R(void* self, C_String* format);
+C_String* C_Array_to_str_R(void* self);
 
 #endif
