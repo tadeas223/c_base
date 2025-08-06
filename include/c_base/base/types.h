@@ -2,6 +2,7 @@
 #define TYPES_H
 
 #include <c_base/base/macros.h>
+#include <c_base/env.h>
 
 #define Id(name) extern const u64 Concat(name, _id);
 #define IdImpl(name)                                                           \
@@ -32,7 +33,11 @@ typedef double f64;
 #define true 1
 #define false 0
 
+#if defined(STD_C99) || defined(STD_C89)
 typedef b8 bool;
+#else
+#include <stdbool.h>
+#endif
 
 typedef void* ptr;
 
