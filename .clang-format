@@ -1,7 +1,13 @@
 BasedOnStyle: LLVM
+UseTab: Never
 PointerAlignment: Left
+AllowAllParametersOfDeclarationOnNextLine: false
+AlignAfterOpenBracket: DontAlign
+ContinuationIndentWidth: 2
+IndentWidth: 2
 
 StatementMacros:
+ - CreateTestHook
  - Id
  - IdImpl
  - GenericVal_ErrorCode

@@ -6,8 +6,9 @@
 #include <c_base/ds/C_Array.h>
 #include <c_base/system.h>
 
-static Interface* C_Array_interfaces[2];
+static Interface* C_Array_interfaces[3];
 static IFormattable C_Array_i_formattable = {0};
+static IHashable C_Array_i_hashable = {0};
 
 struct C_Array {
   ClassObject base;
@@ -23,8 +24,11 @@ C_Array* C_Array_new(u32 len) {
     C_Array_i_formattable = IFormattable_construct_format(
         C_Array_to_str_R, C_Array_to_str_format_R);
 
+    C_Array_i_hashable = IHashable_construct(C_Array_equals, C_Array_hash);
+
     C_Array_interfaces[0] = (Interface*)&C_Array_i_formattable;
-    C_Array_interfaces[1] = null;
+    C_Array_interfaces[1] = (Interface*)&C_Array_i_hashable;
+    C_Array_interfaces[2] = null;
   }
 
   C_Array* self = allocate(sizeof(C_Array));
@@ -87,6 +91,29 @@ static void* __C_Array_peek_front(C_Array* self) {
 
   Ref(self->data[0]);
   return self->data[0];
+}
+
+u32 C_Array_hash(void* self) {
+  u32 hash_code = 0;
+  C_ArrayForeach(self, { hash_code = 31 * hash_code + IHashable_hash(value); });
+  return hash_code;
+}
+
+bool C_Array_equals(void* a, void* b) {
+  C_Array* a_cast = a;
+  C_Array* b_cast = b;
+
+  if (a_cast->len != b_cast->len) {
+    return false;
+  }
+
+  C_ArrayForeach(a_cast, {
+    if (!IHashable_equals(C_Array_at_B(b_cast, iter), value)) {
+      return false;
+    }
+  });
+
+  return true;
 }
 
 /******************************

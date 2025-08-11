@@ -312,12 +312,13 @@ C_String* C_Array_to_str_format_R(void* self, C_String* format) {
   C_List_push_P(str_list, start);
 
   C_ArrayForeach(self, {
-    C_List_push_P(str_list, value);
+    C_List_push_P(str_list, Pass(IFormattable_to_str_PR(value)));
     C_List_push_P(str_list, sep);
   });
 
-  if (C_Array_get_len(self) != 0)
+  if (C_Array_get_len(self) != 0) {
     Unref(C_List_pop_R(str_list));
+  }
 
   C_List_push_P(str_list, end);
 

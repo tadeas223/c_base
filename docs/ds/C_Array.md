@@ -7,7 +7,7 @@
 
 ---
 
-## *overview**
+## *overview*
 
 `C_Array` is a datastructure that should replace normal C array where possible.
 Can store objects which extend `ClassObject`.
@@ -53,6 +53,10 @@ Destroys the array and unreferences all values.
 ### **void C_Array_put_P(C_Array\* self, u32 index, void\* value)**
 Stores a value at the specified index.
 
+**crashes:**
+- `E(EG_Datastructures, E_OutOfBounds, ...)`:
+    if `index` >= length of the darray
+
 **params:**
 - `index`: Index where to store the value
 - `value`: Value to store (reference is added)
@@ -60,6 +64,10 @@ Stores a value at the specified index.
 ---
 ### **void\* C_Array_at_B(C_Array\* self, u32 index);
 Borrows the value at the specified index.
+
+**crashes:**
+- `E(EG_Datastructures, E_OutOfBounds, ...)`:
+    if `index` >= length of the darray
 
 **params:**
 - `index`: Index of the value
@@ -71,6 +79,10 @@ Borrows the value at the specified index.
 ### **void\* C_Array_at_R(C_Array\* self, u32 index)**
 Returns a reference to the value at the specified index.
 
+**crashes:**
+- `E(EG_Datastructures, E_OutOfBounds, ...)`:
+    if `index` >= length of the darray
+
 **params:**
 - `index`: Index of the value
 
@@ -81,12 +93,20 @@ Returns a reference to the value at the specified index.
 ### **void\* C_Array_peek_B(C_Array\* self)
 Borrows the last element.
 
+**crashes:**
+- `E(EG_Datastructures, E_OutOfBounds, ...)`:
+    if `index` >= length of the darray
+
 **returns:**
 - `void*`: Borrowed reference to the last element
 
 ---
 ### **void\* C_Array_peek_R(C_Array\* self)**
 Returns a reference to the last element.
+
+**crashes:**
+- `E(EG_Datastructures, E_OutOfBounds, ...)`:
+    if `index` >= length of the darray
 
 **returns:**
 - `void*`: Owned reference to the last element

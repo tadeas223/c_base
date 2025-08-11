@@ -9,7 +9,7 @@
 
 ## **overview**
 
-`C_List` is a singly linked list that stores objects which extend `ClassObject**.  
+`C_List` is a singly linked list that stores objects which extend `ClassObject`.  
 Supports pushing, popping, peeking, and indexed access.
 
 - Stores references and manages ownership (with ref/unref)
@@ -86,6 +86,10 @@ Prepends a value to the start of the list.
 ### **void\* C_List_pop_R(C_List\* self)**
 Removes and returns the last element.
 
+**crashes:**
+- `E(EG_Datastructures, E_OutOfBouds, ...)`:
+    if the list is empty
+
 **returns:**
 - `void*`: Referenced object
 
@@ -93,6 +97,10 @@ Removes and returns the last element.
 
 ### **void\* C_List_pop_front_R(C_List\* self)**
 Removes and returns the first element.
+
+**crashes:**
+- `E(EG_Datastructures, E_OutOfBouds, ...)`:
+    if the list is empty
 
 **returns:**
 - `void*`: Referenced object
@@ -102,6 +110,10 @@ Removes and returns the first element.
 ### **void\* C_List_peek_B(C_List\* self)**
 Borrows the last element.
 
+**crashes:**
+- `E(EG_Datastructures, E_OutOfBouds, ...)`:
+    if the list is empty
+
 **returns:**
 - `void*`: Borrowed reference (do not unref)
 
@@ -109,6 +121,10 @@ Borrows the last element.
 
 ### **void\* C_List_peek_R(C_List\* self)**
 Returns a reference to the last element.
+
+**crashes:**
+- `E(EG_Datastructures, E_OutOfBouds, ...)`:
+    if the list is empty
 
 **returns:**
 - `void*`: Owned reference (must be unref’d by user)
@@ -118,6 +134,10 @@ Returns a reference to the last element.
 ### **void\* C_List_peek_front_B(C_List\* self)**
 Borrows the first element.
 
+**crashes:**
+- `E(EG_Datastructures, E_OutOfBouds, ...)`:
+    if the list is empty
+
 **returns:**
 - `void*`: Borrowed reference to the first element
 
@@ -125,6 +145,10 @@ Borrows the first element.
 
 ### **void\* C_List_peek_front_R(C_List\* self)**
 Returns a reference to the first element.
+
+**crashes:**
+- `E(EG_Datastructures, E_OutOfBouds, ...)`:
+    if the list is empty
 
 **returns:**
 - `void*`: Owned reference to the first element
@@ -134,6 +158,12 @@ Returns a reference to the first element.
 ### **void C_List_add_P(C_List\* self, u32 index, void\* value)**
 Adds a value at the specified index.
 
+**crashes:**
+- `E(EG_Datastructures, E_OutOfBouds, ...)`:
+    if the list is empty
+- `E(EG_Datastructures, E_OutOfBouds, ...)`:
+    if `index` > length of the list
+
 **params:**
 - `index`: Index where to insert
 - `value`: Value to store (reference is added)
@@ -142,6 +172,12 @@ Adds a value at the specified index.
 
 ### **void\* C_List_at_B(C_List\* self, u32 index)**
 Borrows the value at the specified index.
+
+**crashes:**
+- `E(EG_Datastructures, E_OutOfBouds, ...)`:
+    if the list is empty
+- `E(EG_Datastructures, E_OutOfBouds, ...)`:
+    if `index` >= length of the list
 
 **params:**
 - `index`: Index of the value
@@ -154,6 +190,12 @@ Borrows the value at the specified index.
 ### **void\* C_List_at_R(C_List\* self, u32 index)**
 Returns a reference to the value at the specified index.
 
+**crashes:**
+- `E(EG_Datastructures, E_OutOfBouds, ...)`:
+    if the list is empty
+- `E(EG_Datastructures, E_OutOfBouds, ...)`:
+    if `index` >= length of the list
+
 **params:**
 - `index`: Index of the value
 
@@ -164,6 +206,12 @@ Returns a reference to the value at the specified index.
 
 ### **void\* C_List_remove_R(C_List\* self, u32 index)**
 Removes a value at the given index.
+
+**crashes:**
+- `E(EG_Datastructures, E_OutOfBouds, ...)`:
+    if the list is empty
+- `E(EG_Datastructures, E_OutOfBouds, ...)`:
+    if `index` >= length of the list
 
 **params:**
 - `index`: Index of the value to remove

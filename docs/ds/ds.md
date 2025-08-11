@@ -12,3 +12,4 @@ Error group that is used when any action in any datastructure fails.
 ## contents
 - [C_List](C_List.md)
 - [C_Array](C_Array.md)
+- [C_DArray](C_DArray.md)

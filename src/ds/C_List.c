@@ -313,8 +313,9 @@ C_String* C_List_to_str_format_R(void* self, C_String* format) {
     C_List_push_P(str_list, sepparator);
   });
 
-  if (C_List_get_len(self) != 0)
+  if (C_List_get_len(self) != 0) {
     Unref(C_List_pop_R(str_list));
+  }
   C_List_push_P(str_list, end);
 
   C_String* result = C_String_join_PR(Pass(C_List_to_array_PR(str_list)));

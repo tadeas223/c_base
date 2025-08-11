@@ -37,3 +37,4 @@ install_subdir('include/c_base', install_dir: 'include')
 
 executable('main', 'src/main.c', link_with: lib, include_directories: incl_dirs)
 
+subdir('test')

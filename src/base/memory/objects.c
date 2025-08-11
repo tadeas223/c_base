@@ -1,5 +1,6 @@
 #include <c_base/base/errors/errors.h>
 #include <c_base/base/memory/allocator.h>
+#include <c_base/base/memory/memory.h>
 #include <c_base/base/memory/objects.h>
 #include <c_base/system.h>
 
@@ -30,8 +31,8 @@ bool Interface_initialized(Interface* self) { return self->id != 0; }
 IdImpl(ClassObject)
 
 // construct
-ClassObject ClassObject_construct(void (*destroy)(void* self),
-                                  Interface** interfaces) {
+ClassObject ClassObject_construct(
+  void (*destroy)(void* self), Interface** interfaces) {
   ClassObject self;
   self.class = Class_construct(ClassObject_id);
 
@@ -42,8 +43,8 @@ ClassObject ClassObject_construct(void (*destroy)(void* self),
   return self;
 }
 
-ClassObject ClassObject_construct_extend(u32 id, void (*destroy)(void* self),
-                                         Interface** interfaces) {
+ClassObject ClassObject_construct_extend(
+  u32 id, void (*destroy)(void* self), Interface** interfaces) {
   ClassObject self;
   self.class = Class_construct(id);
 
@@ -73,9 +74,14 @@ void* ClassObject_ref(void* self) {
 }
 
 void ClassObject_unref(void* self) {
-  if (self == null)
+  if (self == null) {
     return;
+  }
   ClassObject* self_cast = self;
+  if (self_cast->references == 0) {
+    crash(E(EG_Memory, E_Unspecified,
+      SV("ClassObject_unref -> object was already destroyed")));
+  }
   self_cast->references--;
   refs--;
   if (self_cast->references == 0) {
@@ -94,9 +100,11 @@ void* ClassObject_pass(void* self) {
 }
 
 bool ClassObject_contains_interface(void* self, u64 id) {
-  if (self == null)
-    return false;
   ClassObject* self_cast = self;
+  if (self_cast->interfaces == null) {
+    return false;
+  }
+
   u32 i = 0;
   while (self_cast->interfaces[i]) {
     if (self_cast->interfaces[i]->id == id) {
@@ -123,8 +131,8 @@ Interface* ClassObject_get_interface(void* self, u64 id) {
 
 crash:
   crash(E(EG_Unspecified, E_InvalidArgument,
-          SV("ClassObject_get_interfaces -> object does not implement this "
-             "interface")));
+    SV("ClassObject_get_interfaces -> object does not implement this "
+       "interface")));
   return null;
 }
 
@@ -134,8 +142,8 @@ crash:
 IdImpl(IHashable)
 
 // construct
-IHashable IHashable_construct(bool (*equals)(void* a, void* b),
-                              u32 (*hash)(void* self)) {
+IHashable IHashable_construct(
+  bool (*equals)(void* a, void* b), u32 (*hash)(void* self)) {
   IHashable self;
   self.interface = Interface_construct(IHashable_id);
 
@@ -150,13 +158,13 @@ bool IHashable_equals(void* a, void* b) {
   if (a == b)
     return true;
   IHashable* i_hashable =
-      (IHashable*)ClassObject_get_interface(a, IHashable_id);
+    (IHashable*)ClassObject_get_interface(a, IHashable_id);
   return i_hashable->equals(a, b);
 }
 
 u32 IHashable_hash(void* self) {
   IHashable* i_hashable =
-      (IHashable*)ClassObject_get_interface(self, IHashable_id);
+    (IHashable*)ClassObject_get_interface(self, IHashable_id);
   return i_hashable->hash(self);
 }
 

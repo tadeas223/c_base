@@ -59,6 +59,7 @@ SToStr(s16)
 SToStr(s32)
 SToStr(s64)
 
+/* AI generated :(*/
 C_String* ptr_to_str_R(void* ptr) {
   if (ptr == null) {
     return S("null");
@@ -66,28 +67,28 @@ C_String* ptr_to_str_R(void* ptr) {
 
   u64 value = (u64)ptr;
 
-  u32 len = 2 + sizeof(ptr) * 2;
-  ascii* chars = allocate(len);
+  u32 max_digits = sizeof(void*) * 2;
+  u32 buf_len = 2 + max_digits;
 
-  ascii* reverse_chars = allocate(len - 2);
-  u32 reverse_len = 0;
-
+  ascii* chars = allocate(buf_len);
   chars[0] = '0';
   chars[1] = 'x';
 
-  while (value != 0) {
+  u32 i = 0;
+  for (; value != 0; ++i) {
     u8 digit = value % 16;
-    reverse_chars[reverse_len++] = digit_to_hex(digit);
+    chars[2 + i] = digit_to_hex(digit);
     value /= 16;
   }
 
-  for (u32 i = 0; i < reverse_len; ++i) {
-    chars[2 + i] = reverse_chars[reverse_len - 1 - i];
+  for (u32 j = 0; j < i / 2; ++j) {
+    ascii temp = chars[2 + j];
+    chars[2 + j] = chars[2 + i - 1 - j];
+    chars[2 + i - 1 - j] = temp;
   }
 
-  return C_String_new(chars, len);
+  return C_String_new(chars, 2 + i);
 }
-
 C_Result* /* u32 */ u32_parse_PR(C_String* string) {
   Ref(string);
   C_Result* result;
