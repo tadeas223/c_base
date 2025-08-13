@@ -50,7 +50,7 @@ void C_DArray_destroy(void* self) {
   deallocate(self_cast->data);
 }
 
-C_Array* C_DArray_to_array_P(C_DArray* self) {
+C_Array* C_DArray_to_array_PR(C_DArray* self) {
   Ref(self);
   C_Array* array = C_Array_new(self->len);
   C_DArrayForeach(self, { C_Array_put_P(array, iter, value); });

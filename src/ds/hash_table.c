@@ -68,11 +68,11 @@ void C_HashTable_put_P(C_HashTable* self, void* key, void* value) {
     C_Array_put_P(self->data, index, Pass(list));
   }
 
-  C_List_Foreach(list, {
+  C_ListForeach(list, {
     C_KeyValue* key_value = value;
     if (IHashable_equals(key_value->key, key)) {
       crash(E(EG_Datastructures, E_InvalidPointer,
-              SV("C_HashTable_put_P -> key is already in the hash table")));
+        SV("C_HashTable_put_P -> key is already in the hash table")));
     }
   });
 
@@ -89,11 +89,11 @@ static void* __C_HashTable_at_P(C_HashTable* self, void* key) {
 
   if (list == null) {
     crash(E(EG_Datastructures, E_InvalidPointer,
-            SV("__C_HashTable_at -> key is not in the hash table")));
+      SV("__C_HashTable_at -> key is not in the hash table")));
   }
 
   void* val = 0;
-  C_List_Foreach(list, {
+  C_ListForeach(list, {
     C_KeyValue* key_value = value;
     if (IHashable_equals(key_value->key, key)) {
       val = key_value->value;
@@ -116,7 +116,7 @@ bool C_HashTable_contains(C_HashTable* self, void* key) {
     goto ret;
   }
 
-  C_List_Foreach(list, {
+  C_ListForeach(list, {
     C_KeyValue* key_value = value;
     if (IHashable_equals(key_value->key, key)) {
       result = true;
@@ -136,10 +136,10 @@ void* C_HashTable_remove_R(C_HashTable* self, void* key) {
   void* result = null;
   if (list == null) {
     crash(E(EG_Datastructures, E_InvalidPointer,
-            SV("C_HashTable_remove_R -> key is not in the hash table")));
+      SV("C_HashTable_remove_R -> key is not in the hash table")));
   }
 
-  C_List_Foreach(list, {
+  C_ListForeach(list, {
     C_KeyValue* key_value = value;
     if (IHashable_equals(key_value->key, key)) {
       result = Ref(key_value->value);
@@ -150,7 +150,7 @@ void* C_HashTable_remove_R(C_HashTable* self, void* key) {
 
   if (result == null) {
     crash(E(EG_Datastructures, E_InvalidPointer,
-            SV("C_HashTable_remove_R -> key is not in the hash table")));
+      SV("C_HashTable_remove_R -> key is not in the hash table")));
   }
 
 ret:

@@ -21,6 +21,8 @@ The array has a static length, and the elements can be only added with `C_Array_
 ## **macros**
 
 ### **C_ArrayForeach(array, code)**
+> *tested*
+
 Iterates over all elements in the array.
 
 exposes variables:
@@ -37,6 +39,8 @@ C_ArrayForeach(array, {
 ## functions**
 
 ### **C_Array\* C_Array_new(u32 len)**
+> *tested*
+
 Creates and initializes a new `C_Array` instance.
 
 **returns:**
@@ -44,6 +48,8 @@ Creates and initializes a new `C_Array` instance.
 
 ---
 ### **void C_Array_destroy(void\* self)**
+> *tested*
+
 Destroys the array and unreferences all values.
 
 **notes:**
@@ -51,6 +57,8 @@ Destroys the array and unreferences all values.
 
 ---
 ### **void C_Array_put_P(C_Array\* self, u32 index, void\* value)**
+> *tested*
+
 Stores a value at the specified index.
 
 **crashes:**
@@ -63,6 +71,8 @@ Stores a value at the specified index.
 
 ---
 ### **void\* C_Array_at_B(C_Array\* self, u32 index);
+> *tested*
+
 Borrows the value at the specified index.
 
 **crashes:**
@@ -77,6 +87,8 @@ Borrows the value at the specified index.
 
 ---
 ### **void\* C_Array_at_R(C_Array\* self, u32 index)**
+> *tested*
+
 Returns a reference to the value at the specified index.
 
 **crashes:**
@@ -91,6 +103,8 @@ Returns a reference to the value at the specified index.
 
 ---
 ### **void\* C_Array_peek_B(C_Array\* self)
+> *tested*
+
 Borrows the last element.
 
 **crashes:**
@@ -102,6 +116,8 @@ Borrows the last element.
 
 ---
 ### **void\* C_Array_peek_R(C_Array\* self)**
+> *tested*
+
 Returns a reference to the last element.
 
 **crashes:**
@@ -113,6 +129,8 @@ Returns a reference to the last element.
 
 ---
 ### **void\* C_Array_peek_front_B(C_Array\* self)
+> *tested*
+
 Borrows the the first element.
 
 **returns:**
@@ -121,6 +139,8 @@ Borrows the the first element.
 ---
 
 ### **void\* C_Array_peek_front_R(C_Array\* self)**
+> *tested*
+
 Returns a reference to the first element.
 
 **returns:**
@@ -128,6 +148,8 @@ Returns a reference to the first element.
 
 ---
 ### **bool C_Array_equals(void\* a, void\* b)**
+> *tested*
+
 Checks all elements in both arrays. If the arrays contain the same elements this function returns true.
 
 **returns:**
@@ -135,6 +157,8 @@ Checks all elements in both arrays. If the arrays contain the same elements this
 
 ---
 ### **u32 C_Array_hash(void\* self)**
+> *not tested*: cannot test
+
 Hashes the array by hashing all its elements and adding it together.
 
 **notes:**
@@ -145,14 +169,20 @@ Hashes the array by hashing all its elements and adding it together.
 
 ---
 ### **C_String\* C_Array_to_str_format_R(void\* self, C_String* format)**
+> *tested*
+
 Documented in [strings.h](../base/strings/strings.h)
 
 ---
 ### **C_String\* C_Array_to_str_R(void\* self, C_String* format)**
+> *not tested*: format may change in the future
+
 Documented in [strings.h](../base/strings/strings.h)
 
 ---
 ### **u32 C_Array_get_len(C_Array\* self)**
+> *not tested*: too simple
+
 Returns the number of elements in the array.
 
 **returns:**

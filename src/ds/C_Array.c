@@ -21,8 +21,8 @@ struct C_Array {
  ******************************/
 C_Array* C_Array_new(u32 len) {
   if (!Interface_initialized((Interface*)&C_Array_i_formattable)) {
-    C_Array_i_formattable = IFormattable_construct_format(
-        C_Array_to_str_R, C_Array_to_str_format_R);
+    C_Array_i_formattable =
+      IFormattable_construct_format(C_Array_to_str_R, C_Array_to_str_format_R);
 
     C_Array_i_hashable = IHashable_construct(C_Array_equals, C_Array_hash);
 
@@ -55,18 +55,20 @@ void C_Array_destroy(void* self) {
 void C_Array_put_P(C_Array* self, u32 index, void* value) {
   if (index >= self->len) {
     crash(E(EG_Datastructures, E_OutOfBounds,
-            SV("C_Array_put -> index is outside of the array")));
+      SV("C_Array_put -> index is outside of the array")));
   }
 
   Ref(value);
+  Ref(self);
   Unref(self->data[index]);
   self->data[index] = value;
+  Unref(self);
 }
 
 static void* __C_Array_at(C_Array* self, u32 index) {
   if (index >= self->len) {
     crash(E(EG_Datastructures, E_OutOfBounds,
-            SV("__C_Array_at -> index is outside of the array")));
+      SV("__C_Array_at -> index is outside of the array")));
   }
 
   Ref(self->data[index]);
@@ -76,7 +78,7 @@ static void* __C_Array_at(C_Array* self, u32 index) {
 static void* __C_Array_peek(C_Array* self) {
   if (self->len == 0) {
     crash(E(EG_Datastructures, E_OutOfBounds,
-            SV("__C_Array_peek -> array is empty")));
+      SV("__C_Array_peek -> array is empty")));
   }
 
   Ref(self->data[self->len - 1]);
@@ -86,7 +88,7 @@ static void* __C_Array_peek(C_Array* self) {
 static void* __C_Array_peek_front(C_Array* self) {
   if (self->len == 0) {
     crash(E(EG_Datastructures, E_OutOfBounds,
-            SV("__C_Array_peek_front -> array is empty")));
+      SV("__C_Array_peek_front -> array is empty")));
   }
 
   Ref(self->data[0]);

@@ -24,7 +24,7 @@ C_List* C_List_new(void) {
   if (!Interface_initialized((Interface*)&C_List_i_hashable)) {
     C_List_i_hashable = IHashable_construct(C_List_equals, C_List_hash);
     C_List_i_formattable =
-        IFormattable_construct_format(C_List_to_str_R, C_List_to_str_format_R);
+      IFormattable_construct_format(C_List_to_str_R, C_List_to_str_format_R);
 
     C_List_interfaces[0] = (Interface*)&C_List_i_hashable;
     C_List_interfaces[1] = (Interface*)&C_List_i_formattable;
@@ -61,14 +61,15 @@ void C_List_destroy(void* self) {
 C_Array* C_List_to_array_PR(C_List* self) {
   Ref(self);
   C_Array* array = C_Array_new(self->len);
-  C_ArrayForeach(array,
-                 { C_Array_put_P(array, iter, C_List_at_B(self, iter)); });
+  C_ArrayForeach(
+    array, { C_Array_put_P(array, iter, C_List_at_B(self, iter)); });
   Unref(self);
   return array;
 }
 
 void C_List_push_P(C_List* self, void* value) {
   Ref(value);
+  Ref(self);
   Node* new_node = allocate(sizeof(Node));
   new_node->value = value;
   new_node->next = null;
@@ -88,23 +89,30 @@ void C_List_push_P(C_List* self, void* value) {
   }
 
   self->len++;
+  Unref(self);
 }
 
 void C_List_push_front_P(C_List* self, void* value) {
   Ref(value);
+  Ref(self);
   Node* new_node = allocate(sizeof(Node));
   new_node->value = value;
   new_node->next = self->head;
 
+  if (self->len == 1) {
+    self->tail = self->head;
+  }
+
   self->head = new_node;
 
   self->len++;
+  Unref(self);
 }
 
 void* C_List_pop_R(C_List* self) {
   if (self->len == 0) {
-    crash(E(EG_Datastructures, E_OutOfBounds,
-            SV("C_List_pop_R -> list is empty")));
+    crash(
+      E(EG_Datastructures, E_OutOfBounds, SV("C_List_pop_R -> list is empty")));
   }
 
   Node* pop_node;
@@ -138,7 +146,7 @@ void* C_List_pop_R(C_List* self) {
 void* C_List_pop_front_R(C_List* self) {
   if (self->len == 0) {
     crash(E(EG_Datastructures, E_OutOfBounds,
-            SV("C_List_pop_front_R -> list is empty")));
+      SV("C_List_pop_front_R -> list is empty")));
   }
 
   Node* pop_node = self->head;
@@ -153,8 +161,8 @@ void* C_List_pop_front_R(C_List* self) {
 
 static void* __C_List_peek(C_List* self) {
   if (self->len == 0) {
-    crash(E(EG_Datastructures, E_OutOfBounds,
-            SV("__C_List_peek -> list is empty")));
+    crash(E(
+      EG_Datastructures, E_OutOfBounds, SV("__C_List_peek -> list is empty")));
   }
 
   return Ref(self->tail->value);
@@ -163,27 +171,29 @@ static void* __C_List_peek(C_List* self) {
 static void* __C_List_peek_front(C_List* self) {
   if (self->len == 0) {
     crash(E(EG_Datastructures, E_OutOfBounds,
-            SV("__C_List_peek_front -> list is empty")));
+      SV("__C_List_peek_front -> list is empty")));
   }
 
   return Ref(self->head->value);
 }
 
 void C_List_add_P(C_List* self, u32 index, void* value) {
-  if (self->len == 0) {
-    crash(
-        E(EG_Datastructures, E_OutOfBounds, SV("C_List_add -> list is empty")));
-  } else if (index > self->len) {
+  if (index > self->len) {
     crash(E(EG_Datastructures, E_OutOfBounds,
-            SV("C_List_add -> index is outside of the list")));
+      SV("C_List_add -> index is outside of the list")));
   }
 
-  Ref(value);
+  Ref(self);
 
   if (index == self->len) {
     C_List_push_P(self, value);
     goto ret;
+  } else if (index == 0) {
+    C_List_push_front_P(self, value);
+    goto ret;
   }
+
+  Ref(value);
 
   Node* new_node = allocate(sizeof(Node));
   new_node->value = value;
@@ -193,22 +203,23 @@ void C_List_add_P(C_List* self, u32 index, void* value) {
     loop_node = loop_node->next;
   }
 
-  new_node = loop_node->next;
+  new_node->next = loop_node->next;
   loop_node->next = new_node;
 
   self->len++;
 
 ret:
+  Unref(self);
   return;
 }
 
 static void* __C_List_at(C_List* self, u32 index) {
   if (self->len == 0) {
-    crash(E(EG_Datastructures, E_OutOfBounds,
-            SV("__C_List_at -> list is empty")));
+    crash(
+      E(EG_Datastructures, E_OutOfBounds, SV("__C_List_at -> list is empty")));
   } else if (index >= self->len) {
     crash(E(EG_Datastructures, E_OutOfBounds,
-            SV("__C_List_at -> index is outside of the list")));
+      SV("__C_List_at -> index is outside of the list")));
   }
 
   void* result;
@@ -234,10 +245,10 @@ ret:
 void* C_List_remove_R(C_List* self, u32 index) {
   if (self->len == 0) {
     crash(E(EG_Datastructures, E_OutOfBounds,
-            SV("__C_List_remove -> list is empty")));
+      SV("__C_List_remove -> list is empty")));
   } else if (index >= self->len) {
     crash(E(EG_Datastructures, E_OutOfBounds,
-            SV("__C_List_remove -> index is outside of the list")));
+      SV("__C_List_remove -> index is outside of the list")));
   }
 
   void* result;
@@ -279,7 +290,7 @@ void C_List_clear(C_List* self) {
 
 u32 C_List_hash(void* self) {
   u32 hash_code = 0;
-  C_List_Foreach(self, { hash_code = 31 * hash_code + IHashable_hash(value); });
+  C_ListForeach(self, { hash_code = 31 * hash_code + IHashable_hash(value); });
   return hash_code;
 }
 
@@ -290,8 +301,8 @@ bool C_List_equals(void* a, void* b) {
   if (a_cast->len != b_cast->len)
     return false;
 
-  C_List_Foreach(a_cast, {
-    if (IHashable_equals(C_List_at_B(b_cast, iter), value)) {
+  C_ListForeach(a_cast, {
+    if (!IHashable_equals(C_List_at_B(b_cast, iter), value)) {
       return false;
     }
   });
@@ -308,7 +319,7 @@ C_String* C_List_to_str_format_R(void* self, C_String* format) {
 
   C_List_push_P(str_list, start);
 
-  C_List_Foreach(self, {
+  C_ListForeach(self, {
     C_List_push_P(str_list, Pass(IFormattable_to_str_PR(value)));
     C_List_push_P(str_list, sepparator);
   });

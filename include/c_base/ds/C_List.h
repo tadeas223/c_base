@@ -6,7 +6,7 @@
 #include <c_base/ds/C_Array.h>
 #include <c_base/ds/ds.h>
 
-#define C_List_Foreach(list, code)                                             \
+#define C_ListForeach(list, code)                                              \
   do {                                                                         \
     for (u32 iter = 0; iter < C_List_get_len(list); iter++) {                  \
       void* value = C_List_at_B(list, iter);                                   \

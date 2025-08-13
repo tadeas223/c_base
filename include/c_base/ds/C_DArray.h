@@ -22,7 +22,7 @@ C_DArray* C_DArray_new_cap(u32 cap);
 
 void C_DArray_destroy(void* self);
 
-C_Array* C_DArray_to_array_P(C_DArray* self);
+C_Array* C_DArray_to_array_PR(C_DArray* self);
 
 void C_DArray_push_P(C_DArray* self, void* value);
 void C_DArray_push_front_P(C_DArray* self, void* value);

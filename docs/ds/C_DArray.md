@@ -20,6 +20,8 @@ Supports pushing, popping, peeking, and indexed access.
 ## **macros**
 
 ### **C_DArrayForeach(darray, code)**
+> *tested*
+
 Iterates over all elements in the darray.
 
 exposes variables:
@@ -54,7 +56,7 @@ Creates and initializes a new `C_DArray` instance.
 
 ---
 ### **void C_DArray_destroy(void\* self)**
-> *not tested*: too simple
+> *tested*
 
 Destroys the array and unreferences all values.
 

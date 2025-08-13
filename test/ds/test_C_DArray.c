@@ -6,6 +6,7 @@
 // clang-format on
 
 #include "../test_helpers.h"
+#include "c_base/base/memory/allocator.h"
 #include "c_base/base/strings/strings.h"
 #include <c_base/base/memory/handles.h>
 #include <c_base/base/memory/objects.h>
@@ -16,6 +17,21 @@
 
 CreateTestHook(C_DArray, C_DArray_destroy)
 CreateTestHook(C_Handle_u32, C_Handle_u32_destroy)
+
+static void test_C_DArrayForeach(void** state) {
+  (void)state;
+
+  C_DArray* darray = C_DArray_new();
+  C_DArray_push_P(darray, Pass(C_Handle_u32_new(0)));
+  C_DArray_push_P(darray, Pass(C_Handle_u32_new(1)));
+  C_DArray_push_P(darray, Pass(C_Handle_u32_new(2)));
+  C_DArray_push_P(darray, Pass(C_Handle_u32_new(3)));
+
+  C_DArrayForeach(
+    darray, { assert_int_equal(iter, C_Handle_bool_get_value(value)); });
+
+  Unref(darray);
+}
 
 static void test_C_DArray_new(void** state) {
   (void)state;
@@ -41,13 +57,29 @@ static void test_C_DArray_new_cap(void** state) {
   Unref(darray);
 }
 
-static void test_C_DArray_to_array_P(void** state) {
+static void test_C_DArray_destroy(void** state) {
+  (void)state;
+
+  C_DArray* darray = C_DArray_new();
+
+  C_Handle_u32* handle = C_Handle_u32_new(10);
+  TestHook(C_Handle_u32, handle);
+
+  C_DArray_push_P(darray, Pass(handle));
+
+  AssertHookDestroyed(1, { C_DArray_destroy(darray); });
+
+  deallocate(darray);
+  refs--; // reset refs after deallocation
+}
+
+static void test_C_DArray_to_array_PR(void** state) {
   (void)state;
 
   /* test passing */ {
     C_DArray* darray = C_DArray_new();
     TestHook(C_DArray, darray);
-    AssertHookDestroyed(1, { Unref(C_DArray_to_array_P(Pass(darray))); });
+    AssertHookDestroyed(1, { Unref(C_DArray_to_array_PR(Pass(darray))); });
   }
 
   /* test logic */ {
@@ -63,7 +95,7 @@ static void test_C_DArray_to_array_P(void** state) {
     C_Array_put_P(reference_array, 2, Pass(C_Handle_u32_new(3)));
     C_Array_put_P(reference_array, 3, Pass(C_Handle_u32_new(4)));
 
-    C_Array* result = C_DArray_to_array_P(darray);
+    C_Array* result = C_DArray_to_array_PR(darray);
 
     assert_true(C_Array_equals(reference_array, result));
 
@@ -98,6 +130,8 @@ static void test_C_DArray_push_P(void** state) {
 
     C_DArrayForeach(
       darray, { assert_int_equal(iter, C_Handle_u32_get_value(value)); });
+
+    Unref(darray);
   }
 }
 
@@ -288,10 +322,10 @@ static void test_C_DArray_at_B(void** state) {
   C_DArray_push_P(darray, Pass(C_Handle_u32_new(30)));
   C_DArray_push_P(darray, Pass(C_Handle_u32_new(40)));
 
-  C_Handle_u32* val0 = C_DArray_at_R(darray, 0);
-  C_Handle_u32* val1 = C_DArray_at_R(darray, 1);
-  C_Handle_u32* val2 = C_DArray_at_R(darray, 2);
-  C_Handle_u32* val3 = C_DArray_at_R(darray, 3);
+  C_Handle_u32* val0 = C_DArray_at_B(darray, 0);
+  C_Handle_u32* val1 = C_DArray_at_B(darray, 1);
+  C_Handle_u32* val2 = C_DArray_at_B(darray, 2);
+  C_Handle_u32* val3 = C_DArray_at_B(darray, 3);
 
   assert_int_equal(10, C_Handle_u32_get_value(val0));
   assert_int_equal(20, C_Handle_u32_get_value(val1));
@@ -421,9 +455,11 @@ static void test_C_DArray_to_str_format_R(void** state) {
 
 int main(void) {
   const struct CMUnitTest tests[] = {
+    cmocka_unit_test(test_C_DArrayForeach),
     cmocka_unit_test(test_C_DArray_new),
     cmocka_unit_test(test_C_DArray_new_cap),
-    cmocka_unit_test(test_C_DArray_to_array_P),
+    cmocka_unit_test(test_C_DArray_destroy),
+    cmocka_unit_test(test_C_DArray_to_array_PR),
     cmocka_unit_test(test_C_DArray_push_P),
     cmocka_unit_test(test_C_DArray_push_front_P),
     cmocka_unit_test(test_C_DArray_pop_R),
@@ -443,5 +479,5 @@ int main(void) {
     cmocka_unit_test(test_C_DArray_to_str_format_R),
   };
 
-  return cmocka_run_group_tests(tests, null, null);
+  return cmocka_run_group_tests(tests, null, test_teardown);
 }

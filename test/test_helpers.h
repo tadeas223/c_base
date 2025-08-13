@@ -30,4 +30,8 @@ extern u32 test_hook_destroyed;
     {code} assert_int_equal(num, test_hook_destroyed);                         \
   } while (0)
 
+int check_refs_equals_zero(void** state);
+
+int test_teardown(void** state);
+
 #endif
