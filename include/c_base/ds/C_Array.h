@@ -39,6 +39,8 @@ void* C_Array_peek_R(C_Array* self);
 void* C_Array_peek_front_B(C_Array* self);
 void* C_Array_peek_front_R(C_Array* self);
 
+void C_Array_clear(C_Array* self);
+
 bool C_Array_equals(void* a, void* b);
 u32 C_Array_hash(void* self);
 

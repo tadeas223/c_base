@@ -93,7 +93,12 @@ void ClassObject_unref(void* self) {
 void* ClassObject_pass(void* self) {
   if (self == null)
     return null;
+
   ClassObject* self_cast = self;
+  if (self_cast->references == 0) {
+    crash(E(EG_Unspecified, E_InvalidArgument,
+      SV("ClassObject_pass -> object was already passed or destroyed")));
+  }
   self_cast->references--;
   refs--;
   return self;

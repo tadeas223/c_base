@@ -2,7 +2,6 @@
 #define MATH_H
 
 #include <c_base/base/errors/errors.h>
-#include <c_base/base/errors/results.h>
 #include <c_base/base/types.h>
 
 #define MATH_E 2.718281828459045235

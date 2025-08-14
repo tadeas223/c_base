@@ -95,6 +95,12 @@ static void* __C_Array_peek_front(C_Array* self) {
   return self->data[0];
 }
 
+void C_Array_clear(C_Array* self) {
+  for (u32 i = 0; i < self->len; i++) {
+    C_Array_put_P(self, i, null);
+  }
+}
+
 u32 C_Array_hash(void* self) {
   u32 hash_code = 0;
   C_ArrayForeach(self, { hash_code = 31 * hash_code + IHashable_hash(value); });

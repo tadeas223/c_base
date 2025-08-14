@@ -20,16 +20,16 @@ CreateTestHook(C_Handle_u32, C_Handle_u32_destroy)
 static void test_C_ArrayForeach(void** state) {
   (void)state;
 
-  C_Array* darray = C_Array_new(4);
-  C_Array_put_P(darray, 0, Pass(C_Handle_u32_new(0)));
-  C_Array_put_P(darray, 1, Pass(C_Handle_u32_new(1)));
-  C_Array_put_P(darray, 2, Pass(C_Handle_u32_new(2)));
-  C_Array_put_P(darray, 3, Pass(C_Handle_u32_new(3)));
+  C_Array* array = C_Array_new(4);
+  C_Array_put_P(array, 0, Pass(C_Handle_u32_new(0)));
+  C_Array_put_P(array, 1, Pass(C_Handle_u32_new(1)));
+  C_Array_put_P(array, 2, Pass(C_Handle_u32_new(2)));
+  C_Array_put_P(array, 3, Pass(C_Handle_u32_new(3)));
 
   C_ArrayForeach(
-    darray, { assert_int_equal(iter, C_Handle_bool_get_value(value)); });
+    array, { assert_int_equal(iter, C_Handle_bool_get_value(value)); });
 
-  Unref(darray);
+  Unref(array);
 }
 
 static void test_C_Array_new(void** state) {
@@ -201,21 +201,44 @@ static void test_C_Array_equals(void** state) {
 static void test_C_Array_to_str_format_R(void** state) {
   (void)state;
 
-  C_Array* darray = C_Array_new(3);
-  C_Array_put_P(darray, 0, Pass(C_Handle_u32_new(1)));
-  C_Array_put_P(darray, 1, Pass(C_Handle_u32_new(2)));
-  C_Array_put_P(darray, 2, Pass(C_Handle_u32_new(3)));
+  C_Array* array = C_Array_new(3);
+  C_Array_put_P(array, 0, Pass(C_Handle_u32_new(1)));
+  C_Array_put_P(array, 1, Pass(C_Handle_u32_new(2)));
+  C_Array_put_P(array, 2, Pass(C_Handle_u32_new(3)));
 
   C_String* correct_result = S("{1, 2, 3}");
   C_String* format = S("start={;end=};sep=, ");
-  C_String* result = C_Array_to_str_format_R(darray, format);
+  C_String* result = C_Array_to_str_format_R(array, format);
 
   assert_true(C_String_equals(correct_result, result));
 
   Unref(format);
   Unref(correct_result);
   Unref(result);
-  Unref(darray);
+  Unref(array);
+}
+
+static void test_C_Array_clear(void** state) {
+  (void)state;
+
+  C_Array* array = C_Array_new(3);
+  C_Handle_u32* val0 = C_Handle_u32_new(0);
+  C_Handle_u32* val1 = C_Handle_u32_new(1);
+  C_Handle_u32* val2 = C_Handle_u32_new(2);
+
+  TestHook(C_Handle_u32, val0);
+  TestHook(C_Handle_u32, val1);
+  TestHook(C_Handle_u32, val2);
+
+  C_Array_put_P(array, 0, Pass(val0));
+  C_Array_put_P(array, 1, Pass(val1));
+  C_Array_put_P(array, 2, Pass(val2));
+
+  AssertHookDestroyed(3, { C_Array_clear(array); });
+
+  C_ArrayForeach(array, { assert_true(value == null); });
+
+  Unref(array);
 }
 
 int main(void) {
@@ -232,6 +255,7 @@ int main(void) {
     cmocka_unit_test(test_C_Array_peek_front_R),
     cmocka_unit_test(test_C_Array_equals),
     cmocka_unit_test(test_C_Array_to_str_format_R),
+    cmocka_unit_test(test_C_Array_clear),
   };
 
   return cmocka_run_group_tests(tests, null, test_teardown);

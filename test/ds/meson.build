@@ -6,3 +6,6 @@ test('ds/C_List', test_c_list)
 
 test_c_array = executable('test_c_array', 'test_C_Array.c', dependencies: [cmocka_dep], link_with: [lib, test_lib], include_directories: [incl_dirs])
 test('ds/C_Array', test_c_array)
+
+test_c_hashtable = executable('test_c_hashtable', 'test_C_HashTable.c', dependencies: [cmocka_dep], link_with: [lib, test_lib], include_directories: [incl_dirs])
+test('ds/C_HashTable', test_c_hashtable)

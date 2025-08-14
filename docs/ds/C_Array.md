@@ -147,6 +147,13 @@ Returns a reference to the first element.
 - `void*`: Owned reference to the first element
 
 ---
+### **void C_Array_clear(C_Array\* self)**
+> *tested*
+
+Unreferences all values stored in the array.
+All elements in the array are set to null.
+
+---
 ### **bool C_Array_equals(void\* a, void\* b)**
 > *tested*
 

@@ -1,5 +1,5 @@
+#include <c_base/base/errors/C_EmptyResult.h>
 #include <c_base/base/errors/errors.h>
-#include <c_base/base/errors/results.h>
 #include <c_base/base/memory/allocator.h>
 #include <c_base/base/memory/memory.h>
 #include <c_base/base/memory/objects.h>

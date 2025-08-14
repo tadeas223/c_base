@@ -1,5 +1,4 @@
 #include <c_base/base/errors/errors.h>
-#include <c_base/base/errors/results.h>
 #include <c_base/base/memory/allocator.h>
 #include <c_base/base/memory/handles.h>
 #include <c_base/base/memory/memory.h>
@@ -28,11 +27,11 @@ void console_write_P(void* obj, ...) {
     C_String* text = IFormattable_to_str_PR(value);
 
     C_Result* result =
-        console_write_chars_R(C_String_get_chars(text), C_String_get_len(text));
+      console_write_chars_R(C_String_get_chars(text), C_String_get_len(text));
     if (C_Handle_u32_get_value(C_Result_force_B(result)) !=
         C_String_get_len(text)) {
       crash(E(EG_OS_IO, E_Unspecified,
-              SV("console_write -> invalid number or characters written")));
+        SV("console_write -> invalid number or characters written")));
     }
     Unref(result);
     Unref(text);

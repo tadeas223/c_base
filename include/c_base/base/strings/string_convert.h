@@ -1,7 +1,7 @@
 #ifndef STRING_CONVERT_H
 #define STRING_CONVERT_H
 
-#include <c_base/base/errors/results.h>
+#include <c_base/base/errors/errors.h>
 #include <c_base/base/strings/strings.h>
 
 ascii digit_to_hex(u8 digit);

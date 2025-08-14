@@ -1,6 +1,5 @@
 #include "c_base/system.h"
 #include <c_base/base/errors/errors.h>
-#include <c_base/base/errors/results.h>
 #include <c_base/base/memory/allocator.h>
 #include <c_base/base/memory/handles.h>
 #include <c_base/base/memory/objects.h>
@@ -18,9 +17,8 @@ C_Result* /* u32 */ console_read_chars_R(ascii* chars, u32 len) {
   C_Result* result;
   int read_result = read(0, chars, len);
   if (read_result < 0) {
-    result = C_Result_new_err(
-        E(EG_OS_IO, E_Unspecified,
-          SV("console_read_chars -> failed to read from console")));
+    result = C_Result_new_err(E(EG_OS_IO, E_Unspecified,
+      SV("console_read_chars -> failed to read from console")));
     goto ret;
   } else {
     C_Handle_u32* handle = C_Handle_u32_new(read_result);
@@ -38,9 +36,8 @@ C_Result* /* u32 */ console_write_chars_R(ascii* chars, u32 len) {
   int write_result = write(1, chars, len);
   C_Result* result;
   if (write_result < 0) {
-    result = C_Result_new_err(
-        E(EG_OS_IO, E_Unspecified,
-          SV("console_write_chars -> failed to write to console")));
+    result = C_Result_new_err(E(EG_OS_IO, E_Unspecified,
+      SV("console_write_chars -> failed to write to console")));
     goto ret;
   } else {
     C_Handle_u32* handle = C_Handle_u32_new(write_result);
@@ -59,9 +56,8 @@ C_EmptyResult* console_set_raw_node(bool value) {
   if (!default_console_attribures_set) {
     int attr_result = tcgetattr(0, &default_console_attribures);
     if (attr_result < 0) {
-      result = C_EmptyResult_new_err(
-          E(EG_OS_IO, E_Unspecified,
-            SV("console_set_raw_mode -> failed to get terminal attributes")));
+      result = C_EmptyResult_new_err(E(EG_OS_IO, E_Unspecified,
+        SV("console_set_raw_mode -> failed to get terminal attributes")));
       goto ret;
     }
   }
@@ -90,9 +86,8 @@ C_EmptyResult* console_set_raw_node(bool value) {
 
   int set_result = tcsetattr(0, TCSANOW, &new_attrs);
   if (set_result < 0) {
-    result = C_EmptyResult_new_err(
-        E(EG_OS_IO, E_Unspecified,
-          SV("console_set_raw_mode -> failed to set new terminal attributes")));
+    result = C_EmptyResult_new_err(E(EG_OS_IO, E_Unspecified,
+      SV("console_set_raw_mode -> failed to set new terminal attributes")));
     goto ret;
   }
 
@@ -138,9 +133,8 @@ C_Result* C_File_new_open_P(C_String* path, FileMode mode) {
   Unref(cstr);
 
   if (descriptor < 0) {
-    result =
-        C_Result_new_err(E(EG_OS_IO, E_Unspecified,
-                           SV("C_File_new_open_P -> failed to open file")));
+    result = C_Result_new_err(E(
+      EG_OS_IO, E_Unspecified, SV("C_File_new_open_P -> failed to open file")));
     goto ret;
   }
 
@@ -162,13 +156,12 @@ C_Result* C_File_new_create_P(C_String* path, FileMode mode) {
 
   C_Ptr* cstr = C_String_to_cstr(path);
   int descriptor =
-      open(C_Ptr_get_ptr(cstr), file_flags(mode) | O_CREAT | O_TRUNC, 0644);
+    open(C_Ptr_get_ptr(cstr), file_flags(mode) | O_CREAT | O_TRUNC, 0644);
   Unref(cstr);
 
   if (descriptor < 0) {
-    result =
-        C_Result_new_err(E(EG_OS_IO, E_Unspecified,
-                           SV("C_File_new_create_P -> failed to create file")));
+    result = C_Result_new_err(E(EG_OS_IO, E_Unspecified,
+      SV("C_File_new_create_P -> failed to create file")));
     goto ret;
   }
 
@@ -192,7 +185,7 @@ C_EmptyResult* C_File_close(C_File* self) {
   int close_result = close(self->descriptor);
   if (close_result < 0) {
     result = C_EmptyResult_new_err(
-        E(EG_OS_IO, E_Unspecified, SV("C_File_close -> failed to close file")));
+      E(EG_OS_IO, E_Unspecified, SV("C_File_close -> failed to close file")));
   } else {
     self->closed = true;
     result = C_EmptyResult_new_ok();
@@ -212,9 +205,8 @@ C_Result* /* u32 */ C_File_read_chars_R(C_File* self, ascii* chars, u32 len) {
 
   C_Result* result;
   if (read_result < 0) {
-    result = C_Result_new_err(
-        E(EG_OS_IO, E_Unspecified,
-          SV("C_File_read_chars_R -> failed to read from file")));
+    result = C_Result_new_err(E(EG_OS_IO, E_Unspecified,
+      SV("C_File_read_chars_R -> failed to read from file")));
   } else {
     result = C_Result_new_ok_P(Pass(C_Handle_u32_new(read_result)));
   }
@@ -227,9 +219,8 @@ C_Result* /* u32 */ C_File_write_chars_R(C_File* self, ascii* chars, u32 len) {
 
   C_Result* result;
   if (write_result < 0) {
-    result = C_Result_new_err(
-        E(EG_OS_IO, E_Unspecified,
-          SV("C_File_read_chars_R -> failed to read from file")));
+    result = C_Result_new_err(E(EG_OS_IO, E_Unspecified,
+      SV("C_File_read_chars_R -> failed to read from file")));
   } else {
     result = C_Result_new_ok_P(Pass(C_Handle_u32_new(write_result)));
   }

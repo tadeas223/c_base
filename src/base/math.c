@@ -1,5 +1,4 @@
 #include <c_base/base/errors/errors.h>
-#include <c_base/base/errors/results.h>
 #include <c_base/base/macros.h>
 #include <c_base/base/math.h>
 #include <c_base/base/memory/handles.h>
@@ -47,7 +46,7 @@ f64 math_ln(f64 x) {
 
   if (x <= 0) {
     crash(E(EG_Math, E_InvalidArgument,
-            SV("logarithm is defined only for numbers grater than 0")));
+      SV("logarithm is defined only for numbers grater than 0")));
   }
 
   while (x > 1.0) {
@@ -81,7 +80,7 @@ f64 math_log(f64 x, f64 base) { return math_ln(x) / math_ln(base); }
     if ((b > 0 && a > Concat(T, _MAX) - b) ||                                  \
         (b < 0 && a < Concat(T, _MIN) - b)) {                                  \
       result = C_Result_new_err(                                               \
-          E(EG_Math, E_OutOfBounds, SV("T_add_safe -> would overflow")));      \
+        E(EG_Math, E_OutOfBounds, SV("T_add_safe -> would overflow")));        \
       goto ret;                                                                \
     }                                                                          \
                                                                                \
@@ -99,7 +98,7 @@ f64 math_log(f64 x, f64 base) { return math_ln(x) / math_ln(base); }
     C_Result* result;                                                          \
     if (a > Concat(T, _MAX) - b) {                                             \
       result = C_Result_new_err(                                               \
-          E(EG_Math, E_OutOfBounds, SV("T_add_safe -> would overflow")));      \
+        E(EG_Math, E_OutOfBounds, SV("T_add_safe -> would overflow")));        \
       goto ret;                                                                \
     }                                                                          \
                                                                                \
@@ -127,7 +126,7 @@ f64 math_log(f64 x, f64 base) { return math_ln(x) / math_ln(base); }
     if ((b > 0 && a < Concat(T, _MIN) + b) ||                                  \
         (b < 0 && a > Concat(T, _MAX) + b)) {                                  \
       result = C_Result_new_err(                                               \
-          E(EG_Math, E_OutOfBounds, SV("T_sub_safe -> would overflow")));      \
+        E(EG_Math, E_OutOfBounds, SV("T_sub_safe -> would overflow")));        \
       goto ret;                                                                \
     }                                                                          \
                                                                                \
@@ -144,7 +143,7 @@ f64 math_log(f64 x, f64 base) { return math_ln(x) / math_ln(base); }
     C_Result* result;                                                          \
     if (a > b) {                                                               \
       result = C_Result_new_err(                                               \
-          E(EG_Math, E_OutOfBounds, SV("T_sub_safe -> would overflow")));      \
+        E(EG_Math, E_OutOfBounds, SV("T_sub_safe -> would overflow")));        \
       goto ret;                                                                \
     }                                                                          \
                                                                                \
@@ -172,13 +171,13 @@ f64 math_log(f64 x, f64 base) { return math_ln(x) / math_ln(base); }
       if (b > 0) {                                                             \
         if (a > Concat(T, _MAX) / b) {                                         \
           result = C_Result_new_err(                                           \
-              E(EG_Math, E_OutOfBounds, SV("T_mult_safe -> would overflow"))); \
+            E(EG_Math, E_OutOfBounds, SV("T_mult_safe -> would overflow")));   \
           goto ret;                                                            \
         }                                                                      \
       } else {                                                                 \
         if (b < Concat(T, _MIN) / a) {                                         \
           result = C_Result_new_err(                                           \
-              E(EG_Math, E_OutOfBounds, SV("T_mult_safe -> would overflow"))); \
+            E(EG_Math, E_OutOfBounds, SV("T_mult_safe -> would overflow")));   \
           goto ret;                                                            \
         }                                                                      \
       }                                                                        \
@@ -186,12 +185,12 @@ f64 math_log(f64 x, f64 base) { return math_ln(x) / math_ln(base); }
       if (b > 0) {                                                             \
         if (a < Concat(T, _MIN) / b) {                                         \
           result = C_Result_new_err(                                           \
-              E(EG_Math, E_OutOfBounds, SV("T_mult_safe -> would overflow"))); \
+            E(EG_Math, E_OutOfBounds, SV("T_mult_safe -> would overflow")));   \
           goto ret;                                                            \
         } else {                                                               \
           if (a != 0 && b < Concat(T, _MAX) / a) {                             \
-            result = C_Result_new_err(E(EG_Math, E_OutOfBounds,                \
-                                        SV("T_mult_safe -> would overflow"))); \
+            result = C_Result_new_err(                                         \
+              E(EG_Math, E_OutOfBounds, SV("T_mult_safe -> would overflow"))); \
             goto ret;                                                          \
           }                                                                    \
         }                                                                      \
@@ -211,7 +210,7 @@ f64 math_log(f64 x, f64 base) { return math_ln(x) / math_ln(base); }
     C_Result* result;                                                          \
     if (b != 0 && a > Concat(T, _MAX) / b) {                                   \
       result = C_Result_new_err(                                               \
-          E(EG_Math, E_OutOfBounds, SV("T_mult_safe -> would overflow")));     \
+        E(EG_Math, E_OutOfBounds, SV("T_mult_safe -> would overflow")));       \
       goto ret;                                                                \
     }                                                                          \
                                                                                \
@@ -238,12 +237,12 @@ f64 math_log(f64 x, f64 base) { return math_ln(x) / math_ln(base); }
     C_Result* result;                                                          \
     if (b == 0) {                                                              \
       result = C_Result_new_err(                                               \
-          E(EG_Math, E_InvalidArgument, SV("_safe_div -> division by zero"))); \
+        E(EG_Math, E_InvalidArgument, SV("_safe_div -> division by zero")));   \
       goto ret;                                                                \
     }                                                                          \
     if (a == Concat(T, _MIN) && b == -1) {                                     \
       result = C_Result_new_err(                                               \
-          E(EG_Math, E_InvalidArgument, SV("_safe_div -> would overflow")));   \
+        E(EG_Math, E_InvalidArgument, SV("_safe_div -> would overflow")));     \
       goto ret;                                                                \
     }                                                                          \
                                                                                \
@@ -260,7 +259,7 @@ f64 math_log(f64 x, f64 base) { return math_ln(x) / math_ln(base); }
     C_Result* result;                                                          \
     if (b == 0) {                                                              \
       result = C_Result_new_err(                                               \
-          E(EG_Math, E_InvalidArgument, SV("_safe_div -> division by zero"))); \
+        E(EG_Math, E_InvalidArgument, SV("_safe_div -> division by zero")));   \
       goto ret;                                                                \
     }                                                                          \
                                                                                \

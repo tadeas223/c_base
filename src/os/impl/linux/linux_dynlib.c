@@ -1,5 +1,4 @@
 #include <c_base/base/errors/errors.h>
-#include <c_base/base/errors/results.h>
 #include <c_base/base/memory/allocator.h>
 #include <c_base/base/memory/objects.h>
 #include <c_base/base/strings/strings.h>
@@ -22,9 +21,8 @@ C_Result* /* C_DynamicLibrary* */ C_DynamicLibrary_new_P(C_String* path) {
   C_Ptr* cstr = C_String_to_cstr(path);
   void* handle = dlopen(C_Ptr_get_ptr(cstr), RTLD_NOW);
   if (handle == null) {
-    result = C_Result_new_err(
-        E(EG_OSDynLib, E_Unspecified,
-          SV("C_DynamicLibrary_new -> failed to load dynamic library")));
+    result = C_Result_new_err(E(EG_OSDynLib, E_Unspecified,
+      SV("C_DynamicLibrary_new -> failed to load dynamic library")));
     goto ret;
   }
 
@@ -48,9 +46,8 @@ C_EmptyResult* C_DynamicLibrary_close(C_DynamicLibrary* self) {
 
   int close_result = dlclose(self->handle);
   if (close_result < 0) {
-    return C_EmptyResult_new_err(
-        E(EG_OSDynLib, E_Unspecified,
-          SV("C_DynamicLibrary_close -> failed to close dynamic library")));
+    return C_EmptyResult_new_err(E(EG_OSDynLib, E_Unspecified,
+      SV("C_DynamicLibrary_close -> failed to close dynamic library")));
   }
   self->closed = true;
 
@@ -64,16 +61,15 @@ void C_DynamicLibrary_destroy(void* self) {
   C_EmptyResult_force(close_result);
   Unref(close_result);
 }
-C_Result* /* void* */ C_DynamicLibrary_load_P(C_DynamicLibrary* self,
-                                              C_String* name) {
+C_Result* /* void* */ C_DynamicLibrary_load_P(
+  C_DynamicLibrary* self, C_String* name) {
   Ref(name);
   C_Result* result;
   C_Ptr* cstr = C_String_to_cstr(name);
   void* result_handle = dlsym(self->handle, C_Ptr_get_ptr(cstr));
   if (!result_handle) {
-    result = C_Result_new_err(
-        E(EG_OSDynLib, E_Unspecified,
-          SV("C_DynamicLibrary_load -> failed to load specified value")));
+    result = C_Result_new_err(E(EG_OSDynLib, E_Unspecified,
+      SV("C_DynamicLibrary_load -> failed to load specified value")));
     goto ret;
   }
 

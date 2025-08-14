@@ -1,4 +1,3 @@
-
 # **C_DArray** : **ClassObject**
 **package:** [ds](ds.md)
 
