@@ -33,8 +33,8 @@
   do {                                                                         \
     args = C_Array_new(argc);                                                  \
     C_ArrayForeach(args, {                                                     \
-      C_Array_put_P(args, iter,                                                \
-                    Pass(C_String_new(argv[iter], cstr_len(argv[iter]))));     \
+      C_Array_put_P(                                                           \
+        args, iter, Pass(C_String_new(argv[iter], cstr_len(argv[iter]))));     \
     });                                                                        \
   } while (0)
 

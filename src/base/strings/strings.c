@@ -21,17 +21,18 @@ struct C_String {
 };
 
 static const ClassObject __ClassObject_zero = {0};
-static C_String __C_StringEmpty = {
-    .base = __ClassObject_zero, .len = 0, .chars = "", .allocated = false};
+static C_String __C_StringEmpty = {.base = __ClassObject_zero,
+  .len = 0,
+  .chars = "",
+  .allocated = false};
 C_String* C_StringEmpty = &__C_StringEmpty;
 
 /******************************
  * IFormattable
  ******************************/
 
-IFormattable IFormattable_construct_format(
-    C_String* (*to_str_R)(void* self),
-    C_String* (*to_str_format_R)(void* self, C_String* format)) {
+IFormattable IFormattable_construct_format(C_String* (*to_str_R)(void* self),
+  C_String* (*to_str_format_R)(void* self, C_String* format)) {
   IFormattable self;
   self.interface = Interface_construct(IFormattable_id);
   self.to_str_R = to_str_R;
@@ -46,13 +47,19 @@ IFormattable IFormattable_construct(C_String* (*to_str_R)(void* self)) {
 C_String* IFormattable_to_str_PR(void* self) {
   Ref(self);
   C_String* result;
+
+  if (self == null) {
+    result = S("null");
+    goto ret;
+  }
+
   if (!ClassObject_contains_interface(self, IFormattable_id)) {
     result = ptr_to_str_R(self);
     goto ret;
   }
 
   IFormattable* i_formattable =
-      (IFormattable*)ClassObject_get_interface(self, IFormattable_id);
+    (IFormattable*)ClassObject_get_interface(self, IFormattable_id);
   result = i_formattable->to_str_R(self);
 
 ret:
@@ -65,13 +72,19 @@ C_String* IFormattable_to_str_format_PR(void* self, C_String* format) {
   Ref(format);
 
   C_String* result;
+
+  if (self == null) {
+    result = S("null");
+    goto ret;
+  }
+
   if (!ClassObject_contains_interface(self, IFormattable_id)) {
     result = ptr_to_str_R(self);
     goto ret;
   }
 
   IFormattable* i_formattable =
-      (IFormattable*)ClassObject_get_interface(self, IFormattable_id);
+    (IFormattable*)ClassObject_get_interface(self, IFormattable_id);
   if (i_formattable->to_str_format_R != null) {
     result = i_formattable->to_str_format_R(self, format);
     goto ret;
@@ -183,7 +196,7 @@ void C_String_destroy(void* self) {
 ascii C_String_at(C_String* self, u32 index) {
   if (index >= self->len) {
     crash(E(EG_Strings, E_OutOfBounds,
-            SV("C_String_at -> index is outside of the string")));
+      SV("C_String_at -> index is outside of the string")));
   }
 
   return self->chars[index];
@@ -192,11 +205,11 @@ ascii C_String_at(C_String* self, u32 index) {
 void C_String_put(C_String* self, u32 index, ascii character) {
   if (!self->allocated) {
     crash(E(EG_Strings, E_InvalidArgument,
-            SV("C_String_set -> only allocated strings can be mutated")));
+      SV("C_String_set -> only allocated strings can be mutated")));
   }
   if (index >= self->len) {
     crash(E(EG_Strings, E_OutOfBounds,
-            SV("C_String_set -> index is outside of the string")));
+      SV("C_String_set -> index is outside of the string")));
   }
 
   self->chars[index] = character;
@@ -204,9 +217,8 @@ void C_String_put(C_String* self, u32 index, ascii character) {
 
 C_String* C_String_substr_R(C_String* original, u32 index, u32 len) {
   if (index + len > original->len) {
-    crash(E(
-        EG_Strings, E_OutOfBounds,
-        SV("C_String_substr -> substring would be longer than the original")));
+    crash(E(EG_Strings, E_OutOfBounds,
+      SV("C_String_substr -> substring would be longer than the original")));
   }
 
   return C_String_new(original->chars + index, len);
@@ -226,7 +238,7 @@ C_String* C_String_concat_PR(C_String* string, ...) {
   C_ArrayForeach(args, {
     C_String* loop_string = value;
     mem_copy(C_String_get_chars(result) + index,
-             C_String_get_chars(loop_string), loop_string->len);
+      C_String_get_chars(loop_string), loop_string->len);
     index += loop_string->len;
   });
 
@@ -250,7 +262,7 @@ C_Array* C_String_split_R(C_String* string, ascii splitter) {
 
   // add last string
   C_String* substr =
-      C_String_substr_R(string, start, C_String_get_len(string) - start);
+    C_String_substr_R(string, start, C_String_get_len(string) - start);
   C_List_push_P(list, Pass(substr));
 
   return C_List_to_array_PR(Pass(list));
@@ -265,7 +277,7 @@ C_String* C_String_join_PR(C_Array* strings) {
   u32 index = 0;
   C_ArrayForeach(strings, {
     mem_copy(C_String_get_chars(result) + index, C_String_get_chars(value),
-             C_String_get_len(value));
+      C_String_get_len(value));
 
     index += C_String_get_len(value);
   });

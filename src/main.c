@@ -1,33 +1,27 @@
+#include "c_base/base/memory/handles.h"
 #include "c_base/base/memory/objects.h"
-#include "c_base/base/strings/string_convert.h"
 #include "c_base/base/strings/strings.h"
 #include "c_base/base/varargs.h"
-#include "c_base/ds/C_List.h"
+#include "c_base/ds/C_Array.h"
 #include "c_base/os/os_io.h"
 
+u32 sum_P(C_Handle_u32* x, ...) {
+  C_Array* args;
+  VarargsLoad(args, x);
+
+  u32 sum = 0;
+  C_ArrayForeach(args, { sum += C_Handle_s32_get_value(value); });
+
+  Unref(args);
+  return sum;
+}
+
 int main(void) {
-  C_List* list = C_List_new();
+  u32 x =
+    sum_P(Pass(C_Handle_u32_new(10)), Pass(C_Handle_u32_new(20)), ArgsEnd);
 
-  bool end = false;
-  while (!end) {
-    C_String* input = console_read_ln_R();
+  console_write_ln_P(
+    PS("x = "), Pass(u32_to_str_R(x)), PS("\nnull: "), null, ArgsEnd);
 
-    if (C_String_equals(input, C_StringEmpty)) {
-      end = true;
-      goto loop_end;
-    } else {
-      C_List_push_P(list, input);
-    }
-
-  loop_end:
-    Unref(input);
-  }
-
-  C_String* join = C_String_join_PR(Pass(C_List_to_array_PR(list)));
-
-  console_write_single_ln_P(Pass(join));
-
-  Unref(list);
-
-  console_write_ln_P(PS("refs: "), Pass(u32_to_str_R(refs)), ArgsEnd);
+  return 0;
 }
