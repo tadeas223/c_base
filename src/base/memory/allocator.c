@@ -26,7 +26,7 @@ Allocator Allocator_construct(void) {
   self.pos = 0;
 
   MemoryResult reserve_result =
-      global_memory_base->reserve(global_memory_base, AllocatorReserveSize);
+    global_memory_base->reserve(global_memory_base, AllocatorReserveSize);
   if (!reserve_result.ok) {
     crash(reserve_result.error);
   }
@@ -35,7 +35,7 @@ Allocator Allocator_construct(void) {
   self.reserve_pos = reserve_result.size;
 
   MemoryResult commit_result = global_memory_base->commit(
-      global_memory_base, self.memory, AllocatorCommitSize);
+    global_memory_base, self.memory, AllocatorCommitSize);
   if (!commit_result.ok) {
     crash(commit_result.error);
   }
@@ -48,15 +48,15 @@ Allocator Allocator_construct(void) {
 
 void Allocator_commit(Allocator* self, u64 min_size) {
   u64 commit_size =
-      (min_size > AllocatorCommitSize) ? min_size : AllocatorCommitSize;
+    (min_size > AllocatorCommitSize) ? min_size : AllocatorCommitSize;
 
   if (commit_size > AllocatorReserveSize) {
     crash(E(EG_Memory, E_OutOfBounds,
-            SV("Allocator_commit -> allocator run out of memory")));
+      SV("Allocator_commit -> allocator run out of memory")));
   }
 
   MemoryResult commit_result = global_memory_base->commit(
-      global_memory_base, self->memory + self->commit_pos, commit_size);
+    global_memory_base, self->memory + self->commit_pos, commit_size);
   if (!commit_result.ok) {
     crash(commit_result.error);
   }
@@ -90,7 +90,7 @@ void* Allocator_allocate(Allocator* self, u64 size) {
     if (node->size >=
         AllocatorNodeAligned + size + AllocatorNodeAligned + MemAlign) {
       AllocatorNode* new_node =
-          (AllocatorNode*)((b8*)node + AllocatorNodeAligned + size);
+        (AllocatorNode*)((b8*)node + AllocatorNodeAligned + size);
       new_node->size = node->size - (AllocatorNodeAligned + size);
       new_node->used = false;
       new_node->next = node->next;
@@ -115,7 +115,7 @@ void* Allocator_allocate(Allocator* self, u64 size) {
     node = node->next;
   }
 
-  Allocator_commit(self, size);
+  Allocator_commit(self, size + AllocatorNodeAligned);
   return Allocator_allocate(self, size);
 }
 
@@ -176,8 +176,8 @@ void* reallocate(void* ptr, u64 size) {
 
   AllocatorNode* ptr_node = (AllocatorNode*)((u8*)ptr - AllocatorNodeAligned);
   u64 new_size = (ptr_node->size - AllocatorNodeAligned >= size)
-                     ? ptr_node->size - AllocatorNodeAligned
-                     : size;
+                   ? ptr_node->size - AllocatorNodeAligned
+                   : size;
 
   void* new_ptr = Allocator_allocate(&allocator, new_size);
 
