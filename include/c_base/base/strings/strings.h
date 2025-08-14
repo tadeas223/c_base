@@ -28,9 +28,8 @@ Id(IFormattable)
 /******************************
  * IFormattable
  ******************************/
-IFormattable IFormattable_construct_format(
-    C_String* (*to_str_R)(void* self),
-    C_String* (*to_str_format_R)(void* self, C_String* format));
+IFormattable IFormattable_construct_format(C_String* (*to_str_R)(void* self),
+  C_String* (*to_str_format_R)(void* self, C_String* format));
 IFormattable IFormattable_construct(C_String* (*to_str_R)(void* self));
 
 C_String* IFormattable_to_str_PR(void* self);

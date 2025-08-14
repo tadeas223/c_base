@@ -3,7 +3,7 @@
 
 #include <c_base/base/strings/strings.h>
 #include <c_base/base/types.h>
-#include <c_base/ds/ds.h>
+#include <c_base/ds/ds_base.h>
 
 #define C_DArrayForeach(darray, code)                                          \
   do {                                                                         \

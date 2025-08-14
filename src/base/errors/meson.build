@@ -1,5 +1,5 @@
 sources += files(
-  'error_macros.c',
+  'error_base.c',
   'Error.c',
   'C_Result.c',
   'C_EmptyResult.c',

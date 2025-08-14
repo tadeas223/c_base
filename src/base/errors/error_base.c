@@ -1,4 +1,4 @@
-#include <c_base/base/errors/error_macros.h>
+#include <c_base/base/errors/errors_base.h>
 
 GenericValImpl_ErrorCode(EG_Unspecified)
 

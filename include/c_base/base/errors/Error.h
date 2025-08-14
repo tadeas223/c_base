@@ -2,6 +2,7 @@
 #define ERROR_H
 
 #include "c_base/base/strings/string_view.h"
+
 #define E(grp_code, code, msg) Error_construct(grp_code, code, msg)
 
 typedef StringView* ErrorCode;

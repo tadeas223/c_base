@@ -2,7 +2,7 @@
 #define HASH_TABLE_H
 
 #include <c_base/base/types.h>
-#include <c_base/ds/ds.h>
+#include <c_base/ds/ds_base.h>
 
 typedef struct C_HashTable C_HashTable;
 
