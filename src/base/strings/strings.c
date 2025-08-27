@@ -104,8 +104,7 @@ C_String* C_String_to_str_R(void* self) { return Ref(self); }
 
 u32 C_String_hash(void* self) {
   C_String* self_cast = self;
-  // hash by poitner to chars, that will never change
-  return hash(&self_cast->chars, sizeof(void*));
+  return hash(self_cast->chars, self_cast->len);
 }
 
 bool C_String_equals(void* a, void* b) {

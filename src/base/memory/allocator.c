@@ -155,6 +155,7 @@ void Allocator_deallocate(Allocator* self, void* ptr) {
     prev_node->next = prev_node->next->next;
   }
 }
+
 void* allocate(u64 size) {
   if (allocator.head == null) {
     allocator = Allocator_construct();

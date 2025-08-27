@@ -226,6 +226,43 @@ static void test_C_HashTable_clear(void** state) {
   Unref(table);
 }
 
+static void test_C_HashTable_equals(void** state) {
+  (void)state;
+
+  C_HashTable* table = C_HashTable_new();
+  C_HashTable_put_P(
+    table, Pass(C_Handle_u32_new(10)), Pass(C_Handle_u32_new(10)));
+  C_HashTable_put_P(
+    table, Pass(C_Handle_u32_new(20)), Pass(C_Handle_u32_new(10)));
+  C_HashTable_put_P(
+    table, Pass(C_Handle_u32_new(30)), Pass(C_Handle_u32_new(10)));
+  C_HashTable_put_P(
+    table, Pass(C_Handle_u32_new(40)), Pass(C_Handle_u32_new(10)));
+  C_HashTable_put_P(
+    table, Pass(C_Handle_u32_new(50)), Pass(C_Handle_u32_new(10)));
+
+  C_HashTable* table2 = C_HashTable_new();
+  C_HashTable_put_P(
+    table2, Pass(C_Handle_u32_new(10)), Pass(C_Handle_u32_new(10)));
+  C_HashTable_put_P(
+    table2, Pass(C_Handle_u32_new(20)), Pass(C_Handle_u32_new(10)));
+  C_HashTable_put_P(
+    table2, Pass(C_Handle_u32_new(30)), Pass(C_Handle_u32_new(10)));
+  C_HashTable_put_P(
+    table2, Pass(C_Handle_u32_new(40)), Pass(C_Handle_u32_new(10)));
+  C_HashTable_put_P(
+    table2, Pass(C_Handle_u32_new(50)), Pass(C_Handle_u32_new(10)));
+
+  assert_true(C_HashTable_equals(table, table2));
+
+  Unref(C_HashTable_remove_PR(table, Pass(C_Handle_u32_new(10))));
+
+  assert_false(C_HashTable_equals(table, table2));
+
+  Unref(table);
+  Unref(table2);
+}
+
 int main(void) {
   const struct CMUnitTest tests[] = {
     cmocka_unit_test(test_C_HashTable_new),
@@ -237,6 +274,7 @@ int main(void) {
     cmocka_unit_test(test_C_HashTable_remove_PR),
     cmocka_unit_test(test_C_HashTable_clear),
     cmocka_unit_test(test_C_HashTable_contains_P),
+    cmocka_unit_test(test_C_HashTable_equals),
   };
 
   return cmocka_run_group_tests(tests, null, test_teardown);

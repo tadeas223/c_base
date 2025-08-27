@@ -133,7 +133,7 @@ Checks all elements in both hash tables. If the hash tables contain the same ele
 
 ---
 ### **C_String\* C_HashTable_to_str_format_R(void\* self, C_String\* format)**
-> *tested*
+> *not tested*: cannot test
 
 Converts the hash table into a string.
 

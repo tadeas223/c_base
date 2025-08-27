@@ -14,3 +14,4 @@ Error group that is used when any action in any datastructure fails.
 - [C_List](C_List.md)
 - [C_Array](C_Array.md)
 - [C_DArray](C_DArray.md)
+- [C_HashTable](C_HashTable.md)

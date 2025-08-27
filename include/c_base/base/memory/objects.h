@@ -40,10 +40,10 @@ typedef struct {
 Id(ClassObject)
 
 // construct
-ClassObject ClassObject_construct(void (*destroy)(void*),
-                                  Interface** interfaces);
-ClassObject ClassObject_construct_extend(u32 id, void (*destroy)(void* self),
-                                         Interface** interfaces);
+ClassObject ClassObject_construct(
+  void (*destroy)(void*), Interface** interfaces);
+ClassObject ClassObject_construct_extend(
+  u32 id, void (*destroy)(void* self), Interface** interfaces);
 
 // methods
 void ClassObject_destroy(void* self);
@@ -66,8 +66,8 @@ typedef struct {
 Id(IHashable)
 
 // construct
-IHashable IHashable_construct(bool (*equals)(void* a, void* b),
-                              u32 (*hash)(void* self));
+IHashable IHashable_construct(
+  bool (*equals)(void* a, void* b), u32 (*hash)(void* self));
 
 // methods
 bool IHashable_equals(void* a, void* b);

@@ -133,7 +133,7 @@ static void* __C_HashTable_at_P(C_HashTable* self, void* key) {
 
   if (list == null) {
     crash(E(EG_Datastructures, E_InvalidPointer,
-      SV("__C_HashTable_at -> key is not in the hash table")));
+      SV("__C_HashTable_at_P -> key is not in the hash table")));
   }
 
   void* val = 0;
