@@ -6,7 +6,7 @@
 #define ContainerOf(type, member, ptr) ptr - OffsetOf(type, member)
 
 #define Kilobytes(x) (u64) x * 1024
-#define Mebabytes(x) (u64) x * 1024 * 1024
+#define Megabytes(x) (u64) x * 1024 * 1024
 #define Gigabytes(x) (u64) x * 1024 * 1024 * 1024
 
 #endif

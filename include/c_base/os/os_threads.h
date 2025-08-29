@@ -2,13 +2,23 @@
 #define OS_THREADS_H
 
 #include "c_base/base/errors/C_EmptyResult.h"
+#include "c_base/base/macros.h"
 #include "c_base/base/types.h"
+#include "c_base/ds/C_Array.h"
+
+GenericVal_ErrorCode(EG_OS_THREADS)
 
 typedef struct C_Thread C_Thread;
 typedef struct C_Mutex C_Mutex;
 
-C_Thread* C_Thread_new(void);
-C_Thread* C_Thread_new_stack_size(u32 stack_size);
+#define OSThreadStackSize Megabytes(8)
+
+C_Thread* C_Thread_new(void (*thread_func)(C_Thread* self), C_Array* args);
+
+C_Thread* C_Thread_new_stack_size(
+  void (*thread_fun)(C_Thread* self), C_Array* args, u32 stack_size);
+
+C_EmptyResult* C_Thread_run(C_Thread* self);
 
 void C_Thread_join(C_Thread* self);
 
