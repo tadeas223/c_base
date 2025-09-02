@@ -2,6 +2,9 @@ project('c_base', 'c', default_options: ['c_std=c99', 'c_args= -Wall -Wextra -We
 
 add_project_arguments('-pedantic',language: 'c')
 
+system = host_machine.system()
+cpu = host_machine.cpu()
+
 incl_dirs = include_directories('include', 'src')
 sources = []
 

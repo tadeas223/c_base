@@ -13,12 +13,6 @@
 
 GenericValImpl_ErrorCode(EG_OS_IO)
 
-#if defined(PLATFORM_LINUX)
-#include "impl/linux/linux_io.c"
-#else
-#error "os_io.c -> unsupported platform"
-#endif
-
 void console_write_P(void* obj, ...) {
   C_Array* args;
   VarargsLoad(args, obj);

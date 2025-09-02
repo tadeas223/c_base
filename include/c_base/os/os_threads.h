@@ -9,9 +9,16 @@
 GenericVal_ErrorCode(EG_OS_THREADS)
 
 typedef struct C_Thread C_Thread;
-typedef struct C_Mutex C_Mutex;
+
+typedef struct {
+  u32 ftx;
+} Mutex;
 
 #define OSThreadStackSize Megabytes(8)
+
+Mutex Mutex_construct(void);
+void Mutex_lock(Mutex* self);
+void Mutex_unlock(Mutex* self);
 
 C_Thread* C_Thread_new(void (*thread_func)(C_Thread* self), C_Array* args);
 
@@ -19,6 +26,7 @@ C_Thread* C_Thread_new_stack_size(
   void (*thread_fun)(C_Thread* self), C_Array* args, u32 stack_size);
 
 C_EmptyResult* C_Thread_run(C_Thread* self);
+void C_Thread_join(C_Thread* self);
 
 void C_Thread_join(C_Thread* self);
 
