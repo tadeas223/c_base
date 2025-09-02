@@ -1,3 +1,4 @@
+#include "c_base/os/os_threads.h"
 #include <c_base/base/memory/allocator.h>
 #include <c_base/base/memory/memory.h>
 #include <c_base/base/memory/memory_base.h>
@@ -16,6 +17,7 @@ typedef struct {
   u64 commit_pos;
   u64 pos;
   AllocatorNode* head;
+  Mutex lock;
 } Allocator;
 
 static Allocator allocator = {0};
@@ -23,6 +25,7 @@ static Allocator allocator = {0};
 Allocator Allocator_construct(void) {
   Allocator self;
 
+  self.lock = Mutex_construct();
   self.pos = 0;
 
   MemoryResult reserve_result =
@@ -81,10 +84,17 @@ void Allocator_commit(Allocator* self, u64 min_size) {
 }
 
 void* Allocator_allocate(Allocator* self, u64 size) {
+  Mutex_lock(&self->lock);
+
+  void* result;
   size = mem_align_forward(size, MemAlign);
 
-  AllocatorNode* node = self->head;
-  AllocatorNode** prev_node = &self->head;
+  AllocatorNode* node;
+  AllocatorNode** prev_node;
+retry:
+  node = self->head;
+  prev_node = &self->head;
+
   while (node) {
     // if fits two memory block
     if (node->size >=
@@ -101,14 +111,16 @@ void* Allocator_allocate(Allocator* self, u64 size) {
 
       *prev_node = new_node;
 
-      return (b8*)node + AllocatorNodeAligned;
+      result = (b8*)node + AllocatorNodeAligned;
+      goto ret;
     } else if (node->size >= AllocatorNodeAligned + size) {
       *prev_node = node->next;
 
       node->used = true;
       node->next = null;
 
-      return (b8*)node + AllocatorNodeAligned;
+      result = (b8*)node + AllocatorNodeAligned;
+      goto ret;
     }
 
     prev_node = &node->next;
@@ -116,10 +128,15 @@ void* Allocator_allocate(Allocator* self, u64 size) {
   }
 
   Allocator_commit(self, size + AllocatorNodeAligned);
-  return Allocator_allocate(self, size);
+  goto retry;
+
+ret:
+  Mutex_unlock(&self->lock);
+  return result;
 }
 
 void Allocator_deallocate(Allocator* self, void* ptr) {
+  Mutex_lock(&self->lock);
   AllocatorNode* loop_node = self->head;
   AllocatorNode* prev_node = null;
   AllocatorNode* ptr_node = (AllocatorNode*)((b8*)ptr - AllocatorNodeAligned);
@@ -154,12 +171,15 @@ void Allocator_deallocate(Allocator* self, void* ptr) {
     prev_node->size += ptr_node->size;
     prev_node->next = prev_node->next->next;
   }
+  Mutex_unlock(&self->lock);
 }
 
 void* allocate(u64 size) {
-  if (allocator.head == null) {
-    allocator = Allocator_construct();
-  }
+  Once({
+    if (allocator.head == null) {
+      allocator = Allocator_construct();
+    }
+  });
 
   return Allocator_allocate(&allocator, size);
 }
@@ -167,9 +187,11 @@ void* allocate(u64 size) {
 void deallocate(void* ptr) { Allocator_deallocate(&allocator, ptr); }
 
 void* reallocate(void* ptr, u64 size) {
-  if (allocator.head == null) {
-    allocator = Allocator_construct();
-  }
+  Once({
+    if (allocator.head == null) {
+      allocator = Allocator_construct();
+    }
+  });
 
   if (ptr == null) {
     return Allocator_allocate(&allocator, size);

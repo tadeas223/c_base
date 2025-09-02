@@ -1,3 +1,5 @@
+#include "c_base/ds/C_List.h"
+#include "c_base/os/os_threads.h"
 #include <c_base/base/errors/errors.h>
 #include <c_base/base/memory/allocator.h>
 #include <c_base/base/memory/handles.h>
@@ -13,7 +15,10 @@
 
 GenericValImpl_ErrorCode(EG_OS_IO)
 
+static Mutex write_mutex = MutexConstructStatic;
+
 void console_write_P(void* obj, ...) {
+  Mutex_lock(&write_mutex);
   C_Array* args;
   VarargsLoad(args, obj);
 
@@ -32,16 +37,23 @@ void console_write_P(void* obj, ...) {
   });
 
   Unref(args);
+  Mutex_unlock(&write_mutex);
 }
 
 void console_write_ln_P(void* obj, ...) {
   C_Array* args;
   VarargsLoad(args, obj);
 
-  C_ArrayForeach(args, { console_write_P(value, ArgsEnd); });
+  C_List* list = C_List_new();
+  C_ArrayForeach(args, { C_List_push_P(list, value); });
+  C_List_push_P(list, PS("\n"));
 
-  console_write_P(PS("\n"), ArgsEnd);
+  C_String* join = C_String_join_PR(Pass(C_List_to_array_PR(list)));
 
+  console_write_P(join, ArgsEnd);
+
+  Unref(join);
+  Unref(list);
   Unref(args);
 }
 

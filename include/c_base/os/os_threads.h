@@ -16,6 +16,14 @@ typedef struct {
 
 #define OSThreadStackSize Megabytes(8)
 
+#define Once(code)                                                             \
+  do {                                                                         \
+    static Mutex _mutex = MutexConstructStatic;                                \
+    Mutex_lock(&_mutex);                                                       \
+    {code} Mutex_unlock(&_mutex);                                              \
+  } while (0);
+
+#define MutexConstructStatic {0}
 Mutex Mutex_construct(void);
 void Mutex_lock(Mutex* self);
 void Mutex_unlock(Mutex* self);

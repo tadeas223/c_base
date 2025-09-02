@@ -1,11 +1,15 @@
 #ifndef OBJECTS_H
 #define OBJECTS_H
 
+#include "c_base/os/os_threads.h"
 #include <c_base/base/types.h>
 
 #define Ref(obj) ClassObject_ref(obj)
 #define Unref(obj) ClassObject_unref(obj)
 #define Pass(obj) ClassObject_pass(obj)
+
+#define Lock(obj) ClassObject_lock(obj)
+#define Unlock(obj) ClassObject_unlock(obj)
 
 typedef struct {
   u64 id;
@@ -28,12 +32,12 @@ Class Class_construct(u64 id);
 Interface Interface_construct(u64 id);
 bool Interface_initialized(Interface* self);
 
-/******************************
- * ClassObject
+/****************************** ClassObject
  ******************************/
 typedef struct {
   Class class;
   u32 references;
+  Mutex mutex;
   void (*destroy)(void*);
   Interface** interfaces;
 } ClassObject;
@@ -51,6 +55,9 @@ void ClassObject_destroy(void* self);
 void* ClassObject_ref(void* self);
 void ClassObject_unref(void* self);
 void* ClassObject_pass(void* self);
+
+void ClassObject_lock(void* self);
+void ClassObject_unlock(void* self);
 
 bool ClassObject_contains_interface(void* self, u64 id);
 Interface* ClassObject_get_interface(void* self, u64 id);

@@ -1,3 +1,4 @@
+#include "c_base/os/os_threads.h"
 #include <c_base/base/errors/errors.h>
 #include <c_base/base/memory/allocator.h>
 #include <c_base/base/memory/memory.h>
@@ -102,6 +103,16 @@ void* ClassObject_pass(void* self) {
   self_cast->references--;
   refs--;
   return self;
+}
+
+void ClassObject_lock(void* self) {
+  ClassObject* self_cast = self;
+  Mutex_lock(&self_cast->mutex);
+}
+
+void ClassObject_unlock(void* self) {
+  ClassObject* self_cast = self;
+  Mutex_unlock(&self_cast->mutex);
 }
 
 bool ClassObject_contains_interface(void* self, u64 id) {
