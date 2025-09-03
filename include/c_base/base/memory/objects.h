@@ -1,8 +1,8 @@
 #ifndef OBJECTS_H
 #define OBJECTS_H
 
-#include "c_base/os/os_threads.h"
 #include <c_base/base/types.h>
+#include <c_base/os/os_threads.h>
 
 #define Ref(obj) ClassObject_ref(obj)
 #define Unref(obj) ClassObject_unref(obj)

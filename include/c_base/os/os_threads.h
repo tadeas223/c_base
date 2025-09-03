@@ -1,10 +1,10 @@
 #ifndef OS_THREADS_H
 #define OS_THREADS_H
 
-#include "c_base/base/errors/C_EmptyResult.h"
-#include "c_base/base/macros.h"
-#include "c_base/base/types.h"
-#include "c_base/ds/C_Array.h"
+#include <c_base/base/errors/C_EmptyResult.h>
+#include <c_base/base/macros.h>
+#include <c_base/base/types.h>
+#include <c_base/ds/C_Array.h>
 
 GenericVal_ErrorCode(EG_OS_THREADS)
 

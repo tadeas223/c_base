@@ -1,6 +1,6 @@
 if cpu == 'x86_64'
   subdir('x86_64')
-elif
+else
   error('cpu architecture not supported')
 endif
 
